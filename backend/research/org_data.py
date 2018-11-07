@@ -1,5 +1,8 @@
+import os
+import json
+
 from collections import defaultdict
-import pprint
+from multiprocessing.dummy import Pool
 
 import requests
 
@@ -16,9 +19,15 @@ def mo_get(url):
 
 DEFAULT_MO_URL = 'http://morademo.atlas.magenta.dk/service'
 
+# The following to assignments assume there's only one org and root org
+# unit. These assumptions are probably wrong, and they should be
+# explicitly configured.
+ORG_ROOT = mo_get(DEFAULT_MO_URL + '/o/')[0]['uuid']
+# ORG_ROOT = '3a87187c-f25a-40a1-8d42-312b2e2b43bd'
 
 
 class MOData:
+    """Abstract base class to interface with MO objects."""
 
     @cached_property
     def json(self):
@@ -55,19 +64,22 @@ class MOData:
     def __str__(self):
         return str(self.json)
 
+    def __init__(self, uuid):
+        self.uuid = uuid
+        self._stored_details = defaultdict(list)
+
+
 class MOOrgUnit(MOData):
 
     def __init__(self, uuid, mo_url=DEFAULT_MO_URL):
-        self.uuid = uuid
-        self._stored_details = defaultdict(list)
+        super().__init__(uuid)
         self.url = mo_url + '/ou/' + self.uuid
 
 
 class MOEmployee(MOData):
 
     def __init__(self, uuid, mo_url=DEFAULT_MO_URL):
-        self.uuid = uuid
-        self._stored_details = defaultdict(list)
+        super().__init__(uuid)
         self.url = mo_url + '/e/' + self.uuid
 
 
@@ -105,7 +117,7 @@ def get_orgunit_data(uuid):
             parent=ou.json['parent'],
             locations=locations,
             employees=employees,
-            departments = departments,
+            departments=departments,
             associates=associates,
             managers=managers
     )
@@ -120,7 +132,7 @@ def get_employee_data(uuid):
         (a['address_type']['name'], a['name']) for a in employee.address
     ]
     # For departments, department name, UUID as well as engagement and
-    # job function name. 
+    # job function name.
     departments = [
         (
             e['org_unit']['name'], e['org_unit']['uuid'],
@@ -150,8 +162,7 @@ def get_employee_data(uuid):
         associated_units=associated_units)
 
 
-
-def get_org_units(root_id):
+def get_org_units(root_id, mo_url=DEFAULT_MO_URL):
     "Get all org units by traversing the tree."
     my_ou = mo_get(mo_url + '/ou/' + root_id)
     my_children = mo_get(mo_url + '/ou/' + root_id + '/children')
@@ -161,18 +172,18 @@ def get_org_units(root_id):
     return org_units
 
 
-def get_ous(org_id):
+def get_ous(org_id, mo_url=DEFAULT_MO_URL):
     return mo_get(mo_url + '/o/' + org_id + '/ou/')['items']
 
 
-def get_employees(org_id):
+def get_employees(org_id, mo_url=DEFAULT_MO_URL):
     return mo_get(mo_url + '/o/' + org_id + '/e/')['items']
 
 
 def get_organisation(mo_url):
     org_root = mo_get(mo_url + '/o/')
     [org_root] = org_root
-    org_info = mo_get(mo_url + '/o/' + org_root['uuid'])
+    # org_info = mo_get(mo_url + '/o/' + org_root['uuid'])
     org_children = mo_get(mo_url + '/o/' + org_root['uuid'] + '/children')
     [root_org_unit] = org_children  # Assume there's only one!
 
@@ -183,14 +194,65 @@ def get_organisation(mo_url):
     return org_units
 
 
-ORG_ROOT = mo_get(DEFAULT_MO_URL + '/o/')[0]['uuid']
-ROOT_ORG_UNIT = mo_get(DEFAULT_MO_URL + '/o/' + ORG_ROOT + '/children')[0]['uuid']
-# ORG_ROOT = '3a87187c-f25a-40a1-8d42-312b2e2b43bd'
-# ROOT_ORG_UNIT = '9f42976b-93be-4e0b-9a25-0dcb8af2f6b4'
+def write_phonebook_data(orgunit_writer, employee_writer):
+    """Write data to store in backend DB.
+
+    The _writer arguments are function to store/index employees and org
+    units, respectively.
+    """
+
+    ous = get_ous(ORG_ROOT)
+    employees = get_employees(ORG_ROOT)
+
+    def handler(getter, writer):
+        def handle_this(uuid):
+            data = getter(uuid)
+            writer(data)
+        return handle_this
+
+    ou_handler = handler(get_orgunit_data, orgunit_writer)
+    employee_handler = handler(get_employee_data, employee_writer)
+
+    p = Pool(10)
+    # First, org units
+    p.map(ou_handler, [ou['uuid'] for ou in ous])
+    p.close()
+    p.join()
+
+    p = Pool(10)
+    # Now, employees
+    p.map(employee_handler, [e['uuid'] for e in employees])
+    p.close()
+    p.join()
+    """
+    for ou in ous:
+        orgunit_data = get_orgunit_data(ou['uuid'])
+        orgunit_writer(orgunit_data)
+
+    for e in employees:
+        employee_data = get_employee_data(e['uuid'])
+        employee_writer(employee_data)
+    """
+
+def file_writer(directory, field_name='name'):
+
+    base_dir = 'var'
+    target_dir = os.path.join(base_dir, directory)
+
+    def writer(data):
+        out_file = "{}.json".format(data[field_name].replace(' ', ''))
+        out_file = os.path.join(target_dir, out_file)
+        with open(out_file, 'w') as f:
+            json.dump(data, f)
+
+    return writer
+
 
 if __name__ == '__main__':
 
-    print(ROOT_ORG_UNIT)
-    # data = get_orgunit_data(ROOT_ORG_UNIT)
-    data = get_employee_data('a7b5c37b-3b5b-4110-a8d7-1d6f36861be4')
-    pprint.pprint(data)
+    orgunit_writer = file_writer('ous')
+    employee_writer = file_writer('employees')
+
+    print("Writing data ...")
+    write_phonebook_data(orgunit_writer, employee_writer)
+    print("done")
