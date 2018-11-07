@@ -86,6 +86,8 @@ class MOEmployee(MOData):
 def get_orgunit_data(uuid):
     '''Get the data we need to display for this particular org. func.'''
     ou = MOOrgUnit(uuid)
+    # Parent - UUID if exists, ROOT if not.
+    parent = ou.json['parent']['uuid'] if ou.json['parent'] else 'ROOT'
     # For employees, we need job function, name and UUID.
     employees = [
         (
@@ -103,18 +105,20 @@ def get_orgunit_data(uuid):
     departments = [(c['name'], c['uuid']) for c in ou.children]
     # For locations, their type and content.
     locations = [
-        (a['address_type']['name'], a['name']) for a in ou.address
+        (a['address_type']['scope'], a['name']) for a in ou.address
     ]
     # For managers, manager type and name and UUID.
     managers = [
         (
-            m['manager_type']['name'], m['person']['name'], m['uuid']
+            m['manager_type']['name'],
+            m['person']['name'] if m['person'] else None, m['uuid']
         ) for m in ou.manager
     ]
 
     return dict(
+            uuid=ou.json['uuid'],
             name=ou.json['name'],
-            parent=ou.json['parent'],
+            parent=parent,
             locations=locations,
             employees=employees,
             departments=departments,
@@ -129,7 +133,7 @@ def get_employee_data(uuid):
 
     # For locations, their type and content.
     locations = [
-        (a['address_type']['name'], a['name']) for a in employee.address
+        (a['address_type']['scope'], a['name']) for a in employee.address
     ]
     # For departments, department name, UUID as well as engagement and
     # job function name.
@@ -155,6 +159,7 @@ def get_employee_data(uuid):
          ) for a in employee.association
     ]
     return dict(
+        uuid=employee.json['uuid'],
         name=employee.json['name'],
         locations=locations,
         departments=departments,
@@ -224,15 +229,7 @@ def write_phonebook_data(orgunit_writer, employee_writer):
     p.map(employee_handler, [e['uuid'] for e in employees])
     p.close()
     p.join()
-    """
-    for ou in ous:
-        orgunit_data = get_orgunit_data(ou['uuid'])
-        orgunit_writer(orgunit_data)
 
-    for e in employees:
-        employee_data = get_employee_data(e['uuid'])
-        employee_writer(employee_data)
-    """
 
 def file_writer(directory, field_name='name'):
 
