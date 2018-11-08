@@ -127,7 +127,6 @@ def file_writer(directory, field_name='uuid'):
         os.path.join(os.path.dirname(__file__), '..', 'var')
     )
     target_dir = os.path.join(base_dir, directory)
-    print(target_dir)
 
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)

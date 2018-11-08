@@ -26,6 +26,8 @@ then
     rm solr-7.5.0.tgz
 
     solr-7.5.0/bin/solr start
+    solr-7.5.0/bin/solr create -c departments -s 2 -rf 2
+    solr-7.5.0/bin/solr create -c employees -s 2 -rf 2
 
     echo "SOLR installed, SOlR started."
 else
