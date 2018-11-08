@@ -1,91 +1,13 @@
 import os
 import json
-
-from collections import defaultdict
 from multiprocessing.dummy import Pool
 
-import requests
-
-from cached_property import cached_property
-
-
-def mo_get(url):
-    result = requests.get(url)
-    if not result:
-        result.raise_for_status()
-    else:
-        return result.json()
-
-
-DEFAULT_MO_URL = 'http://morademo.atlas.magenta.dk/service'
-
-# The following to assignments assume there's only one org and root org
-# unit. These assumptions are probably wrong, and they should be
-# explicitly configured.
-ORG_ROOT = mo_get(DEFAULT_MO_URL + '/o/')[0]['uuid']
-# ORG_ROOT = '3a87187c-f25a-40a1-8d42-312b2e2b43bd'
-
-
-class MOData:
-    """Abstract base class to interface with MO objects."""
-
-    @cached_property
-    def json(self):
-        return mo_get(self.url)
-
-    @cached_property
-    def children(self):
-        return mo_get(self.url + '/children')
-
-    @cached_property
-    def _details(self):
-        return mo_get(self.url + '/details/')
-
-    @cached_property
-    def detail_fields(self):
-        return list(self._details.keys())
-
-    def _get_detail(self, detail):
-        return mo_get(self.url + '/details/' + detail)
-
-    def __getattr__(self, name):
-        """Get details if field in details for object.
-
-         Available details for OrgFunc are: address, association,
-         engagement, it, leave, manager, org_unit, role
-         """
-        if name in self._details:
-            if name not in self._stored_details and self._details[name]:
-                self._stored_details[name] = self._get_detail(name)
-            return self._stored_details[name]
-        else:
-            return object.__getattribute__(self, name)
-
-    def __str__(self):
-        return str(self.json)
-
-    def __init__(self, uuid):
-        self.uuid = uuid
-        self._stored_details = defaultdict(list)
-
-
-class MOOrgUnit(MOData):
-
-    def __init__(self, uuid, mo_url=DEFAULT_MO_URL):
-        super().__init__(uuid)
-        self.url = mo_url + '/ou/' + self.uuid
-
-
-class MOEmployee(MOData):
-
-    def __init__(self, uuid, mo_url=DEFAULT_MO_URL):
-        super().__init__(uuid)
-        self.url = mo_url + '/e/' + self.uuid
+import mo_api
 
 
 def get_orgunit_data(uuid):
-    '''Get the data we need to display for this particular org. func.'''
-    ou = MOOrgUnit(uuid)
+    """Get the data we need to display for this particular org. func."""
+    ou = mo_api.MOOrgUnit(uuid)
     # Parent - UUID if exists, ROOT if not.
     parent = ou.json['parent']['uuid'] if ou.json['parent'] else 'ROOT'
     # For employees, we need job function, name and UUID.
@@ -129,7 +51,7 @@ def get_orgunit_data(uuid):
 
 def get_employee_data(uuid):
     '''Get the data we need to display this employee'''
-    employee = MOEmployee(uuid)
+    employee = mo_api.MOEmployee(uuid)
 
     # For locations, their type and content.
     locations = [
@@ -167,38 +89,6 @@ def get_employee_data(uuid):
         associated_units=associated_units)
 
 
-def get_org_units(root_id, mo_url=DEFAULT_MO_URL):
-    "Get all org units by traversing the tree."
-    my_ou = mo_get(mo_url + '/ou/' + root_id)
-    my_children = mo_get(mo_url + '/ou/' + root_id + '/children')
-    org_units = [my_ou]
-    for c in my_children:
-        org_units += get_org_units(c['uuid'])
-    return org_units
-
-
-def get_ous(org_id, mo_url=DEFAULT_MO_URL):
-    return mo_get(mo_url + '/o/' + org_id + '/ou/')['items']
-
-
-def get_employees(org_id, mo_url=DEFAULT_MO_URL):
-    return mo_get(mo_url + '/o/' + org_id + '/e/')['items']
-
-
-def get_organisation(mo_url):
-    org_root = mo_get(mo_url + '/o/')
-    [org_root] = org_root
-    # org_info = mo_get(mo_url + '/o/' + org_root['uuid'])
-    org_children = mo_get(mo_url + '/o/' + org_root['uuid'] + '/children')
-    [root_org_unit] = org_children  # Assume there's only one!
-
-    # This is, finally, the root OU of our organization
-    root_id = root_org_unit['uuid']
-    org_units = get_org_units(root_id)
-
-    return org_units
-
-
 def write_phonebook_data(orgunit_writer, employee_writer):
     """Write data to store in backend DB.
 
@@ -206,8 +96,8 @@ def write_phonebook_data(orgunit_writer, employee_writer):
     units, respectively.
     """
 
-    ous = get_ous(ORG_ROOT)
-    employees = get_employees(ORG_ROOT)
+    ous = mo_api.get_ous()
+    employees = mo_api.get_employees()
 
     def handler(getter, writer):
         def handle_this(uuid):
@@ -231,10 +121,16 @@ def write_phonebook_data(orgunit_writer, employee_writer):
     p.join()
 
 
-def file_writer(directory, field_name='name'):
+def file_writer(directory, field_name='uuid'):
 
-    base_dir = 'var'
+    base_dir = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), '..', 'var')
+    )
     target_dir = os.path.join(base_dir, directory)
+    print(target_dir)
+
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
 
     def writer(data):
         out_file = "{}.json".format(data[field_name].replace(' ', ''))
