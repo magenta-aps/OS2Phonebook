@@ -4,6 +4,10 @@
 #
 # A production deployment may have other requirements.
 
+# Prerequisites
+
+sudo apt install -y python3-venv default-jre
+
 # We'll work here
 cd $(dirname $0)
 
