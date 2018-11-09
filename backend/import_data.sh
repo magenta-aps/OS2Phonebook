@@ -12,6 +12,15 @@ rm -rf $VAR_DIR/employees/*
 # Do the deed
 MO_URL=$MO_URL MO_ORG_ROOT=$MO_ORG_ROOT $PYTHON $PROGRAM
 
+# Bail out if there's an error
+status=$?
+
+if [ $status -ne 0 ]
+then
+    echo "Import from MO failed."
+    exit -1
+fi
+
 # Now transfer to SOLR
 
 SOLR_POST=solr-7.5.0/bin/post

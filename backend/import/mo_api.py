@@ -66,7 +66,7 @@ class MOData:
                 self._stored_details[name] = self._get_detail(name)
             return self._stored_details[name]
         else:
-            return object.__getattribute__(self, name)
+            return object.__getattr__(self, name)
 
     def __str__(self):
         return str(self.json)

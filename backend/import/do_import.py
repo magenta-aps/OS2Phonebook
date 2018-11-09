@@ -6,7 +6,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 import os
+import sys
 import json
+
 from multiprocessing.dummy import Pool
 
 import mo_api
@@ -139,7 +141,7 @@ def file_writer(directory, field_name='uuid'):
         os.makedirs(target_dir)
 
     def writer(data):
-        out_file = "{}.json".format(data[field_name].replace(' ', ''))
+        out_file = f"{data[field_name].replace(' ', '')}.json"
         out_file = os.path.join(target_dir, out_file)
         with open(out_file, 'w') as f:
             json.dump(data, f)
@@ -153,5 +155,10 @@ if __name__ == '__main__':
     employee_writer = file_writer('employees')
 
     print("Writing data ...")
-    write_phonebook_data(orgunit_writer, employee_writer)
+    try:
+        write_phonebook_data(orgunit_writer, employee_writer)
+    except Exception as e:
+        print(f"Failed to import phonebook data: {str(e)}", file=sys.stderr)
+        sys.exit(-1)
+
     print("done")
