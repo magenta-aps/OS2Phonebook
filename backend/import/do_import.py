@@ -25,8 +25,8 @@ def get_orgunit_data(uuid):
             e['person']['name'], e['person']['uuid'], e['job_function']['name']
         ) for e in ou.engagement
     ]
-    # For associates: Association type, job function, name and UUID.
-    associates = [
+    # For associateds: Association type, job function, name and UUID.
+    associated = [
         (
             a['person']['name'], a['person']['uuid'],
             a['association_type']['name'], a['job_function']['name']
@@ -53,7 +53,7 @@ def get_orgunit_data(uuid):
             locations=locations,
             employees=employees,
             departments=departments,
-            associates=associates,
+            associated=associated,
             managers=managers
     )
 

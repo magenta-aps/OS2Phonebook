@@ -6,6 +6,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 import os
+import functools
 
 from collections import defaultdict
 
@@ -22,11 +23,11 @@ ORG_ROOT = os.environ.get(
 )
 
 
-def mo_get(url):
+def mo_get(url, session=None):
     """Helper function for getting data from MO.
 
     Return JSON content if successful, throw exception if not."""
-    result = requests.get(url)
+    result = session.get(url) if session else requests.get(url)
     if not result:
         result.raise_for_status()
     else:
@@ -36,24 +37,30 @@ def mo_get(url):
 class MOData:
     """Abstract base class to interface with MO objects."""
 
+    def __init__(self, uuid):
+        self.uuid = uuid
+        self._stored_details = defaultdict(list)
+        self.session = requests.session()
+        self.get = functools.partial(mo_get, session=self.session)
+
     @cached_property
     def json(self):
-        return mo_get(self.url)
+        return self.get(self.url)
 
     @cached_property
     def children(self):
-        return mo_get(self.url + '/children')
+        return self.get(self.url + '/children')
 
     @cached_property
     def _details(self):
-        return mo_get(self.url + '/details/')
+        return self.get(self.url + '/details/')
 
     @cached_property
     def detail_fields(self):
         return list(self._details.keys())
 
     def _get_detail(self, detail):
-        return mo_get(self.url + '/details/' + detail)
+        return self.get(self.url + '/details/' + detail)
 
     def __getattr__(self, name):
         """Get details if field in details for object.
@@ -70,10 +77,6 @@ class MOData:
 
     def __str__(self):
         return str(self.json)
-
-    def __init__(self, uuid):
-        self.uuid = uuid
-        self._stored_details = defaultdict(list)
 
 
 class MOOrgUnit(MOData):
