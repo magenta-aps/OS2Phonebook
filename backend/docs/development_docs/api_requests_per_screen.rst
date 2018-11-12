@@ -14,10 +14,17 @@ In these examples, the backend (an SOLR server) is assumed to be running
 on localhost (``127.0.0.1``) and port 8983. In production, this will be
 different, and the URLs should be adjusted accordingly.
 
-Note that only the SOLR search syntax specifically needed to reproduce
-the searches in the mockups is given. At the end of the document, a link
-is given to a more complete coverage of the SOLR/Lucene search syntax,
-which has many more features than covered here.
+**Note:** For more advanced search combinations than described in this
+document, please refer to this section of the SOLR Tutorial:
+
+    http://www.solrtutorial.com/solr-query-syntax.html
+
+It is possible to combine query parameters in many ways not described
+above.
+
+Here, only the SOLR search syntax specifically needed to reproduce the
+searches in the mockups is given. Suffice it to say that the full
+SOLR/Lucene search syntax has many more features than covered here.
 
 Front page
 ==========
@@ -241,14 +248,6 @@ Display results (person search)
 If there are no spaces in search string, query for ::
 
     name:<search string>*
-
-**Note:** For more advanced search combinations than described here,
-please refer to this section of the SOLR Tutorial,
-
-    http://www.solrtutorial.com/solr-query-syntax.html
-
-It is possible to combine query parameters in many ways not described
-above.
 
 
 Display details (departments)
