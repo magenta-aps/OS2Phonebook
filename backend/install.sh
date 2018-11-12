@@ -50,7 +50,7 @@ pip install -r requirements.txt
 
 echo "Everything installed."
 echo ""
-echo "Run import_data.sh and index_solr.sh to get started."
+echo "Run import_data.sh to get started."
 
 
 

@@ -42,7 +42,8 @@ def get_orgunit_data(uuid):
     managers = [
         (
             m['manager_type']['name'],
-            m['person']['name'] if m['person'] else None, m['uuid']
+            m['person']['name'] if m['person'] else None,
+            m['person']['uuid'] if m['person'] else None
         ) for m in ou.manager
     ]
 
@@ -95,7 +96,7 @@ def get_employee_data(uuid):
         locations=locations,
         departments=departments,
         managing=managing,
-        associated_units=associated_units)
+        associated=associated_units)
 
 
 def write_phonebook_data(orgunit_writer, employee_writer):

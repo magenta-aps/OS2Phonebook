@@ -11,6 +11,7 @@ import functools
 from collections import defaultdict
 
 import requests
+global_session = requests.session()
 
 from cached_property import cached_property
 
@@ -27,7 +28,7 @@ def mo_get(url, session=None):
     """Helper function for getting data from MO.
 
     Return JSON content if successful, throw exception if not."""
-    result = session.get(url) if session else requests.get(url)
+    result = session.get(url) if session else global_session.get(url)
     if not result:
         result.raise_for_status()
     else:
@@ -40,7 +41,7 @@ class MOData:
     def __init__(self, uuid):
         self.uuid = uuid
         self._stored_details = defaultdict(list)
-        self.session = requests.session()
+        self.session = global_session
         self.get = functools.partial(mo_get, session=self.session)
 
     @cached_property
