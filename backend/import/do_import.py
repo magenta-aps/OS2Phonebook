@@ -22,7 +22,8 @@ def get_orgunit_data(uuid):
     # For employees, we need job function, name and UUID.
     employees = [
         (
-            e['person']['name'], e['person']['uuid'], e['job_function']['name']
+            e['person']['name'], e['person']['uuid'],
+            e['engagement_type']['name'], e['job_function']['name']
         ) for e in ou.engagement
     ]
     # For associateds: Association type, job function, name and UUID.
@@ -79,15 +80,16 @@ def get_employee_data(uuid):
     # Manager associations, if any
     managing = [
         (
-            m['manager_type']['name'], m['org_unit']['name'],
-            m['org_unit']['uuid']
+            m['org_unit']['name'],
+            m['org_unit']['uuid'], m['manager_type']['name']
         ) for m in employee.manager
     ]
     # Associated units - association type, name and UUID of association
     associated_units = [
         (
-            a['association_type']['name'], a['org_unit']['name'],
-            a['org_unit']['uuid']
+            a['org_unit']['name'],
+            a['org_unit']['uuid'], a['association_type']['name'],
+            a['job_function']['name']
          ) for a in employee.association
     ]
     return dict(
