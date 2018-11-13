@@ -11,9 +11,10 @@ import functools
 from collections import defaultdict
 
 import requests
-global_session = requests.session()
 
 from cached_property import cached_property
+
+global_session = requests.Session()
 
 
 DEFAULT_MO_URL = os.environ.get(
