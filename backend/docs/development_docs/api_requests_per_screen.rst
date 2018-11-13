@@ -14,7 +14,7 @@ In these examples, the backend (an SOLR server) is assumed to be running
 on localhost (``127.0.0.1``) and port 8983. In production, this will be
 different, and the URLs should be adjusted accordingly.
 
-.. NOTE::
+.. note::
     For more advanced search combinations than described in this document, see this quick tutorial:
 
     http://www.solrtutorial.com/solr-query-syntax.html
@@ -120,8 +120,7 @@ ones, to be interpreted like this:
   *(manager type, name, UUID)*.
 
 
-.. NOTE::
-
+.. note::
     The UUIs for employees, associated and managers are the person
     UUIDs, found under the MO API's ``/e/`` section.
 
