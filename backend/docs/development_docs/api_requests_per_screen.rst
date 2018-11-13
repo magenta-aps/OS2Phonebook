@@ -14,8 +14,8 @@ In these examples, the backend (an SOLR server) is assumed to be running
 on localhost (``127.0.0.1``) and port 8983. In production, this will be
 different, and the URLs should be adjusted accordingly.
 
-**Note:** For more advanced search combinations than described in this
-document, there's this quick tutorial:
+.. NOTE::
+    For more advanced search combinations than described in this document, see this quick tutorial:
 
     http://www.solrtutorial.com/solr-query-syntax.html
 
@@ -39,23 +39,22 @@ Root organisation
 To get the name of the root organisation ("Ballerup Kommune" in the
 example), you have two options.
 
-In the first case, you rely on the assumption that this organisation has
-one root organisation unit only. In that case, you can search for the
-single root node, denoted by having its "parent" field set to the value
-"ROOT": ::
-
-   http://127.0.0.1:8983/solr/departments/select?q=parent:ROOT
-
-If you cannot make that assumption, e.g. because there are more than one
-organisation and hence more than one root unit, you need to know the
-UUID of the root organisation unit. In the data currently available at
-``morademo.magenta-aps.dk``, and which will be used as an example in
-this document, this UUID is ``97337de5-6096-41f9-921e-5bed7a140d85``.
+If there is more than one root unit, e.g. because there is more than one
+organisation, you need to know the UUID of the root organisation unit.
+In the data currently available at ``morademo.magenta-aps.dk``, and
+which will be used as an example in this document, this UUID is
+``97337de5-6096-41f9-921e-5bed7a140d85``.
 
 In that case, you can get the root node by issuing the following query:
 ::
     
     http://127.0.0.1:8983/solr/departments/select?q=uuid:97337de5-6096-41f9-921e-5bed7a140d85
+
+If, on the other hand, you know that there is only one root organisation
+unit, you can search for the single root node, denoted by having its
+"parent" field set to the value "ROOT": ::
+
+   http://127.0.0.1:8983/solr/departments/select?q=parent:ROOT
 
 
 Note on the data formats in the SOLR results
@@ -121,14 +120,17 @@ ones, to be interpreted like this:
   *(manager type, name, UUID)*.
 
 
-**NOTE:** The UUIs for employees, associated and managers are the person
-UUIDs, found under the MO API's ``/e/`` section.
+.. NOTE::
+
+    The UUIs for employees, associated and managers are the person
+    UUIDs, found under the MO API's ``/e/`` section.
 
 Employees
 .........
 
-The "wrapping" with response headers etc. is like for departments. A
-typical "doc" for a person could be: ::
+The result headers are as in the example above - only the contents of
+the "docs" section are different.. A typical "doc" for a person could
+be: ::
 
     {
         "uuid":["cee8800a-983d-41fa-998c-b4557d68ec35"],
@@ -151,7 +153,7 @@ typical "doc" for a person could be: ::
     }
 
 
-This record has the following non-trivial members:
+This record has the following non-trivial (composite) members:
 
 * ``locations`` - this works as for departments.
 * ``departments`` - corresponds to ``engagement`` in MO. These are
@@ -182,28 +184,28 @@ did with the root department.
 Display results (general query)
 ===============================
 
-There are two separate URLs for searching departments, basically ::
+Two separate URLs allow searching for departments or employees: ::
 
     http://127.0.0.1:8983/solr/employees/
 
     http://127.0.0.1:8983/solr/departments/
 
-To search for *persons* or *employees* in all supported fields, write
-(e.g., searching for the name "Eva"): ::
+To search all *employees* - that is, persons - for the name "Eva" in all
+supported fields, write: ::
 
     http://127.0.0.1:8983/solr/employees/select?q=name:Eva%20locations:Eva%20departments:Eva%20associated:Eva%20managing:Eva
 
-I.e., this is an explicit search for the string in all of the fields
-that are supported for employees. 
+This is an explicit search for the string in all of the fields that are
+supported for employees.
 
 In order to search for *departments* in all fields, we do the
 corresponding search on the departments URL. 
 
-Since all employees (persons, Users in LoRa) are indexed under the employees URL
-as given above, we only need to search for the fields that are *not*
-directly associated with any person - which is name and locations.
-Supposing that we want to find all departments that are located on
-"Havagervej 20, Lønstrup", we use this URL: ::
+Since all employees are indexed under the employees URL as given above,
+we only need to search for the fields that are *not* directly associated
+with any person - which is name and locations.  Supposing that we want
+to find all departments that are located on "Havagervej 20, Lønstrup",
+we use this URL: ::
 
     http://127.0.0.1:8983/solr/departments/select?q=locations:%22Havagervej%2020,%20L%C3%B8nstrup%22
 
