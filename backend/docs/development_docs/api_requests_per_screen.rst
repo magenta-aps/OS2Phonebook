@@ -15,9 +15,13 @@ on localhost (``127.0.0.1``) and port 8983. In production, this will be
 different, and the URLs should be adjusted accordingly.
 
 **Note:** For more advanced search combinations than described in this
-document, please refer to this section of the SOLR Tutorial:
+document, there's this quick tutorial:
 
     http://www.solrtutorial.com/solr-query-syntax.html
+
+For more information, please consult the SOLR reference manual:
+
+    http://lucene.apache.org/solr/guide/7_5/overview-of-searching-in-solr.html#overview-of-searching-in-solr
 
 It is possible to combine query parameters in many ways not described
 above.
