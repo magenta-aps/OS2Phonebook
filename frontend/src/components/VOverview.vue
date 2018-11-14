@@ -2,31 +2,32 @@
   <div>
     <div class="card">
       <div class="card-body">
-        <search/>
+        <v-search/>
       </div>
     </div>
 
     <div class="card mt-3">
       <div class="card-body">
-        <h4>Overblik</h4>
-        <tree-view/>
+        <h4>
+          <icon class="icon-color" name="folder-open"/>
+          Overblik
+        </h4>
+        <v-tree-view/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Search from '@/components/Search'
-import SearchOption from '@/components/SearchOption'
-import TreeView from '@/components/TreeView'
+import VSearch from '@/components/VSearch'
+import VTreeView from '@/components/VTreeView'
 
 export default {
   name: 'Overview',
 
   components: {
-    Search,
-    SearchOption,
-    TreeView
+    VSearch,
+    VTreeView
   }
 }
 </script>

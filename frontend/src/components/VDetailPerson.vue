@@ -1,11 +1,15 @@
 <template>
   <div>
-    <div class="card mt-3 mb-3">
-      <div class="card-body">
         <b-list-group>
-          <b-list-group-item class="active">Hans Pedersen</b-list-group-item>
-          <b-list-group-item>
-          <b-list-group-item class="mt-3" variant="dark">
+          <b-list-group-item class="header-item active">
+            <icon class="icon-color" name="user"/>
+            Hans Pedersen
+          </b-list-group-item>
+        </b-list-group>
+
+    <div class="card mt-2">
+      <div class="card-body">
+          <b-list-group-item variant="dark">
             Adresse
           </b-list-group-item>
           <b-list-group-item>
@@ -20,46 +24,52 @@
             <icon name="envelope"/>
             <span class="col">mila@gmail.dk</span>
           </b-list-group-item>
+      </div>
+    </div>
 
-          <b-list-group-item class="mt-3" variant="dark">
+    <div class="card mt-2">
+      <div class="card-body">
+          <b-list-group-item variant="dark">
             Afdeling
           </b-list-group-item>
           <b-list-group-item>
-            <tree-view/>
+            <v-tree-view/>
           </b-list-group-item>
+      </div>
+    </div>
 
-          <b-list-group-item class="mt-3" variant="dark">
+    <div class="card mt-2">
+      <div class="card-body">
+          <b-list-group-item variant="dark">
             Ledertilknytninger
           </b-list-group-item>
           <b-list-group-item>
             Leder Digitalisering
           </b-list-group-item>
+      </div>
+    </div>
 
-          <b-list-group-item class="mt-3" variant="dark">
+    <div class="card mt-2 mb-2">
+      <div class="card-body">
+          <b-list-group-item variant="dark">
             Tilknyttet enheder
           </b-list-group-item>
-          <b-list-group-item class="mb-3">
+          <b-list-group-item>
             IT afdelingen
           </b-list-group-item>
-          </b-list-group-item>
-        </b-list-group>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Search from '@/components/Search'
-import SearchOption from '@/components/SearchOption'
-import TreeView from '@/components/TreeView'
+import VTreeView from '@/components/VTreeView'
 
 export default {
-  name: 'Overview',
+  name: 'VDetailPerson',
 
   components: {
-    Search,
-    SearchOption,
-    TreeView
+    VTreeView
   }
 }
 </script>
@@ -71,5 +81,9 @@ export default {
 
 .list-group-item {
     padding: 0.25rem 0.5rem;
+}
+
+.header-item {
+    font-size: 1.2em;
 }
 </style>

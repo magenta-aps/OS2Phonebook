@@ -58,10 +58,6 @@ export default {
     padding-left: 1.25rem;
   }
 
-  li {
-    border: 1px solid #343a40;
-  }
-
   .item {
     cursor: pointer;
     list-style-type: none;

@@ -1,18 +1,26 @@
 <template>
   <div>
-    <div class="card mt-3 mb-3">
-      <div class="card-body">
-        <b-list-group>
-          <b-list-group-item class="active">Digitalisering</b-list-group-item>
-          <b-list-group-item>
-          <b-list-group-item class="mt-3" variant="dark">
-            Afdeling
-          </b-list-group-item>
-          <b-list-group-item>
-            <tree-view/>
-          </b-list-group-item>
+    <b-list-group>
+      <b-list-group-item class="header-item active">
+        <icon class="icon-color" name="users"/>
+        Digitalisering
+      </b-list-group-item>
+    </b-list-group>
 
-          <b-list-group-item class="mt-3" variant="dark">
+    <div class="card mt-2">
+      <div class="card-body">
+        <b-list-group-item variant="dark">
+          Afdeling
+        </b-list-group-item>
+        <b-list-group-item>
+          <v-tree-view/>
+        </b-list-group-item>
+      </div>
+    </div>
+
+    <div class="card mt-2">
+      <div class="card-body">
+          <b-list-group-item variant="dark">
             Lokationer
           </b-list-group-item>
           <b-list-group-item>
@@ -27,8 +35,12 @@
             <icon name="envelope"/>
             <span class="col">digitalisering@gmail.dk</span>
           </b-list-group-item>
+      </div>
+    </div>
 
-          <b-list-group-item class="mt-3" variant="dark">
+    <div class="card mt-2">
+      <div class="card-body">
+          <b-list-group-item variant="dark">
             Ledere
           </b-list-group-item>
           <b-list-group-item>
@@ -37,8 +49,12 @@
           <b-list-group-item>
             Sekretær Bente Andersen
           </b-list-group-item>
+      </div>
+    </div>
 
-          <b-list-group-item class="mt-3" variant="dark">
+    <div class="card mt-2">
+      <div class="card-body">
+          <b-list-group-item variant="dark">
             Ansatte
           </b-list-group-item>
           <b-list-group-item>
@@ -50,42 +66,44 @@
           <b-list-group-item>
             Søren Petersen
           </b-list-group-item>
+      </div>
+    </div>
 
-          <b-list-group-item class="mt-3" variant="dark">
+    <div class="card mt-2">
+      <div class="card-body">
+          <b-list-group-item variant="dark">
             Tilknyttede
           </b-list-group-item>
           <b-list-group-item>
             Camilla Toft Sørensen
           </b-list-group-item>
+      </div>
+    </div>
 
-          <b-list-group-item class="mt-3" variant="dark">
+    <div class="card mt-2 mb-2">
+      <div class="card-body">
+          <b-list-group-item variant="dark">
             Opgaver
           </b-list-group-item>
           <b-list-group-item>
             Ferieydelse optjent under barsel (34.30.10)
           </b-list-group-item>
-          <b-list-group-item class="mb-3">
+          <b-list-group-item>
             Ferieydelse optjent under barsel (34.30.10)
           </b-list-group-item>
-          </b-list-group-item>
-        </b-list-group>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Search from '@/components/Search'
-import SearchOption from '@/components/SearchOption'
-import TreeView from '@/components/TreeView'
+import VTreeView from '@/components/VTreeView'
 
 export default {
-  name: 'Overview',
+  name: 'VDetailOrganisation',
 
   components: {
-    Search,
-    SearchOption,
-    TreeView
+    VTreeView
   }
 }
 </script>
@@ -97,5 +115,9 @@ export default {
 
 .list-group-item {
     padding: 0.25rem 0.5rem;
+}
+
+.header-item {
+    font-size: 1.2em;
 }
 </style>

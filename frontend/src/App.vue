@@ -8,7 +8,7 @@
       </b-navbar>
     </router-link>
 
-    <main class="container-fluid container-top-margin">
+    <main class="container container-fluid container-top-margin">
       <router-view/>
     </main>
   </div>

@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Overview from '@/components/Overview'
-import Result from '@/components/Result'
-import Person from '@/components/DetailPerson'
-import Organization from '@/components/DetailOrganization'
+import Overview from '@/components/VOverview'
+import Result from '@/components/VResult'
+import Person from '@/components/VDetailPerson'
+import Organisation from '@/components/VDetailOrganisation'
 
 Vue.use(Router)
 
@@ -31,9 +31,9 @@ export default new Router({
       component: Person
     },
     {
-      path: '/organization',
-      name: 'organization',
-      component: Organization
+      path: '/organisation',
+      name: 'organisation',
+      component: Organisation
     }
   ]
 })
