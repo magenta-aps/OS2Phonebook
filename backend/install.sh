@@ -33,7 +33,28 @@ then
     solr-7.5.0/bin/solr create -c departments -s 2 -rf 2
     solr-7.5.0/bin/solr create -c employees -s 2 -rf 2
 
+    # Create schema for departments
+    
+   curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"name", "type":"text_general", "multiValued":false, "stored":true}}' http://localhost:8983/solr/departments/schema
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"uuid", "type":"text_general", "multiValued":false, "stored":true}}' http://localhost:8983/solr/departments/schema
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"parent", "type":"text_general", "multiValued":false, "stored":true}}' http://localhost:8983/solr/departments/schema
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"locations", "type":"text_general", "multiValued":true, "stored":true}}' http://localhost:8983/solr/departments/schema
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"employees", "type":"text_general", "multiValued":true, "stored":true}}' http://localhost:8983/solr/departments/schema
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"departments", "type":"text_general", "multiValued":true, "stored":true}}' http://localhost:8983/solr/departments/schema
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"associated", "type":"text_general", "multiValued":true, "stored":true}}' http://localhost:8983/solr/departments/schema
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"managers", "type":"text_general", "multiValued":true, "stored":true}}' http://localhost:8983/solr/departments/schema
+
+  # Create schema for employees
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"name", "type":"text_general", "multiValued":false, "stored":true}}' http://localhost:8983/solr/employees/schema
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"uuid", "type":"text_general", "multiValued":false, "stored":true}}' http://localhost:8983/solr/employees/schema
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"locations", "type":"text_general", "multiValued":true, "stored":true}}' http://localhost:8983/solr/employees/schema
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"departments", "type":"text_general", "multiValued":true, "stored":true}}' http://localhost:8983/solr/employees/schema
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"associated", "type":"text_general", "multiValued":true, "stored":true}}' http://localhost:8983/solr/employees/schema
+    curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"managing", "type":"text_general", "multiValued":true, "stored":true}}' http://localhost:8983/solr/employees/schema
+
     echo "SOLR installed, SOlR started."
+
+
 else
     echo "SOLR already installed; use solr-7.5.0/bin/solr status to check."
 fi
