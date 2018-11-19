@@ -2,20 +2,22 @@
   <div>
     <div class="card">
       <div class="card-body">
-        <v-search/>
+        <v-search
+          v-model="items"
+        />
         <v-search-option class="mt-3"/>
       </div>
     </div>
 
     <h4 class="mt-3 mb-2">Resultater</h4>
-    <div class="card mt-2">
+    <div class="card mt-2" v-for="item in items" :key="item.uuid[0]">
       <div class="card-body">
         <router-link
           :to="{ name: 'person'}"
         >
           <b-list-group>
             <b-list-group-item class="active">
-                Hans Pedersen
+                {{ item.name[0] }}
             </b-list-group-item>
             <b-list-group-item>
               <icon name="phone"/>
@@ -23,18 +25,6 @@
             </b-list-group-item>
           </b-list-group>
         </router-link>
-      </div>
-      </div>
-
-    <div class="card mt-2">
-      <div class="card-body">
-        <b-list-group>
-          <b-list-group-item class="active">Mia Larsen</b-list-group-item>
-          <b-list-group-item>
-            <icon name="envelope"/>
-            <span class="col">mila@gmail.dk</span>
-          </b-list-group-item>
-        </b-list-group>
       </div>
     </div>
 
@@ -78,6 +68,17 @@ export default {
     VSearch,
     VSearchOption,
     VTreeView
+  },
+
+  props: {
+    value: Object,
+    results: Array
+  },
+
+  computed: {
+    items () {
+      return this.results
+    }
   }
 }
 </script>
