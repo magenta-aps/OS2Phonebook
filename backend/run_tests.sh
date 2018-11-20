@@ -2,16 +2,18 @@
 
 # Run phonebook backend tests.
 
-cd $(dirname $0)
+DIR=$(dirname $0)
+cd $DIR
+DIR=$PWD
 
-python3 -m venv venv
-source venv/bin/activate
-pip install -r $PWD/import/requirements-test.txt
+python3 -m venv $DIR/venv
+source $DIR/venv/bin/activate
+pip install -r $DIR/import/requirements-test.txt
 
-pushd import
-venv/bin/pytest --flake8
+pushd $DIR/import
+$DIR/venv/bin/pytest --flake8
 popd
 
-rm -rf venv
+rm -r $DIR/venv
 
 
