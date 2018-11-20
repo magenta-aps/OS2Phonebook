@@ -31,7 +31,7 @@ def test_get_employee_data():
     e = mo_api.MOEmployee(employee_uuid)
     e.get = my_mo_get
     e_data = do_import.get_employee_data(e)
-    # Normalize
+    # Normalize to convert tuples to lists - JSON doesn't have tuples.
     e_data = json.loads(json.dumps(e_data))
     with open('.test_data/output/' + employee_uuid + '.json', 'r') as f:
         target_e_data = json.load(f)
@@ -44,7 +44,7 @@ def test_get_orgunit_data():
     ou = mo_api.MOOrgUnit(orgunit_uuid)
     ou.get = my_mo_get
     ou_data = do_import.get_orgunit_data(ou)
-    # Normalize
+    # Normalize to convert tuples to lists - JSON doesn't have tuples.
     ou_data = json.loads(json.dumps(ou_data))
     with open('.test_data/output/' + orgunit_uuid + '.json', 'r') as f:
         target_ou_data = json.load(f)
