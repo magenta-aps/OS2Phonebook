@@ -159,6 +159,7 @@ if __name__ == '__main__':
     try:
         write_phonebook_data(orgunit_writer, employee_writer)
     except Exception as e:
+        raise
         print(f"Failed to import phonebook data: {str(e)}", file=sys.stderr)
         sys.exit(-1)
 
