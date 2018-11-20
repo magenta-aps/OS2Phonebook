@@ -120,13 +120,13 @@ def write_phonebook_data(orgunit_writer, employee_writer):
 
     p = Pool(10)
     # First, org units
-    p.map(ou_handler, [mo_api.MOOrgUnit(ou['uuid']) for ou in ous])
+    p.map(ou_handler, (mo_api.MOOrgUnit(ou['uuid']) for ou in ous))
     p.close()
     p.join()
 
     p = Pool(10)
     # Now, employees
-    p.map(employee_handler, [mo_api.MOEmployee(e['uuid']) for e in employees])
+    p.map(employee_handler, (mo_api.MOEmployee(e['uuid']) for e in employees))
     p.close()
     p.join()
 

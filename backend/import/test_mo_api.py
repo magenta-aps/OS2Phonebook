@@ -21,8 +21,8 @@ def test_mo_data():
     e.get = my_mo_get
 
     # Test json function
-    assert(ou.json['name'] == 'Østervrå børnehus')
-    assert(e.json['name'] == 'Henry Olesen Steno Ahmad')
+    assert ou.json['name'] == 'Østervrå børnehus'
+    assert e.json['name'] == 'Henry Olesen Steno Ahmad'
 
 
 def test_get_employee_data():
@@ -35,7 +35,7 @@ def test_get_employee_data():
     e_data = json.loads(json.dumps(e_data))
     with open('.test_data/output/' + employee_uuid + '.json', 'r') as f:
         target_e_data = json.load(f)
-        assert(e_data == target_e_data)
+        assert e_data == target_e_data
 
 
 def test_get_orgunit_data():
@@ -48,4 +48,4 @@ def test_get_orgunit_data():
     ou_data = json.loads(json.dumps(ou_data))
     with open('.test_data/output/' + orgunit_uuid + '.json', 'r') as f:
         target_ou_data = json.load(f)
-        assert(ou_data == target_ou_data)
+        assert ou_data == target_ou_data
