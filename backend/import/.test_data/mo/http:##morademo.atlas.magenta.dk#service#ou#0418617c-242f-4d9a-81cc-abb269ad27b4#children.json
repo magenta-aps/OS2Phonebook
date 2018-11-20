@@ -1,1 +1,12 @@
-[{"child_count": 0, "name": "Administration", "user_key": "Administration 004fee7f-bc3d-4889-b34f-94b7e9b03692", "uuid": "4569dcf2-a9d7-4e27-9baf-9cd045a36790", "validity": {"from": "1960-01-01", "to": null}}]
+[
+    {
+        "child_count": 0,
+        "name": "Administration",
+        "user_key": "Administration 004fee7f-bc3d-4889-b34f-94b7e9b03692",
+        "uuid": "4569dcf2-a9d7-4e27-9baf-9cd045a36790",
+        "validity": {
+            "from": "1960-01-01",
+            "to": null
+        }
+    }
+]

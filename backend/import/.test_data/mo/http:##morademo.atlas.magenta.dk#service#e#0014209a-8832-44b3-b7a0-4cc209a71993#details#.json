@@ -1,1 +1,10 @@
-{"address": true, "association": false, "engagement": true, "it": false, "leave": false, "manager": false, "org_unit": false, "role": false}
+{
+    "address": true,
+    "association": false,
+    "engagement": true,
+    "it": false,
+    "leave": false,
+    "manager": false,
+    "org_unit": false,
+    "role": false
+}

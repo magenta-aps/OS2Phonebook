@@ -1,1 +1,62 @@
-[{"address_type": {"example": "20304060", "name": "Tlf", "scope": "PHONE", "user_key": "Telefon", "uuid": "966358d5-146c-44ba-b69b-94b91e52ab70"}, "href": "tel:+4550280541", "name": "50280541", "person": {"name": "Henry Olesen Steno Ahmad", "uuid": "0014209a-8832-44b3-b7a0-4cc209a71993"}, "urn": "urn:magenta.dk:telefon:+4550280541", "validity": {"from": "2003-04-15", "to": null}}, {"address_type": {"example": "<UUID>", "name": "Adresse", "scope": "DAR", "user_key": "AdressePost", "uuid": "c40943db-671e-4263-a10d-76c693e41c0f"}, "href": "https://www.openstreetmap.org/?mlon=9.82648603&mlat=57.49073905&zoom=16", "name": "B\u00f8vlingbjergvej 7, Skallerup, 9800 Hj\u00f8rring", "person": {"name": "Henry Olesen Steno Ahmad", "uuid": "0014209a-8832-44b3-b7a0-4cc209a71993"}, "uuid": "0a3f50c8-0b24-32b8-e044-0003ba298018", "validity": {"from": "2003-04-15", "to": null}}, {"address_type": {"example": "test@example.com", "name": "Email", "scope": "EMAIL", "user_key": "Email", "uuid": "e12a8e5e-ac52-4f6e-ae27-b509784d624a"}, "href": "mailto:henrya@hjorring.dk", "name": "henrya@hjorring.dk", "person": {"name": "Henry Olesen Steno Ahmad", "uuid": "0014209a-8832-44b3-b7a0-4cc209a71993"}, "urn": "urn:mailto:henrya@hjorring.dk", "validity": {"from": "2003-04-15", "to": null}}]
+[
+    {
+        "address_type": {
+            "example": "20304060",
+            "name": "Tlf",
+            "scope": "PHONE",
+            "user_key": "Telefon",
+            "uuid": "966358d5-146c-44ba-b69b-94b91e52ab70"
+        },
+        "href": "tel:+4550280541",
+        "name": "50280541",
+        "person": {
+            "name": "Henry Olesen Steno Ahmad",
+            "uuid": "0014209a-8832-44b3-b7a0-4cc209a71993"
+        },
+        "urn": "urn:magenta.dk:telefon:+4550280541",
+        "validity": {
+            "from": "2003-04-15",
+            "to": null
+        }
+    },
+    {
+        "address_type": {
+            "example": "<UUID>",
+            "name": "Adresse",
+            "scope": "DAR",
+            "user_key": "AdressePost",
+            "uuid": "c40943db-671e-4263-a10d-76c693e41c0f"
+        },
+        "href": "https://www.openstreetmap.org/?mlon=9.82648603&mlat=57.49073905&zoom=16",
+        "name": "B\u00f8vlingbjergvej 7, Skallerup, 9800 Hj\u00f8rring",
+        "person": {
+            "name": "Henry Olesen Steno Ahmad",
+            "uuid": "0014209a-8832-44b3-b7a0-4cc209a71993"
+        },
+        "uuid": "0a3f50c8-0b24-32b8-e044-0003ba298018",
+        "validity": {
+            "from": "2003-04-15",
+            "to": null
+        }
+    },
+    {
+        "address_type": {
+            "example": "test@example.com",
+            "name": "Email",
+            "scope": "EMAIL",
+            "user_key": "Email",
+            "uuid": "e12a8e5e-ac52-4f6e-ae27-b509784d624a"
+        },
+        "href": "mailto:henrya@hjorring.dk",
+        "name": "henrya@hjorring.dk",
+        "person": {
+            "name": "Henry Olesen Steno Ahmad",
+            "uuid": "0014209a-8832-44b3-b7a0-4cc209a71993"
+        },
+        "urn": "urn:mailto:henrya@hjorring.dk",
+        "validity": {
+            "from": "2003-04-15",
+            "to": null
+        }
+    }
+]

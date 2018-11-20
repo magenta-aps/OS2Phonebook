@@ -1,1 +1,36 @@
-[{"engagement_type": {"example": null, "name": "Ansat", "scope": null, "user_key": "Ansat", "uuid": "de5fea84-33e0-4099-8c4e-a844830be76d"}, "job_function": {"example": null, "name": "Udviklingskonsulent", "scope": null, "user_key": "Udviklingskonsulent", "uuid": "db544b60-bf74-447d-b659-d5201fca39d2"}, "org_unit": {"name": "L\u00f8kken b\u00f8rnehus", "user_key": "L\u00f8kken b\u00f8rnehus 32e3d86c-a0a0-4957-9899-dac3c54feb80", "uuid": "af76c22e-ae43-46c5-8618-94c5790dfb79", "validity": {"from": "1960-01-01", "to": null}}, "person": {"name": "Henry Olesen Steno Ahmad", "uuid": "0014209a-8832-44b3-b7a0-4cc209a71993"}, "uuid": "23ce2e4b-ca5a-4130-9733-e863ca2599ab", "validity": {"from": "2003-04-15", "to": null}}]
+[
+    {
+        "engagement_type": {
+            "example": null,
+            "name": "Ansat",
+            "scope": null,
+            "user_key": "Ansat",
+            "uuid": "de5fea84-33e0-4099-8c4e-a844830be76d"
+        },
+        "job_function": {
+            "example": null,
+            "name": "Udviklingskonsulent",
+            "scope": null,
+            "user_key": "Udviklingskonsulent",
+            "uuid": "db544b60-bf74-447d-b659-d5201fca39d2"
+        },
+        "org_unit": {
+            "name": "L\u00f8kken b\u00f8rnehus",
+            "user_key": "L\u00f8kken b\u00f8rnehus 32e3d86c-a0a0-4957-9899-dac3c54feb80",
+            "uuid": "af76c22e-ae43-46c5-8618-94c5790dfb79",
+            "validity": {
+                "from": "1960-01-01",
+                "to": null
+            }
+        },
+        "person": {
+            "name": "Henry Olesen Steno Ahmad",
+            "uuid": "0014209a-8832-44b3-b7a0-4cc209a71993"
+        },
+        "uuid": "23ce2e4b-ca5a-4130-9733-e863ca2599ab",
+        "validity": {
+            "from": "2003-04-15",
+            "to": null
+        }
+    }
+]

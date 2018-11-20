@@ -1,1 +1,106 @@
-{"uuid": "0418617c-242f-4d9a-81cc-abb269ad27b4", "name": "\u00d8stervr\u00e5 b\u00f8rnehus", "parent": "3d3a73c3-7897-4bfb-bed4-fac6d6e19519", "locations": [["DAR", "Vestergade 20B, 9760 Vr\u00e5"]], "employees": [["Hans Lehtonen Pedersen", "860da2c6-e85b-4bc3-b3e8-4ac344a80668", "Ansat", "Personalekonsulent"], ["Marie Lindtner Christensen", "5d37860b-0618-4589-b69b-fb9d2150a4bf", "Ansat", "P\u00e6dagogmedhj\u00e6lper"], ["Karoline \u00d8rving Lundgreen", "9f2de802-6209-4d0e-83f8-09db40aedfa5", "Ansat", "Specialkonsulent"], ["Knud Hejlskov Skovhuus", "b92dcf6f-73be-4846-a0e9-7275c2279562", "Ansat", "P\u00e6dagoisk vejleder"], ["Rubin  Bjeldbak", "5f8e141b-04f3-443d-8dff-d15b7d116f66", "Ansat", "P\u00e6dagoisk vejleder"], ["Louise  Hansen", "5f5ac491-5d31-4e21-8000-c6b3d4227456", "Ansat", "Skolepsykolog"], ["Christian \u00d8stergaard S\u00f8rensen", "fdca0ca0-9ee8-4c51-bf12-1c2743ee65d9", "Ansat", "L\u00f8nkonsulent"], ["Juel Godsk Kjersgaard Olsen", "01ec41aa-db34-48d0-9f86-7b1ddbb37acf", "Ansat", "Bogops\u00e6tter"], ["Florian Damgaard H\u00f8yer Daarbak", "e1f3c923-16d1-4b32-b2bd-3bd1bf422931", "Ansat", "Kontorelev"], ["Emil Holtze Hansen", "7159f27f-a1d9-4c4e-81e2-878c3bd67e8c", "Ansat", "Specialist"]], "departments": [["Administration", "4569dcf2-a9d7-4e27-9baf-9cd045a36790"]], "associated": [["Peter Holm Hansen", "80fe3222-836e-415c-9302-9d736095ab3c", "Medhj\u00e6lper", "St\u00f8ttep\u00e6dagog"], ["Ebbe Lauvring Merl", "0ed1ef05-59a1-429e-8161-12e8ece4dcef", "Konsulent", "Udvikler"], ["Anette Eybye Jepsen", "66438e02-7788-4726-9b23-1d92cc1e9923", "Problemknuser", "L\u00f8nkonsulent"]], "managers": [["Direkt\u00f8r", "Juel Godsk Kjersgaard Olsen", "01ec41aa-db34-48d0-9f86-7b1ddbb37acf"]]}
+{
+    "uuid": "0418617c-242f-4d9a-81cc-abb269ad27b4",
+    "name": "\u00d8stervr\u00e5 b\u00f8rnehus",
+    "parent": "3d3a73c3-7897-4bfb-bed4-fac6d6e19519",
+    "locations": [
+        [
+            "DAR",
+            "Vestergade 20B, 9760 Vr\u00e5"
+        ]
+    ],
+    "employees": [
+        [
+            "Hans Lehtonen Pedersen",
+            "860da2c6-e85b-4bc3-b3e8-4ac344a80668",
+            "Ansat",
+            "Personalekonsulent"
+        ],
+        [
+            "Marie Lindtner Christensen",
+            "5d37860b-0618-4589-b69b-fb9d2150a4bf",
+            "Ansat",
+            "P\u00e6dagogmedhj\u00e6lper"
+        ],
+        [
+            "Karoline \u00d8rving Lundgreen",
+            "9f2de802-6209-4d0e-83f8-09db40aedfa5",
+            "Ansat",
+            "Specialkonsulent"
+        ],
+        [
+            "Knud Hejlskov Skovhuus",
+            "b92dcf6f-73be-4846-a0e9-7275c2279562",
+            "Ansat",
+            "P\u00e6dagoisk vejleder"
+        ],
+        [
+            "Rubin  Bjeldbak",
+            "5f8e141b-04f3-443d-8dff-d15b7d116f66",
+            "Ansat",
+            "P\u00e6dagoisk vejleder"
+        ],
+        [
+            "Louise  Hansen",
+            "5f5ac491-5d31-4e21-8000-c6b3d4227456",
+            "Ansat",
+            "Skolepsykolog"
+        ],
+        [
+            "Christian \u00d8stergaard S\u00f8rensen",
+            "fdca0ca0-9ee8-4c51-bf12-1c2743ee65d9",
+            "Ansat",
+            "L\u00f8nkonsulent"
+        ],
+        [
+            "Juel Godsk Kjersgaard Olsen",
+            "01ec41aa-db34-48d0-9f86-7b1ddbb37acf",
+            "Ansat",
+            "Bogops\u00e6tter"
+        ],
+        [
+            "Florian Damgaard H\u00f8yer Daarbak",
+            "e1f3c923-16d1-4b32-b2bd-3bd1bf422931",
+            "Ansat",
+            "Kontorelev"
+        ],
+        [
+            "Emil Holtze Hansen",
+            "7159f27f-a1d9-4c4e-81e2-878c3bd67e8c",
+            "Ansat",
+            "Specialist"
+        ]
+    ],
+    "departments": [
+        [
+            "Administration",
+            "4569dcf2-a9d7-4e27-9baf-9cd045a36790"
+        ]
+    ],
+    "associated": [
+        [
+            "Peter Holm Hansen",
+            "80fe3222-836e-415c-9302-9d736095ab3c",
+            "Medhj\u00e6lper",
+            "St\u00f8ttep\u00e6dagog"
+        ],
+        [
+            "Ebbe Lauvring Merl",
+            "0ed1ef05-59a1-429e-8161-12e8ece4dcef",
+            "Konsulent",
+            "Udvikler"
+        ],
+        [
+            "Anette Eybye Jepsen",
+            "66438e02-7788-4726-9b23-1d92cc1e9923",
+            "Problemknuser",
+            "L\u00f8nkonsulent"
+        ]
+    ],
+    "managers": [
+        [
+            "Direkt\u00f8r",
+            "Juel Godsk Kjersgaard Olsen",
+            "01ec41aa-db34-48d0-9f86-7b1ddbb37acf"
+        ]
+    ]
+}
