@@ -1,4 +1,4 @@
-PYTHON=$(dirname $0)/import/venv/bin/python
+PYTHON=$(dirname $0)/venv/bin/python
 PROGRAM=$(dirname $0)/import/do_import.py
 VAR_DIR=$(dirname $0)/var
 

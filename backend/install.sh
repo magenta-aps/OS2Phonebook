@@ -61,12 +61,13 @@ fi
 
 # Install importer
 
-cd import
 if [ ! -d "venv" ]
 then
     python3 -m venv venv
 fi
 source venv/bin/activate
+
+cd import
 pip install -r requirements.txt
 
 echo "Everything installed."
