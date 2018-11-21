@@ -1,8 +1,6 @@
 import os
 import json
 
-import requests
-
 import mo_api
 import do_import
 
@@ -83,15 +81,6 @@ def test_write_phonebook_data():
     do_import.write_phonebook_data(lambda d: None, lambda d: None)
 
     assert True
-
-
-def test_mo_get_fails():
-    try:
-        mo_api.mo_get("http://xyz, no such URL")
-    except requests.exceptions.ConnectionError:
-        assert True
-        return
-    assert False
 
 
 def test_nosuchattribute():
