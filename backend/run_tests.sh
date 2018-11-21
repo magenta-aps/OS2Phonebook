@@ -11,7 +11,7 @@ source $DIR/venv/bin/activate
 pip install -r $DIR/import/requirements-test.txt
 
 pushd $DIR/import
-$DIR/venv/bin/pytest --flake8
+$DIR/venv/bin/pytest --flake8 --cov=do_import --cov=mo_api --cov-report=xml --cov-branch --junitxml=build/reports/import.xml
 popd
 
 rm -r $DIR/venv

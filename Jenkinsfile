@@ -24,7 +24,7 @@ pipeline {
       junit healthScaleFactor: 200.0,           \
         testResults: '**/build/reports/*.xml'
 
-      cobertura coberturaReportFile: 'coverage.xml',    \
+      cobertura coberturaReportFile: 'backend/import/coverage.xml',    \
         maxNumberOfBuilds: 0
 
       cleanWs()
