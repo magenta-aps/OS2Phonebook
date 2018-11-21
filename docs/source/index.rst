@@ -11,6 +11,7 @@ Welcome to os2phonebook's documentation!
    :caption: Contents:
 
    backend_documentation.rst
+   frontend_documentation.rst
 
 Indices and tables
 ==================
