@@ -1,11 +1,15 @@
+import os
 import json
 
 import mo_api
 import do_import
 
+CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
+
 
 def my_mo_get(url):
     url_file = '.test_data/mo/' + url.replace('/', '#') + '.json'
+    url_file = os.path.join(CURRENT_DIR, url_file)
     with open(url_file, 'r') as f:
         return json.load(f)
 
@@ -33,7 +37,10 @@ def test_get_employee_data():
     e_data = do_import.get_employee_data(e)
     # Normalize to convert tuples to lists - JSON doesn't have tuples.
     e_data = json.loads(json.dumps(e_data))
-    with open('.test_data/output/' + employee_uuid + '.json', 'r') as f:
+    data_file = os.path.join(
+        CURRENT_DIR, '.test_data/output/' + employee_uuid + '.json'
+    )
+    with open(data_file, 'r') as f:
         target_e_data = json.load(f)
         assert e_data == target_e_data
 
@@ -46,6 +53,9 @@ def test_get_orgunit_data():
     ou_data = do_import.get_orgunit_data(ou)
     # Normalize to convert tuples to lists - JSON doesn't have tuples.
     ou_data = json.loads(json.dumps(ou_data))
-    with open('.test_data/output/' + orgunit_uuid + '.json', 'r') as f:
+    data_file = os.path.join(
+        CURRENT_DIR, '.test_data/output/' + orgunit_uuid + '.json'
+    )
+    with open(data_file, 'r') as f:
         target_ou_data = json.load(f)
         assert ou_data == target_ou_data

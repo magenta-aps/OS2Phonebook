@@ -6,14 +6,12 @@ DIR=$(dirname $0)
 cd $DIR
 DIR=$PWD
 
-python3 -m venv $DIR/venv
-source $DIR/venv/bin/activate
+python3 -m venv $DIR/test-venv
+source $DIR/test-venv/bin/activate
 pip install -r $DIR/import/requirements-test.txt
 
-pushd $DIR/import
-$DIR/venv/bin/pytest --flake8 --cov=do_import --cov=mo_api --cov-report=xml --cov-branch --junitxml=build/reports/import.xml
-popd
+$DIR/test-venv/bin/pytest --flake8 --junitxml=build/reports/import.xml --cov=import --cov-report=xml --cov-branch  import
 
-rm -r $DIR/venv
+rm -r $DIR/test-venv
 
 
