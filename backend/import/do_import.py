@@ -105,7 +105,6 @@ def write_phonebook_data(orgunit_writer, employee_writer):
     The _writer arguments are function to store/index employees and org
     units, respectively.
     """
-
     ous = mo_api.get_ous()
     employees = mo_api.get_employees()
 
@@ -150,8 +149,7 @@ def file_writer(directory, field_name='uuid'):
     return writer
 
 
-if __name__ == '__main__':
-
+if __name__ == '__main__':  # pragma: no cover
     orgunit_writer = file_writer('ous')
     employee_writer = file_writer('employees')
 

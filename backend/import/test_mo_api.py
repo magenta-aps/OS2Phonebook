@@ -43,6 +43,7 @@ def test_get_employee_data():
     with open(data_file, 'r') as f:
         target_e_data = json.load(f)
         assert e_data == target_e_data
+        return e_data
 
 
 def test_get_orgunit_data():
@@ -59,3 +60,22 @@ def test_get_orgunit_data():
     with open(data_file, 'r') as f:
         target_ou_data = json.load(f)
         assert ou_data == target_ou_data
+        return ou_data
+
+
+def test_file_writer():
+    writer = do_import.file_writer('test', 'test')
+    writer({'test': 'Hej'})
+    assert True
+
+
+def test_write_phonebook_data():
+    e_data = test_get_employee_data()
+    ou_data = test_get_orgunit_data()
+
+    mo_api.get_ous = lambda: [ou_data]
+    mo_api.get_employees = lambda: [e_data]
+
+    do_import.write_phonebook_data(lambda d: None, lambda d: None)
+
+    assert True
