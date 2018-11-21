@@ -142,7 +142,7 @@ def file_writer(directory, field_name='uuid'):
         os.makedirs(target_dir)
 
     def writer(data):
-        out_file = f"{data[field_name].replace(' ', '')}.json"
+        out_file = "{}.json".format(data[field_name].replace(' ', ''))
         out_file = os.path.join(target_dir, out_file)
         with open(out_file, 'w') as f:
             json.dump(data, f)
@@ -159,7 +159,10 @@ if __name__ == '__main__':
     try:
         write_phonebook_data(orgunit_writer, employee_writer)
     except Exception as e:
-        print(f"Failed to import phonebook data: {str(e)}", file=sys.stderr)
+        print(
+            "Failed to import phonebook data: {}".format(str(e)),
+            file=sys.stderr
+        )
         sys.exit(-1)
 
     print("done")
