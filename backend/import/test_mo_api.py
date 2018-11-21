@@ -1,6 +1,8 @@
 import os
 import json
 
+import requests
+
 import mo_api
 import do_import
 
@@ -27,6 +29,8 @@ def test_mo_data():
     # Test json function
     assert ou.json['name'] == 'Østervrå børnehus'
     assert e.json['name'] == 'Henry Olesen Steno Ahmad'
+    assert str(e) == str(e.json)
+    assert str(ou) == str(ou.json)
 
 
 def test_get_employee_data():
@@ -79,3 +83,24 @@ def test_write_phonebook_data():
     do_import.write_phonebook_data(lambda d: None, lambda d: None)
 
     assert True
+
+
+def test_mo_get_fails():
+    try:
+        mo_api.mo_get("http://xyz, no such URL")
+    except requests.exceptions.ConnectionError:
+        assert True
+        return
+    assert False
+
+
+def test_nosuchattribute():
+    orgunit_uuid = '0418617c-242f-4d9a-81cc-abb269ad27b4'
+    ou = mo_api.MOOrgUnit(orgunit_uuid)
+    ou.get = my_mo_get
+    try:
+        print(ou.nosuchattribute)
+    except AttributeError:
+        assert True
+        return
+    assert False

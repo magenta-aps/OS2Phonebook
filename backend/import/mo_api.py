@@ -57,10 +57,6 @@ class MOData:
     def _details(self):
         return self.get(self.url + '/details/')
 
-    @cached_property
-    def detail_fields(self):
-        return list(self._details.keys())
-
     def _get_detail(self, detail):
         return self.get(self.url + '/details/' + detail)
 
@@ -75,7 +71,7 @@ class MOData:
                 self._stored_details[name] = self._get_detail(name)
             return self._stored_details[name]
         else:
-            return object.__getattr__(self, name)
+            raise AttributeError("No such attribute: {}".format(name))
 
     def __str__(self):
         return str(self.json)
@@ -106,7 +102,7 @@ def get_employees(org_id=ORG_ROOT, mo_url=DEFAULT_MO_URL):
     return mo_get(mo_url + '/o/' + org_id + '/e/')['items']
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     # Note: This is just a quick smoke test. Will only work if
     # DEFAULT_MO_URL and ORG_ROOT are properly configured.
     ou_uuid = get_ous(ORG_ROOT)[0]['uuid']
