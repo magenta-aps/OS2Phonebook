@@ -14,7 +14,7 @@ TO_INSTALL=""
 
 dpkg -l | grep "^ii" > $PKG_FILE
 
-for PACKAGE in "${DEPENDENCIES[@]}"
+for PACKAGE in ${DEPENDENCIES}
 do
     grep -w "ii $PACKAGE " $PKG_FILE > /dev/null
     if [[ $? -ne 0 ]]
