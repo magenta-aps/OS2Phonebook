@@ -1,6 +1,8 @@
 import os
 import json
 
+import pytest
+
 import mo_api
 import do_import
 
@@ -87,9 +89,5 @@ def test_nosuchattribute():
     orgunit_uuid = '0418617c-242f-4d9a-81cc-abb269ad27b4'
     ou = mo_api.MOOrgUnit(orgunit_uuid)
     ou.get = my_mo_get
-    try:
+    with pytest.raises(AttributeError):
         print(ou.nosuchattribute)
-    except AttributeError:
-        assert True
-        return
-    assert False
