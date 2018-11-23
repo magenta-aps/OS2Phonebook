@@ -6,4 +6,4 @@ cd $(dirname $0)
 solr-7.5.0/bin/solr stop
 
 # Remove everything that's not source.
-rm -r solr-7.5.0/ var/ import/__pycache__/ venv/ build/ coverage.xml
+rm -rf solr-7.5.0/ var/ import/__pycache__/ venv/ build/ coverage.xml
