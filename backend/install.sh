@@ -16,27 +16,24 @@ dpkg -l | grep "^ii" > $PKG_FILE
 
 for PACKAGE in ${DEPENDENCIES}
 do
-    grep -w "ii $PACKAGE " $PKG_FILE > /dev/null
-    if [[ $? -ne 0 ]]
+    if ! grep -wq "ii  $PACKAGE " $PKG_FILE
     then
         TO_INSTALL=$TO_INSTALL" "$PACKAGE
     fi
 done
-
 if [ "$TO_INSTALL" != "" ]
 then
-    sudo apt-get update > /dev/null
-    if [ $? -ne 0 ] 
+    echo "Installing: " $TO_INSTALL
+    if ! sudo apt-get -qq update
     then
         echo "ERROR: Apt repositories are not valid or cannot be reached from your network." 1>&2
         echo "Please fix and retry" 1>&2
         exit -1
     else
         echo "Installing dependencies ..."
-        sudo apt-get -y install $TO_INSTALL
+        sudo apt-get -qy install $TO_INSTALL
     fi
 fi
-
 
 # Dependencies done, do the installation itself.
 
