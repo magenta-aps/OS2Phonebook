@@ -1,6 +1,14 @@
 {
-    "uuid": "0014209a-8832-44b3-b7a0-4cc209a71993",
-    "name": "Henry Olesen Steno Ahmad",
+    "associated": [],
+    "departments": [
+        [
+            "L\u00f8kken b\u00f8rnehus",
+            "af76c22e-ae43-46c5-8618-94c5790dfb79",
+            "Ansat",
+            "Udviklingskonsulent"
+        ]
+    ],
+    "document": "{\"uuid\": \"0014209a-8832-44b3-b7a0-4cc209a71993\", \"name\": \"Henry Olesen Steno Ahmad\", \"locations\": [[\"PHONE\", \"50280541\"], [\"DAR\", \"B\\u00f8vlingbjergvej 7, Skallerup, 9800 Hj\\u00f8rring\"], [\"EMAIL\", \"henrya@hjorring.dk\"]], \"departments\": [[\"L\\u00f8kken b\\u00f8rnehus\", \"af76c22e-ae43-46c5-8618-94c5790dfb79\", \"Ansat\", \"Udviklingskonsulent\"]], \"managing\": [], \"associated\": []}",
     "locations": [
         [
             "PHONE",
@@ -15,14 +23,7 @@
             "henrya@hjorring.dk"
         ]
     ],
-    "departments": [
-        [
-            "L\u00f8kken b\u00f8rnehus",
-            "af76c22e-ae43-46c5-8618-94c5790dfb79",
-            "Ansat",
-            "Udviklingskonsulent"
-        ]
-    ],
     "managing": [],
-    "associated": []
+    "name": "Henry Olesen Steno Ahmad",
+    "uuid": "0014209a-8832-44b3-b7a0-4cc209a71993"
 }
