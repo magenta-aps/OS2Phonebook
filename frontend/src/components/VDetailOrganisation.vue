@@ -3,7 +3,7 @@
     <b-list-group>
       <b-list-group-item class="header-item active">
         <icon class="icon-color" name="users"/>
-        Digitalisering
+        {{result.name}}
       </b-list-group-item>
     </b-list-group>
 
@@ -18,64 +18,55 @@
       </div>
     </div>
 
-    <div class="card mt-2">
+    <div v-if="result.locations" class="card mt-2">
       <div class="card-body">
           <b-list-group-item variant="dark">
             Lokationer
           </b-list-group-item>
           <b-list-group-item>
             <icon name="map-marker-alt"/>
-            <span class="col">Hold-an vej 7</span>
+            <span class="col">{{result.locations[1]}}</span>
           </b-list-group-item>
           <b-list-group-item>
             <icon name="phone"/>
-            <span class="col">34233350</span>
+            <span class="col">{{result.locations[3]}}</span>
           </b-list-group-item>
           <b-list-group-item>
             <icon name="envelope"/>
-            <span class="col">digitalisering@gmail.dk</span>
+            <span class="col">{{result.locations[5]}}</span>
           </b-list-group-item>
       </div>
     </div>
 
-    <div class="card mt-2">
+    <div v-if="result.managers" class="card mt-2">
       <div class="card-body">
           <b-list-group-item variant="dark">
             Ledere
           </b-list-group-item>
           <b-list-group-item>
-            Leder Jesper Torup
-          </b-list-group-item>
-          <b-list-group-item>
-            Sekretær Bente Andersen
+            {{result.managers[0]}} - {{result.managers[1]}}
           </b-list-group-item>
       </div>
     </div>
 
-    <div class="card mt-2">
+    <div v-if="result.employees" class="card mt-2">
       <div class="card-body">
           <b-list-group-item variant="dark">
             Ansatte
           </b-list-group-item>
           <b-list-group-item>
-            Allan Nielsen
-          </b-list-group-item>
-           <b-list-group-item>
-            Ole Henrik Langgard
-          </b-list-group-item>
-          <b-list-group-item>
-            Søren Petersen
+            {{result.employees}}
           </b-list-group-item>
       </div>
     </div>
 
-    <div class="card mt-2">
+    <div v-if="result.associated" class="card mt-2">
       <div class="card-body">
           <b-list-group-item variant="dark">
             Tilknyttede
           </b-list-group-item>
           <b-list-group-item>
-            Camilla Toft Sørensen
+            {{result.associated}}
           </b-list-group-item>
       </div>
     </div>
@@ -104,6 +95,10 @@ export default {
 
   components: {
     VTreeView
+  },
+
+  props: {
+    result: Object
   }
 }
 </script>

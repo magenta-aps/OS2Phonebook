@@ -1,10 +1,8 @@
 <template>
   <div id="app">
-    <router-link
-      :to="{ name: 'home'}"
-    >
+    <router-link :to="{ name: 'home'}">
       <b-navbar class="bg-primary">
-        <b-navbar-brand class="mx-auto">{{ $t('phonebook') }}</b-navbar-brand>
+        <b-navbar-brand class="mx-auto"><span class="text-color">{{ $t('phonebook') }}</span></b-navbar-brand>
       </b-navbar>
     </router-link>
 
@@ -22,5 +20,9 @@
 
   .container-top-margin {
     margin-top: 1em;
+  }
+
+  .text-color {
+    color: #ffffff;
   }
 </style>
