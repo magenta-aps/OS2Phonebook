@@ -1,5 +1,9 @@
+Documentation for front end developers - how to use the API
+===========================================================
+
+
 Mapping of backend requests (SOLR queries) to application screens
-=================================================================
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 This document describes how to get the data necessary for displaying the
 various pages in the phone book mockup. The document will refer to the
@@ -31,7 +35,7 @@ searches in the mockups is given. Suffice it to say that the full
 SOLR/Lucene search syntax has many more features than covered here.
 
 Front page
-==========
+++++++++++
 
 Root organisation
 -----------------
@@ -181,7 +185,7 @@ did with the root department.
 
 
 Display results (general query)
-===============================
++++++++++++++++++++++++++++++++
 
 Two separate URLs allow searching for departments or employees: ::
 
@@ -233,7 +237,7 @@ or, URL-encoded: ::
 
 
 Display results (email search)
-==============================
+++++++++++++++++++++++++++++++
 
 Search for ``locations:<address>`` for full address with an asterisk as
 a wildcard of desired, e.g. to get the results for the search in the
@@ -248,7 +252,7 @@ for employees/persons and ::
 for departments.
 
 Display results (person search)
-===============================
++++++++++++++++++++++++++++++++
 
 If there are no spaces in search string, query for ::
 
@@ -256,7 +260,7 @@ If there are no spaces in search string, query for ::
 
 
 Display details (departments)
-=============================
++++++++++++++++++++++++++++++
 
 Get the unique JSON entry for the department with the desired UUID, ::
 
@@ -264,7 +268,7 @@ Get the unique JSON entry for the department with the desired UUID, ::
 
 
 Display details (employees)
-===========================
++++++++++++++++++++++++++++
 
 As for departments, get the selected UUID from the link/search
 results/wherever and query for ::

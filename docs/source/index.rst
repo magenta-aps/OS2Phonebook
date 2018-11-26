@@ -10,8 +10,8 @@ Welcome to os2phonebook's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   backend_documentation.rst
-   frontend_documentation.rst
+   backend/backend_documentation.rst
+   frontend/frontend_documentation.rst
 
 Indices and tables
 ==================
