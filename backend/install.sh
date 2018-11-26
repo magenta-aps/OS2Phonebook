@@ -6,7 +6,36 @@
 
 # Prerequisites
 
-sudo apt install -y python3-venv default-jre
+# Only try to install dependencies if we actually need them.
+
+PKG_FILE=/tmp/installed-package-list.txt
+DEPENDENCIES="python3-venv default-jre"
+TO_INSTALL=""
+
+dpkg -l | grep "^ii" > $PKG_FILE
+
+for PACKAGE in ${DEPENDENCIES}
+do
+    if ! grep -wq "ii  $PACKAGE " $PKG_FILE
+    then
+        TO_INSTALL=$TO_INSTALL" "$PACKAGE
+    fi
+done
+if [ "$TO_INSTALL" != "" ]
+then
+    echo "Installing: " $TO_INSTALL
+    if ! sudo apt-get -qq update
+    then
+        echo "ERROR: Apt repositories are not valid or cannot be reached from your network." 1>&2
+        echo "Please fix and retry" 1>&2
+        exit -1
+    else
+        echo "Installing dependencies ..."
+        sudo apt-get -qy install $TO_INSTALL
+    fi
+fi
+
+# Dependencies done, do the installation itself.
 
 # We'll work here
 cd $(dirname $0)
@@ -61,17 +90,14 @@ fi
 
 # Install importer
 
-cd import
 if [ ! -d "venv" ]
 then
     python3 -m venv venv
 fi
 source venv/bin/activate
-pip install -r requirements.txt
+
+pip install -r import/requirements.txt
 
 echo "Everything installed."
 echo ""
 echo "Run import_data.sh to get started."
-
-
-

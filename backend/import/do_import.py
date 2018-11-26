@@ -14,9 +14,8 @@ from multiprocessing.dummy import Pool
 import mo_api
 
 
-def get_orgunit_data(uuid):
+def get_orgunit_data(ou):
     """Get the data we need to display for this particular org. func."""
-    ou = mo_api.MOOrgUnit(uuid)
     # Parent - UUID if exists, ROOT if not.
     parent = ou.json['parent']['uuid'] if ou.json['parent'] else 'ROOT'
     # For employees, we need job function, name and UUID.
@@ -60,9 +59,8 @@ def get_orgunit_data(uuid):
     )
 
 
-def get_employee_data(uuid):
+def get_employee_data(employee):
     '''Get the data we need to display this employee'''
-    employee = mo_api.MOEmployee(uuid)
 
     # For locations, their type and content.
     locations = [
@@ -107,7 +105,6 @@ def write_phonebook_data(orgunit_writer, employee_writer):
     The _writer arguments are function to store/index employees and org
     units, respectively.
     """
-
     ous = mo_api.get_ous()
     employees = mo_api.get_employees()
 
@@ -122,13 +119,13 @@ def write_phonebook_data(orgunit_writer, employee_writer):
 
     p = Pool(10)
     # First, org units
-    p.map(ou_handler, [ou['uuid'] for ou in ous])
+    p.map(ou_handler, (mo_api.MOOrgUnit(ou['uuid']) for ou in ous))
     p.close()
     p.join()
 
     p = Pool(10)
     # Now, employees
-    p.map(employee_handler, [e['uuid'] for e in employees])
+    p.map(employee_handler, (mo_api.MOEmployee(e['uuid']) for e in employees))
     p.close()
     p.join()
 
@@ -144,7 +141,7 @@ def file_writer(directory, field_name='uuid'):
         os.makedirs(target_dir)
 
     def writer(data):
-        out_file = f"{data[field_name].replace(' ', '')}.json"
+        out_file = "{}.json".format(data[field_name].replace(' ', ''))
         out_file = os.path.join(target_dir, out_file)
         with open(out_file, 'w') as f:
             json.dump(data, f)
@@ -152,8 +149,7 @@ def file_writer(directory, field_name='uuid'):
     return writer
 
 
-if __name__ == '__main__':
-
+if __name__ == '__main__':  # pragma: no cover
     orgunit_writer = file_writer('ous')
     employee_writer = file_writer('employees')
 
@@ -161,7 +157,10 @@ if __name__ == '__main__':
     try:
         write_phonebook_data(orgunit_writer, employee_writer)
     except Exception as e:
-        print(f"Failed to import phonebook data: {str(e)}", file=sys.stderr)
+        print(
+            "Failed to import phonebook data: {}".format(str(e)),
+            file=sys.stderr
+        )
         sys.exit(-1)
 
     print("done")
