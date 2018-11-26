@@ -6,6 +6,7 @@ Backend
    :caption: Contents:
 
    installation.rst
-   modules.rst
+   architecture.rst
    api_requests_per_screen.rst
+   modules.rst
 

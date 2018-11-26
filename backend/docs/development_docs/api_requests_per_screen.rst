@@ -7,12 +7,14 @@ Mapping of backend requests (SOLR queries) to application screens
 
 This document describes how to get the data necessary for displaying the
 various pages in the phone book mockup. The document will refer to the
-mockups for the web version. These mockups may be found in the same
-directory as the present document, in the file
-``OS2-telefonbog_webversion.pdf``.
+mockups for the web version, but the instructions given are general and
+should be understood even without referring to the specific mockups.
 
-The document follows the mockups, describing the necessary queries page
-by page. 
+If necessary, they can be found in the source code's ``backend/docs/``
+directory, in the file ``OS2-telefonbog_webversion.pdf``.
+
+This document follows the mockups, documenting the API by describing the
+necessary queries page by page. 
 
 In these examples, the backend (an SOLR server) is assumed to be running
 on localhost (``127.0.0.1``) and port 8983. In production, this will be
