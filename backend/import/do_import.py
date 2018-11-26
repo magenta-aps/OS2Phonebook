@@ -57,7 +57,7 @@ def get_orgunit_data(ou):
             associated=associated,
             managers=managers
     )
-    orgunit_data['document'] = json.dumps(orgunit_data)
+    orgunit_data['document'] = json.dumps(orgunit_data, sort_keys=True)
 
     return orgunit_data
 
@@ -101,7 +101,7 @@ def get_employee_data(employee):
         managing=managing,
         associated=associated_units
     )
-    employee_data['document'] = json.dumps(employee_data)
+    employee_data['document'] = json.dumps(employee_data, sort_keys=True)
 
     return employee_data
 
