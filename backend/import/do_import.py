@@ -47,7 +47,7 @@ def get_orgunit_data(ou):
         ) for m in ou.manager
     ]
 
-    return dict(
+    orgunit_data = dict(
             uuid=ou.json['uuid'],
             name=ou.json['name'],
             parent=parent,
@@ -57,6 +57,9 @@ def get_orgunit_data(ou):
             associated=associated,
             managers=managers
     )
+    orgunit_data['document'] = json.dumps(orgunit_data, sort_keys=True)
+
+    return orgunit_data
 
 
 def get_employee_data(employee):
@@ -90,13 +93,17 @@ def get_employee_data(employee):
             a['job_function']['name']
          ) for a in employee.association
     ]
-    return dict(
+    employee_data = dict(
         uuid=employee.json['uuid'],
         name=employee.json['name'],
         locations=locations,
         departments=departments,
         managing=managing,
-        associated=associated_units)
+        associated=associated_units
+    )
+    employee_data['document'] = json.dumps(employee_data, sort_keys=True)
+
+    return employee_data
 
 
 def write_phonebook_data(orgunit_writer, employee_writer):
