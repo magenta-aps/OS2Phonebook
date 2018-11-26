@@ -76,54 +76,109 @@ SOLR will return data in JSON format and according to the following template: ::
      (...)
      },
     "response":{"numFound":1,"start":0,"docs":[
-      {
-        "uuid":["97337de5-6096-41f9-921e-5bed7a140d85"],
-        "name":["Hjørring"],
-        "parent":["ROOT"],
-        "locations":["DAR",
-          "Stensgårdsvej 19, Nr Harritsl, 9800 Hjørring"],
-        "employees":["Esther Hildeborg Nielsen",
-          "2355a754-5de4-4b3f-b78c-0dceba80dfa6",
-          "Ergoterapeut",
-          (...)
-          "Pawel Nyskov Dalgaard",
-          "edb1f226-90db-4d23-94d2-232c048f84de",
-          "Jurist"],
-        "departments":["Borgmesterens Afdeling",
-          "40644200-b3f1-42d4-8752-8dab581d5b23",
-          (...)
-          "Teknik og Miljø",
-          "be7bb9e5-b298-4019-b0fd-ce80c8f97934"],
-        "associated":[
-          "Christian Kjeldal Schmidt Nielsen",
-          "4419dbb3-a698-4d98-b255-a4eff621ee4f",
-          "Problemknuser",
-          "Specialkonsulent"],
-        "managers":["Direktør",
-          "Esther Hildeborg Nielsen",
-          "b078107a-4299-4251-b41c-23e0b8a9575a"],
-        "id":"38bbb6ad-d31f-4381-aa88-61be37f70d8c",
-        "_version_":1616659562091249664}]
+        {
+           "document":"<very long string omitted>",
+        "id":"8284b4b5-118a-4cbf-aa7c-f08ae2ca391c",
+        "_version_":1617934905120915456}    
+    ]
      }}
+
+In this output, the fields ``id`` and ``_version_`` are not used. The
+actual contents of the found object are in the ``document`` field, which
+is a JSON encoded string. 
+
+If the ``document`` field of any of these results is parsed, we may, e.g., get an organisation
+unit that looks like this: ::
+    {
+    "associated": [
+    [
+      "Amin Laurvig Deichgraeber", 
+      "03ecfcfd-33ab-4d9a-bc46-df4fb9e60ceb", 
+      "Medhj\u00e6lper", 
+      "Teknisk Servicemedarb."
+    ]
+    ], 
+    "departments": [], 
+    "employees": [
+    [
+      "Jesper Olesen Jepsen", 
+      "839ee38a-ce78-4ef7-989c-8c0fa587857a", 
+      "Ansat", 
+      "P\u00e6dagogmedhj\u00e6lper"
+    ], 
+    [
+      "Jesper  Overmark Jensen", 
+      "06410197-b6b0-48c2-a07c-2506dd711862", 
+      "Ansat", 
+      "Timel\u00f8nnet l\u00e6rer"
+    ], 
+    [
+      "Esther S\u00f8rensen Haugsted", 
+      "e2fc5e65-2cf0-4e1c-b902-33d125a59267", 
+      "Ansat", 
+      "Personalekonsulent"
+    ], 
+    [
+      "Camilla  Hansen", 
+      "2b76a21f-e803-48e3-b0ad-90911910a4f1", 
+      "Ansat", 
+      "L\u00e6rer/Overl\u00e6rer"
+    ], 
+    [
+      "Linda Bjerring Hansen", 
+      "a60fcdaa-9487-4cae-94f4-9cead9d55d75", 
+      "Ansat", 
+      "Udviklingskonsulent"
+    ], 
+    [
+      "Kadiatou Schultz Petersen", 
+      "fa42289b-745c-46df-9289-a9f4c155ef19", 
+      "Ansat", 
+      "P\u00e6dagoisk vejleder"
+    ], 
+    [
+      "Margrethe Neess Borup", 
+      "5a18ce2b-267a-475d-a781-7f6b714b4e46", 
+      "Ansat", 
+      "Teknisk Servicemedarb."
+    ]
+    ], 
+    "locations": [
+    [
+      "DAR", 
+      "Vesterklit 9, L\u00f8nstrup, 9800 Hj\u00f8rring"
+    ]
+    ], 
+    "managers": [
+    [
+      "Direkt\u00f8r", 
+      "Margrethe Neess Borup", 
+      "5a18ce2b-267a-475d-a781-7f6b714b4e46"
+    ]
+    ], 
+    "name": "Budget og Planl\u00e6gning", 
+    "parent": "40644200-b3f1-42d4-8752-8dab581d5b23", 
+    "uuid": "d4f9af18-aacd-48de-aa78-5f29cb23d716"
+    }
 
 Of course, there will be the number of ``docs`` corresponding to the
 ``numFound`` parameter in the ``response``.
 
 In the present example, there is only one document and the name to be
-dislayed is simply "Hjørring".  The members are, apart from the obvious
-ones, to be interpreted like this:
+dislayed is "Budget og Planlægning".  The members are, apart from the
+obvious ones, to be interpreted like this:
 
 * ``locations`` are addresses and can be of type ``DAR``, ``EMAIL``
-  and ``PHONE``. The list contains a list of addresses that are to be
-  interpreted as couples, *(type, value)*.
+  and ``PHONE``. The list contains a list of addresses; each address is
+  itself a couple,  *[type, value]*.
 * ``employees`` correspond to ``engagement`` in MO. They are four-tuples,
-  *(name, UUID, engagement type, job function)*.
+  *[name, UUID, engagement type, job function]*.
 * ``departments`` are the children of the current node, i.e. the
-  subsections etc. They are couples, *(name, UUID)*.
+  subsections etc. They are couples, *[name, UUID]*.
 * ``associated`` correspond to ``association`` in MO. They are
-  four-tuples, *(name, UUID, association type, job function)*.
+  four-tuples, *[name, UUID, association type, job function]*.
 * ``managers`` correspond to ``manager`` in MO and are triplets,
-  *(manager type, name, UUID)*.
+  *[manager type, name, UUID]*.
 
 
 .. note::
@@ -134,25 +189,25 @@ Employees
 .........
 
 The result headers are as in the example above - only the contents of
-the "docs" section are different.. A typical "doc" for a person could
+the "document" field are different.. A typical "document" for a person could
 be: ::
 
     {
         "uuid":["cee8800a-983d-41fa-998c-b4557d68ec35"],
         "name":["Anna Bjerre Reidl"],
-        "locations":["PHONE",
-          "21557342",
-          "DAR",
-          "Strandgårdsvej 16, Skallerup Klit, 9800 Hjørring",
-          "EMAIL",
-          "annar@hjorring.dk"],
-        "departments":["IT-Support",
+        "locations":[["PHONE",
+          "21557342"],
+          ["DAR",
+          "Strandgårdsvej 16, Skallerup Klit, 9800 Hjørring"],
+          ["EMAIL",
+          "annar@hjorring.dk"]],
+        "departments":[["IT-Support",
           "d3a9e589-5be0-4d28-95af-5d24ac42a2e9",
           "Ansat",
-          "Specialist"],
-        "managing":["Direktør",
+          "Specialist"]],
+        "managing":[["Direktør",
           "IT-Support",
-          "d3a9e589-5be0-4d28-95af-5d24ac42a2e9"],
+          "d3a9e589-5be0-4d28-95af-5d24ac42a2e9"]],
         "id":"e6207b7c-6204-44e2-8839-277694589883",
         "_version_":1616933478548373504
     }
@@ -162,15 +217,15 @@ This record has the following non-trivial (composite) members:
 
 * ``locations`` - this works as for departments.
 * ``departments`` - corresponds to ``engagement`` in MO. These are
-  to be interpreted as four-tuples consisting of *(department name,
-  UUID, engagement type, job function)*. Departments in which the person
+  four-tuples consisting of *[department name,
+  UUID, engagement type, job function]*. Departments in which the person
   is *employed*.
 * ``associated`` - corresponds to ``association`` in MO and organized as
   ``departments``. Departments to which the person is associated.
   Association type might e.g. be "Konsulent".
   (tilknyttet).
 * ``managing`` - the departments which the user is managing. These are
-  triplets consisting of *(department name, UUID, manager type)*.
+  triplets consisting of *[department name, UUID, manager type]*.
   Manager type might e.g. be "Afdelingsleder" or "Direktør".
 
 

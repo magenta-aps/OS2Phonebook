@@ -1,3 +1,4 @@
+"""Import org units and employees from MO."""
 #
 # Copyright (c) 2018, Magenta ApS
 #
@@ -63,8 +64,7 @@ def get_orgunit_data(ou):
 
 
 def get_employee_data(employee):
-    '''Get the data we need to display this employee'''
-
+    """Get the data we need to display this employee."""
     # For locations, their type and content.
     locations = [
         (a['address_type']['scope'], a['name']) for a in employee.address
@@ -138,7 +138,7 @@ def write_phonebook_data(orgunit_writer, employee_writer):
 
 
 def file_writer(directory, field_name='uuid'):
-
+    """Return a function that writes data to a given directory."""
     base_dir = os.path.abspath(
         os.path.join(os.path.dirname(__file__), '..', 'var')
     )
