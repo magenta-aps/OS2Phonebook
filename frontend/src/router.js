@@ -4,6 +4,7 @@ import Overview from '@/components/VOverview'
 import Result from '@/components/VResult'
 import Person from '@/components/VDetailPerson'
 import Organisation from '@/components/VDetailOrganisation'
+import Search from '@/api/Search'
 
 Vue.use(Router)
 
@@ -27,14 +28,26 @@ export default new Router({
       // component: () => import(/* webpackChunkName: "result" */ './views/Result.vue')
     },
     {
-      path: '/person',
+      path: '/person/:uuid',
       name: 'person',
-      component: Person
+      component: Person,
+      props: true,
+      beforeEnter (to, from, next) {
+        Search.employees('uuid', to.params.uuid)
+          .then(res => {
+            to.params.result = res.response.docs[0]
+            return res
+          })
+          .finally(() =>
+            next()
+          )
+      }
     },
     {
       path: '/organisation',
       name: 'organisation',
-      component: Organisation
+      component: Organisation,
+      props: true
     }
   ]
 })
