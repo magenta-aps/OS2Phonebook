@@ -8,7 +8,7 @@
       v-model="item"
       :get-label="getLabel"
       :component-item='template'
-      @item-selected="$emit('input', $event)"
+      @item-clicked="selected(item)"
       @update-items="updateItems"
       :auto-select-one-item="false"
       :min-len="2"
@@ -41,31 +41,13 @@ export default {
      */
       item: null,
       items: [],
-      routeName: '',
       template: VSearchBarTemplate,
       /**
        * The noItem component value.
        * Used to give a default name.
        */
-      noItem: [{ name: ['Ingen resultater matcher din søgning'] }]
+      noItem: [{ name: 'Ingen resultater matcher din søgning' }]
     }
-  },
-
-  watch: {
-    /**
-     * Whenever route change update.
-     */
-    '$route' (to) {
-      this.getRouteName(to)
-    }
-  },
-
-  created () {
-    /**
-     * Called synchronously after the instance is created.
-     * Get route name.
-     */
-    this.getRouteName(this.$route)
   },
 
   methods: {
@@ -77,34 +59,20 @@ export default {
     },
 
     /**
-     * Get to the route name.
-     * So if we're viewing an employee, it goes to the employee detail.
-     */
-    getRouteName (route) {
-      if (route.name.indexOf('organisation') > -1) {
-        this.routeName = 'organisation'
-      }
-      if (route.name.indexOf('person') > -1) {
-        this.routeName = 'person'
-      }
-    },
-
-    /**
      * Update employee or organisation suggestions based on search query.
      */
-    updateItems (query) {
+    updateItems (inputVal) {
       let vm = this
       vm.items = []
 
-      Search.employees(query)
+      Search.employees('name', inputVal)
         .then(response => {
           let searchResults = response.response.docs.length > 0 ? response.response.docs : vm.noItem
           // We need to use Vue.set() to update the items object, because otherwise items would no longer be reactive.
           // We update items with the original array + the new search results concatenated onto it.
           vm.$set(vm, 'items', vm.items.concat(searchResults))
         })
-
-      Search.departments(query)
+      Search.departments('name', inputVal)
         .then(response => {
           let searchResults = response.response.docs.length > 0 ? response.response.docs : vm.noItem
           vm.$set(vm, 'items', vm.items.concat(searchResults))
@@ -114,10 +82,13 @@ export default {
     /**
      * Go to the selected route.
      */
-    selected (item) {
-      if (item.uuid == null) return
-      this.items = []
-      this.$router.push({ name: this.routeName, params: { uuid: item.uuid } })
+    selected (searchResult) {
+      if (this.item.parent) {
+        this.$router.push({ name: 'organisation', params: { result: searchResult } })
+      }
+      if (!this.item.parent) {
+        this.$router.push({ name: 'person', params: { uuid: searchResult.uuid } })
+      }
     },
 
     /**
