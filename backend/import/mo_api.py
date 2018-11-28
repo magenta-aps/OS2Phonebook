@@ -1,4 +1,3 @@
-"""A simple API for requesting data from MO."""
 #
 # Copyright (c) 2018, Magenta ApS
 #
@@ -6,6 +5,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
+"""A simple API for requesting data from MO."""
+
 import os
 import functools
 
@@ -42,7 +43,7 @@ class MOData:
     """Abstract base class to interface with MO objects."""
 
     def __init__(self, uuid):
-        """Initialize object - speccify session and getter method."""
+        """Initialize object from ``uuid``."""
         self.uuid = uuid
         self._stored_details = defaultdict(list)
         self.session = global_session

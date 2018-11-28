@@ -5,7 +5,7 @@ The os2phonebook backend consists of two components:
 
 * A Python program (located in the ``import`` directory) that imports
   all the necessary data from MO and stores it in the file system, and
-* An SOLR server in which the data are indexed, and from which the
+* A SOLR server in which the data are indexed, and from which the
   frontend retrieves them.
 
 This corresponds to the two steps in the ``import_data.sh`` script.

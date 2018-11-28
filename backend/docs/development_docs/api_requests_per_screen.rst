@@ -51,14 +51,13 @@ In the data currently available at ``morademo.magenta-aps.dk``, and
 which will be used as an example in this document, this UUID is
 ``97337de5-6096-41f9-921e-5bed7a140d85``.
 
-In that case, you can get the root node by issuing the following query:
-::
+In that case, you can get the root node by issuing the following query::
     
     http://127.0.0.1:8983/solr/departments/select?q=uuid:97337de5-6096-41f9-921e-5bed7a140d85
 
 If, on the other hand, you know that there is only one root organisation
 unit, you can search for the single root node, denoted by having its
-"parent" field set to the value "ROOT": ::
+"parent" field set to the value "ROOT"::
 
    http://127.0.0.1:8983/solr/departments/select?q=parent:ROOT
 
@@ -69,96 +68,86 @@ Note on the data formats in the SOLR results
 Org units (departments)
 .......................
 
-SOLR will return data in JSON format and according to the following template: ::
+SOLR will return data in JSON format and according to the following template:
+
+.. sourcecode:: json
 
     {
-    "responseHeader":{
-     (...)
-     },
-    "response":{"numFound":1,"start":0,"docs":[
-        {
-           "document":"<very long string omitted>",
-        "id":"8284b4b5-118a-4cbf-aa7c-f08ae2ca391c",
-        "_version_":1617934905120915456}    
-    ]
-     }}
+        "responseHeader": {
+            "status": 0,
+            "QTime": 30,
+            "params": {
+                "q": "*:*",
+                "_": "1543400551984"
+            }
+        },
+        "response": {
+            "numFound": 1,
+            "start": 0,
+            "docs": [
+                {
+                    "document": "<very long string omitted>",
+                    "id": "8284b4b5-118a-4cbf-aa7c-f08ae2ca391c",
+                    "_version_": 1617934905120915456
+                }
+            ]
+        }
+    }
 
-In this output, the fields ``id`` and ``_version_`` are not used. The
-actual contents of the found object are in the ``document`` field, which
-is a JSON encoded string. 
+The ``responseHeader`` field contains information about query and query
+times and will not concern us here. We will focus on the ``response``
+field, which is a list of "``docs``", which are objects found by the
+query.
 
-If the ``document`` field of any of these results is parsed, we may, e.g., get an organisation
-unit that looks like this: ::
+In each of these objects, the fields ``id`` and ``_version_`` are not
+used. The actual contents of the found object are in the ``document``
+field, which is a JSON encoded string. 
+
+If the ``document`` field of any of these results is parsed, we may,
+e.g., get an organisation unit that looks like this:
+
+.. sourcecode:: json
+
     {
-    "associated": [
-    [
-      "Amin Laurvig Deichgraeber", 
-      "03ecfcfd-33ab-4d9a-bc46-df4fb9e60ceb", 
-      "Medhj\u00e6lper", 
-      "Teknisk Servicemedarb."
-    ]
-    ], 
-    "departments": [], 
-    "employees": [
-    [
-      "Jesper Olesen Jepsen", 
-      "839ee38a-ce78-4ef7-989c-8c0fa587857a", 
-      "Ansat", 
-      "P\u00e6dagogmedhj\u00e6lper"
-    ], 
-    [
-      "Jesper  Overmark Jensen", 
-      "06410197-b6b0-48c2-a07c-2506dd711862", 
-      "Ansat", 
-      "Timel\u00f8nnet l\u00e6rer"
-    ], 
-    [
-      "Esther S\u00f8rensen Haugsted", 
-      "e2fc5e65-2cf0-4e1c-b902-33d125a59267", 
-      "Ansat", 
-      "Personalekonsulent"
-    ], 
-    [
-      "Camilla  Hansen", 
-      "2b76a21f-e803-48e3-b0ad-90911910a4f1", 
-      "Ansat", 
-      "L\u00e6rer/Overl\u00e6rer"
-    ], 
-    [
-      "Linda Bjerring Hansen", 
-      "a60fcdaa-9487-4cae-94f4-9cead9d55d75", 
-      "Ansat", 
-      "Udviklingskonsulent"
-    ], 
-    [
-      "Kadiatou Schultz Petersen", 
-      "fa42289b-745c-46df-9289-a9f4c155ef19", 
-      "Ansat", 
-      "P\u00e6dagoisk vejleder"
-    ], 
-    [
-      "Margrethe Neess Borup", 
-      "5a18ce2b-267a-475d-a781-7f6b714b4e46", 
-      "Ansat", 
-      "Teknisk Servicemedarb."
-    ]
-    ], 
-    "locations": [
-    [
-      "DAR", 
-      "Vesterklit 9, L\u00f8nstrup, 9800 Hj\u00f8rring"
-    ]
-    ], 
-    "managers": [
-    [
-      "Direkt\u00f8r", 
-      "Margrethe Neess Borup", 
-      "5a18ce2b-267a-475d-a781-7f6b714b4e46"
-    ]
-    ], 
-    "name": "Budget og Planl\u00e6gning", 
-    "parent": "40644200-b3f1-42d4-8752-8dab581d5b23", 
-    "uuid": "d4f9af18-aacd-48de-aa78-5f29cb23d716"
+        "associated": [
+            [
+                "Amin Laurvig Deichgraeber",
+                "03ecfcfd-33ab-4d9a-bc46-df4fb9e60ceb",
+                "Medhj\u00e6lper",
+                "Teknisk Servicemedarb."
+            ]
+        ],
+        "departments": [],
+        "employees": [
+            [
+                "Kadiatou Schultz Petersen",
+                "fa42289b-745c-46df-9289-a9f4c155ef19",
+                "Ansat",
+                "P\u00e6dagoisk vejleder"
+            ],
+            [
+                "Margrethe Neess Borup",
+                "5a18ce2b-267a-475d-a781-7f6b714b4e46",
+                "Ansat",
+                "Teknisk Servicemedarb."
+            ]
+        ],
+        "locations": [
+            [
+                "DAR",
+                "Vesterklit 9, L\u00f8nstrup, 9800 Hj\u00f8rring"
+            ]
+        ],
+        "managers": [
+            [
+                "Direkt\u00f8r",
+                "Margrethe Neess Borup",
+                "5a18ce2b-267a-475d-a781-7f6b714b4e46"
+            ]
+        ],
+        "name": "Budget og Planl\u00e6gning",
+        "parent": "40644200-b3f1-42d4-8752-8dab581d5b23",
+        "uuid": "d4f9af18-aacd-48de-aa78-5f29cb23d716"
     }
 
 Of course, there will be the number of ``docs`` corresponding to the
@@ -170,7 +159,11 @@ obvious ones, to be interpreted like this:
 
 * ``locations`` are addresses and can be of type ``DAR``, ``EMAIL``
   and ``PHONE``. The list contains a list of addresses; each address is
-  itself a couple,  *[type, value]*.
+  itself a pair,  *[type, value]*. As shown in the examples, the
+  ``type`` indicates whether this is a postal address, an email address
+  or a phone number (e.g., ``"DAR"``) while the ``value`` is a textual representation of
+  the address in question (e.g., ``"Skt. Johannes Allé 2, 8000 Aarhus
+  C"``).
 * ``employees`` correspond to ``engagement`` in MO. They are four-tuples,
   *[name, UUID, engagement type, job function]*.
 * ``departments`` are the children of the current node, i.e. the
@@ -189,29 +182,50 @@ Employees
 .........
 
 The result headers are as in the example above - only the contents of
-the "document" field are different.. A typical "document" for a person could
-be: ::
+the ``document`` field are different. A typical ``document`` for a
+person could be:
+
+.. sourcecode:: json
 
     {
-        "uuid":["cee8800a-983d-41fa-998c-b4557d68ec35"],
-        "name":["Anna Bjerre Reidl"],
-        "locations":[["PHONE",
-          "21557342"],
-          ["DAR",
-          "Strandgårdsvej 16, Skallerup Klit, 9800 Hjørring"],
-          ["EMAIL",
-          "annar@hjorring.dk"]],
-        "departments":[["IT-Support",
-          "d3a9e589-5be0-4d28-95af-5d24ac42a2e9",
-          "Ansat",
-          "Specialist"]],
-        "managing":[["Direktør",
-          "IT-Support",
-          "d3a9e589-5be0-4d28-95af-5d24ac42a2e9"]],
-        "id":"e6207b7c-6204-44e2-8839-277694589883",
-        "_version_":1616933478548373504
+        "uuid": [
+            "cee8800a-983d-41fa-998c-b4557d68ec35"
+        ],
+        "name": [
+            "Anna Bjerre Reidl"
+        ],
+        "locations": [
+            [
+                "PHONE",
+                "21557342"
+            ],
+            [
+                "DAR",
+                "Strandg\u00e5rdsvej 16, Skallerup Klit, 9800 Hj\u00f8rring"
+            ],
+            [
+                "EMAIL",
+                "annar@hjorring.dk"
+            ]
+        ],
+        "departments": [
+            [
+                "IT-Support",
+                "d3a9e589-5be0-4d28-95af-5d24ac42a2e9",
+                "Ansat",
+                "Specialist"
+            ]
+        ],
+        "managing": [
+            [
+                "Direkt\u00f8r",
+                "IT-Support",
+                "d3a9e589-5be0-4d28-95af-5d24ac42a2e9"
+            ]
+        ],
+        "id": "e6207b7c-6204-44e2-8839-277694589883",
+        "_version_": 1616933478548373504
     }
-
 
 This record has the following non-trivial (composite) members:
 
@@ -244,14 +258,14 @@ did with the root department.
 Display results (general query)
 +++++++++++++++++++++++++++++++
 
-Two separate URLs allow searching for departments or employees: ::
+Two separate URLs allow searching for departments or employees::
 
     http://127.0.0.1:8983/solr/employees/
 
     http://127.0.0.1:8983/solr/departments/
 
 To search all *employees* - that is, persons - for the name "Eva" in all
-supported fields, write: ::
+supported fields, write::
 
     http://127.0.0.1:8983/solr/employees/select?q=name:Eva%20locations:Eva%20departments:Eva%20associated:Eva%20managing:Eva
 
@@ -265,18 +279,18 @@ Since all employees are indexed under the employees URL as given above,
 we only need to search for the fields that are *not* directly associated
 with any person - which is name and locations.  Supposing that we want
 to find all departments that are located on "Havagervej 20, Lønstrup",
-we use this URL: ::
+we use this URL::
 
     http://127.0.0.1:8983/solr/departments/select?q=locations:%22Havagervej%2020,%20L%C3%B8nstrup%22
 
 Note that, as in the preceding example, quotes and spaces are URL
-encoded. The only important part of this seemingly obscure string is: ::
+encoded. The only important part of this seemingly obscure string is::
 
     locations:"Havagervej 20, Lønstrup"
 
 Strings match up to the first space, e.g. a search for ``name:Eva Hansen``
 in the employees URL will match all persons whose first name is "Eva".
-If you wish to match a string exactly, e.g. a name, quotes must be used: ::
+If you wish to match a string exactly, e.g. a name, quotes must be used::
 
     name:"Eva Hansen"
 
@@ -288,7 +302,7 @@ starts with 2303, search for ::
 
     locations:2303*
 
-or, URL-encoded: ::
+or, URL-encoded::
 
     http://127.0.0.1:8983/solr/employees/select?q=locations:2303*
 
@@ -331,4 +345,3 @@ As for departments, get the selected UUID from the link/search
 results/wherever and query for ::
 
     uuid:<uuid>
-
