@@ -57,7 +57,7 @@ In that case, you can get the root node by issuing the following query::
 
 If, on the other hand, you know that there is only one root organisation
 unit, you can search for the single root node, denoted by having its
-"parent" field set to the value "ROOT"::
+``parent`` field set to the value "ROOT"::
 
    http://127.0.0.1:8983/solr/departments/select?q=parent:ROOT
 
