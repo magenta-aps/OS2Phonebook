@@ -110,7 +110,7 @@ def get_employee_data(employee):
 def write_phonebook_data(orgunit_writer, employee_writer):
     """Write data to store in backend DB.
 
-    The _writer arguments are function to store/index employees and org
+    The ``_writer`` arguments are function to store/index employees and org
     units, respectively.
     """
     ous = mo_api.get_ous()

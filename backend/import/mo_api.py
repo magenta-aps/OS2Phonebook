@@ -58,7 +58,7 @@ class MOData:
     def children(self):
         """Children of the current object.
 
-        Will currently only work wit Org Units.
+        Will currently only work with Org Units.
         """
         return self.get(self.url + '/children')
 
