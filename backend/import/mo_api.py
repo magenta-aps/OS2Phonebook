@@ -5,6 +5,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
+"""A simple API for requesting data from MO."""
+
 import os
 import functools
 
@@ -28,7 +30,8 @@ ORG_ROOT = os.environ.get(
 def mo_get(url, session=None):
     """Helper function for getting data from MO.
 
-    Return JSON content if successful, throw exception if not."""
+    Return JSON content if successful, throw exception if not.
+    """
     result = session.get(url) if session else global_session.get(url)
     if not result:
         result.raise_for_status()
@@ -40,6 +43,7 @@ class MOData:
     """Abstract base class to interface with MO objects."""
 
     def __init__(self, uuid):
+        """Initialize object from ``uuid``."""
         self.uuid = uuid
         self._stored_details = defaultdict(list)
         self.session = global_session
@@ -47,10 +51,15 @@ class MOData:
 
     @cached_property
     def json(self):
+        """JSON representation of the object itself (no details)."""
         return self.get(self.url)
 
     @cached_property
     def children(self):
+        """Children of the current object.
+
+        Will currently only work with Org Units.
+        """
         return self.get(self.url + '/children')
 
     @cached_property
@@ -63,9 +72,9 @@ class MOData:
     def __getattr__(self, name):
         """Get details if field in details for object.
 
-         Available details for OrgFunc are: address, association,
-         engagement, it, leave, manager, org_unit, role
-         """
+        Available details for OrgFunc are: address, association,
+        engagement, it, leave, manager, org_unit, role
+        """
         if name in self._details:
             if name not in self._stored_details and self._details[name]:
                 self._stored_details[name] = self._get_detail(name)
@@ -74,6 +83,7 @@ class MOData:
             raise AttributeError("No such attribute: {}".format(name))
 
     def __str__(self):
+        """String representation - JSON representation without details."""
         return str(self.json)
 
 
@@ -81,6 +91,7 @@ class MOOrgUnit(MOData):
     """A MO organisation unit, e.g. a department in a municipality."""
 
     def __init__(self, uuid, mo_url=DEFAULT_MO_URL):
+        """Initialize the org unit by specifying the URL prefix."""
         super().__init__(uuid)
         self.url = mo_url + '/ou/' + self.uuid
 
@@ -89,6 +100,7 @@ class MOEmployee(MOData):
     """A MO employee."""
 
     def __init__(self, uuid, mo_url=DEFAULT_MO_URL):
+        """Initialize the employee by specifying the URL prefix."""
         super().__init__(uuid)
         self.url = mo_url + '/e/' + self.uuid
 
@@ -99,6 +111,7 @@ def get_ous(org_id=ORG_ROOT, mo_url=DEFAULT_MO_URL):
 
 
 def get_employees(org_id=ORG_ROOT, mo_url=DEFAULT_MO_URL):
+    """Get all employees belonging to the given organization."""
     return mo_get(mo_url + '/o/' + org_id + '/e/')['items']
 
 

@@ -5,6 +5,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
+"""Import org units and employees from MO."""
+
 import os
 import sys
 import json
@@ -63,8 +65,7 @@ def get_orgunit_data(ou):
 
 
 def get_employee_data(employee):
-    '''Get the data we need to display this employee'''
-
+    """Get the data we need to display this employee."""
     # For locations, their type and content.
     locations = [
         (a['address_type']['scope'], a['name']) for a in employee.address
@@ -109,7 +110,7 @@ def get_employee_data(employee):
 def write_phonebook_data(orgunit_writer, employee_writer):
     """Write data to store in backend DB.
 
-    The _writer arguments are function to store/index employees and org
+    The ``_writer`` arguments are function to store/index employees and org
     units, respectively.
     """
     ous = mo_api.get_ous()
@@ -138,6 +139,10 @@ def write_phonebook_data(orgunit_writer, employee_writer):
 
 
 def file_writer(directory, field_name='uuid'):
+    """Return a function that writes data to a given directory.
+
+    The data must be JSON and is  stored in a file name taken from the
+    data's field as indicated by the ``field_name`` parameter."""
 
     base_dir = os.path.abspath(
         os.path.join(os.path.dirname(__file__), '..', 'var')
