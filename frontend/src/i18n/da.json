@@ -1,3 +1,14 @@
 {
-  "phonebook": "OS2 Telefonbog"
+  "phonebook": "OS2 Telefonbog",
+  "overview": "Overblik",
+  "results": "Resultater",
+  "no_results": "Ingen resultater",
+  "contact_info": "Kontaktoplysninger",
+  "locations": "Lokationer",
+  "department": "Afdeling",
+  "managing": "Ledertilknytninger",
+  "managers": "Ledere",
+  "associated_departments": "Tilknyttede enheder",
+  "associated": "Tilknyttede",
+  "employees": "Ansatte"
 }
