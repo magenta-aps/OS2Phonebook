@@ -103,7 +103,7 @@ In each of these objects, the fields ``id`` and ``_version_`` are not
 used. The actual contents of the found object are in the ``document``
 field, which is a JSON encoded string. 
 
-If the ``document`` field of any of these results is parsed, we may,
+If the ``document`` field of one of these results is parsed, we may,
 e.g., get an organisation unit that looks like this:
 
 .. sourcecode:: json
@@ -153,7 +153,7 @@ e.g., get an organisation unit that looks like this:
 Of course, there will be the number of ``docs`` corresponding to the
 ``numFound`` parameter in the ``response``.
 
-In the present example, there is only one document and the name to be
+In the present example there is only one document and the name to be
 dislayed is "Budget og Planlægning".  The members are, apart from the
 obvious ones, to be interpreted like this:
 
@@ -167,7 +167,7 @@ obvious ones, to be interpreted like this:
 * ``employees`` correspond to ``engagement`` in MO. They are four-tuples,
   *[name, UUID, engagement type, job function]*.
 * ``departments`` are the children of the current node, i.e. the
-  subsections etc. They are couples, *[name, UUID]*.
+  subsections etc. They are pairs, *[name, UUID]*.
 * ``associated`` correspond to ``association`` in MO. They are
   four-tuples, *[name, UUID, association type, job function]*.
 * ``managers`` correspond to ``manager`` in MO and are triplets,
