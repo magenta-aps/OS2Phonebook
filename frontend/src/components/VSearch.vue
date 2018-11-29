@@ -4,8 +4,9 @@
       class="col"
       type="search"
       placeholder="Søg"
-      :items="items"
+      :items="searchItems"
       v-model="item"
+      ref="searchWord"
       :get-label="getLabel"
       :component-item='template'
       @item-clicked="selected(item)"
@@ -35,25 +36,24 @@ export default {
 
   data () {
     return {
-    /**
-     * The item, items, routeName component value.
-     * Used to detect changes and restore the value.
-     */
       item: null,
-      items: [],
+      searchItems: [],
       template: VSearchBarTemplate,
       /**
        * The noItem component value.
        * Used to give a default name.
        */
-      noItem: [{ name: 'Ingen resultater matcher din søgning' }]
+      noItem: [
+        {
+          document: JSON.stringify({
+            name: 'Ingen resultater matcher din søgning'
+          })
+        }
+      ]
     }
   },
 
   methods: {
-    /**
-     * Get label name.
-     */
     getLabel (item) {
       return item ? item.name : null
     },
@@ -63,19 +63,34 @@ export default {
      */
     updateItems (inputVal) {
       let vm = this
-      vm.items = []
+      vm.searchItems = []
 
-      Search.employees('name', inputVal)
+      const employees = Search.employees('name', inputVal)
         .then(response => {
-          let searchResults = response.response.docs.length > 0 ? response.response.docs : vm.noItem
-          // We need to use Vue.set() to update the items object, because otherwise items would no longer be reactive.
-          // We update items with the original array + the new search results concatenated onto it.
-          vm.$set(vm, 'items', vm.items.concat(searchResults))
+          let employeeResults = response.response.docs.length > 0 ? response.response.docs : []
+          return employeeResults
         })
-      Search.departments('name', inputVal)
+
+      const departments = Search.departments('name', inputVal)
         .then(response => {
-          let searchResults = response.response.docs.length > 0 ? response.response.docs : vm.noItem
-          vm.$set(vm, 'items', vm.items.concat(searchResults))
+          let departmentResults = response.response.docs.length > 0 ? response.response.docs : []
+          return departmentResults
+        })
+
+      Promise.all([employees, departments])
+        .then(res => {
+          let results = []
+          res.forEach(result => {
+            results = results.concat(result)
+          })
+          if (!results.length) {
+            results = results.concat(vm.noItem)
+          }
+          // We need to use Vue.set() to update the searchItems object, because otherwise searchItems would no longer be reactive.
+          vm.$set(vm, 'searchItems', results)
+        })
+        .catch(() => {
+          vm.$set(vm, 'searchItems', vm.noItem)
         })
     },
 
@@ -83,11 +98,10 @@ export default {
      * Go to the selected route.
      */
     selected (searchResult) {
-      if (this.item.parent) {
-        this.$router.push({ name: 'organisation', params: { result: searchResult } })
-      }
-      if (!this.item.parent) {
-        this.$router.push({ name: 'person', params: { uuid: searchResult.uuid } })
+      if (JSON.parse(this.item.document).parent) {
+        this.$router.push({ name: 'organisation', params: { uuid: JSON.parse(searchResult.document).uuid } })
+      } else {
+        this.$router.push({ name: 'person', params: { uuid: JSON.parse(searchResult.document).uuid } })
       }
     },
 
@@ -95,7 +109,11 @@ export default {
      * View all search results for the given search string
      */
     viewSearchResults () {
-      this.$router.push({ name: 'result', params: { results: this.items } })
+      if (this.searchItems.length) {
+        // this.$refs.searchWord poins to the v-autocomplete component.
+        // Within this, we can get the current search string with searchText attribute.
+        this.$router.push({ name: 'result', query: { q: this.$refs.searchWord.searchText } })
+      }
     }
   }
 }
