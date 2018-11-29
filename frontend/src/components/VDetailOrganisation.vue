@@ -2,15 +2,27 @@
   <div>
     <b-list-group>
       <b-list-group-item class="header-item active">
-        <icon class="icon-color" name="users"/>
+        <icon class="mb-1" name="users"/>
         {{result.name}}
       </b-list-group-item>
     </b-list-group>
 
+    <div v-if="result.locations.length" class="card mt-2 mb-2">
+      <div class="card-body">
+        <b-list-group-item variant="dark">
+          {{ $t('contact_info') }}
+        </b-list-group-item>
+        <b-list-group-item v-if="result.locations && result.locations.length" v-for="(location, idx) in result.locations" :key="Object.keys(location)[idx]">
+          <icon  class="mb-1" v-if="getIcon(location[0])" :name="getIcon(location[0])"/>
+          <span class="col">{{ location[1] }}</span>
+        </b-list-group-item>
+      </div>
+    </div>
+
     <div class="card mt-2">
       <div class="card-body">
         <b-list-group-item variant="dark">
-          Afdeling
+          {{ $t('department') }}
         </b-list-group-item>
         <b-list-group-item>
           <v-tree-view/>
@@ -18,56 +30,57 @@
       </div>
     </div>
 
-    <div v-if="result.locations" class="card mt-2">
+    <div v-if="result.managers.length" class="card mt-2">
       <div class="card-body">
           <b-list-group-item variant="dark">
-            Lokationer
+            {{ $t('managers') }}
+          </b-list-group-item>
+           <b-list-group class="mt-2" v-for="val in result.managers" :key="val[2]">
+          <b-list-group-item>
+            <router-link :to="{ name: 'person', params: { uuid: val[2] } }">
+              {{val[1]}}
+            </router-link>
           </b-list-group-item>
           <b-list-group-item>
-            <icon name="map-marker-alt"/>
-            <span class="col">{{result.locations[1]}}</span>
+            {{val[0]}}
           </b-list-group-item>
-          <b-list-group-item>
-            <icon name="phone"/>
-            <span class="col">{{result.locations[3]}}</span>
-          </b-list-group-item>
-          <b-list-group-item>
-            <icon name="envelope"/>
-            <span class="col">{{result.locations[5]}}</span>
-          </b-list-group-item>
+          </b-list-group>
       </div>
     </div>
 
-    <div v-if="result.managers" class="card mt-2">
+    <div v-if="result.employees.length" class="card mt-2">
       <div class="card-body">
           <b-list-group-item variant="dark">
-            Ledere
+            {{ $t('employees') }}
+          </b-list-group-item>
+          <b-list-group class="mt-2" v-for="val in result.employees" :key="val[1]">
+          <b-list-group-item>
+            <router-link :to="{ name: 'person', params: { uuid: val[1] } }">
+              {{val[0]}}
+            </router-link>
           </b-list-group-item>
           <b-list-group-item>
-            {{result.managers[0]}} - {{result.managers[1]}}
+            {{val[2]}}, {{val[3]}}
           </b-list-group-item>
+          </b-list-group>
       </div>
     </div>
 
-    <div v-if="result.employees" class="card mt-2">
+    <div v-if="result.associated.length" class="card mt-2">
       <div class="card-body">
           <b-list-group-item variant="dark">
-            Ansatte
+            {{ $t('associated') }}
+          </b-list-group-item>
+           <b-list-group class="mt-2" v-for="val in result.associated" :key="val[1]">
+          <b-list-group-item>
+            <router-link :to="{ name: 'person', params: { uuid: val[1] } }">
+              {{val[0]}}
+            </router-link>
           </b-list-group-item>
           <b-list-group-item>
-            {{result.employees}}
+            {{val[2]}}, {{val[3]}}
           </b-list-group-item>
-      </div>
-    </div>
-
-    <div v-if="result.associated" class="card mt-2">
-      <div class="card-body">
-          <b-list-group-item variant="dark">
-            Tilknyttede
-          </b-list-group-item>
-          <b-list-group-item>
-            {{result.associated}}
-          </b-list-group-item>
+          </b-list-group>
       </div>
     </div>
 
@@ -98,7 +111,21 @@ export default {
   },
 
   props: {
+    uuid: String,
     result: Object
+  },
+
+  methods: {
+    getIcon (locationType) {
+      if (locationType === 'PHONE') {
+        return 'phone'
+      } else if (locationType === 'DAR') {
+        return 'map-marker-alt'
+      } else if (locationType === 'EMAIL') {
+        return 'envelope'
+      }
+      return null
+    }
   }
 }
 </script>

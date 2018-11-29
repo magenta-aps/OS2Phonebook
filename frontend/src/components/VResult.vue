@@ -7,42 +7,35 @@
       </div>
     </div>
 
-    <h4 class="mt-3 mb-2">Resultater</h4>
-    <div class="card mt-2" v-for="item in items" :key="item.uuid" v-if="!item.parent">
+    <h4 v-if="items.length" class="mt-3 mb-2">{{ $t('results') }}</h4>
+    <h4 v-if="!items.length" class="mt-3 mb-2">{{ $t('no_results') }}</h4>
+
+    <div class="card mt-2 mb-2" v-for="item in items" :key="item.uuid" v-if="!item.parent">
       <div class="card-body">
-        <router-link class="link-color" :to="{ name: 'person', params: { uuid: item.uuid }}">
+        <router-link class="link-color" :to="{ name: 'person', params: { uuid: item.uuid } }">
           <b-list-group>
             <b-list-group-item class="active">
                 {{ item.name }}
             </b-list-group-item>
-            <b-list-group-item v-if="item.locations">
-              <icon name="phone"/>
-              <span class="col">{{ item.locations[1] }}</span>
-            </b-list-group-item>
-            <b-list-group-item v-if="!item.locations">
-              <icon name="phone"/>
-              <span class="col">Ingen</span>
+            <b-list-group-item v-if="item.locations && item.locations.length" v-for="(location, idx) in item.locations" :key="item.locations[idx][0]">
+              <icon class="mb-1" v-if="getIcon(location[0])" :name="getIcon(location[0])"/>
+              <span class="col">{{ location[1] }}</span>
             </b-list-group-item>
           </b-list-group>
         </router-link>
       </div>
     </div>
 
-    <div v-for="item in items" :key="item.uuid" v-if="item.parent" class="card mt-2 mb-2">
+    <div class="card mt-2 mb-2" v-for="item in items" :key="item.uuid" v-if="item.parent">
       <div class="card-body">
-        <router-link class="link-color" :to="{ name: 'organisation', params: { result: item }}">
+        <router-link class="link-color" :to="{ name: 'organisation', params: { uuid: item.uuid } }">
         <b-list-group>
           <b-list-group-item class="active">
             {{item.name}}
-            <!-- <b-btn v-b-toggle.collapse1 variant="primary" class="float-right"><icon name="angle-down"/></b-btn> -->
           </b-list-group-item>
-          <b-list-group-item v-if="item.locations">
-            <icon name="phone"/>
-            <span class="col mb-3">{{item.locations[1]}}</span>
-          </b-list-group-item>
-          <b-list-group-item v-if="!item.locations">
-            <icon name="phone"/>
-            <span class="col mb-3">Ingen</span>
+          <b-list-group-item v-if="item.locations && item.locations.length" v-for="(location, idx) in item.locations" :key="item.locations[idx][0]">
+            <icon class="mb-1" v-if="getIcon(location[0])" :name="getIcon(location[0])"/>
+            <span class="col">{{ location[1] }}</span>
           </b-list-group-item>
         </b-list-group>
         </router-link>
@@ -66,12 +59,32 @@ export default {
   },
 
   props: {
+    q: String,
     results: Array
   },
 
   computed: {
     items () {
-      return this.results
+      var results = []
+      for (var item = 0; item < this.results.length; item++) {
+        if (this.results[item].document) {
+          results.push(JSON.parse(this.results[item].document))
+        }
+      }
+      return results
+    }
+  },
+
+  methods: {
+    getIcon (locationType) {
+      if (locationType === 'PHONE') {
+        return 'phone'
+      } else if (locationType === 'DAR') {
+        return 'map-marker-alt'
+      } else if (locationType === 'EMAIL') {
+        return 'envelope'
+      }
+      return null
     }
   }
 }
