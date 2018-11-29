@@ -10,7 +10,7 @@
       <div class="card-body">
         <h4>
           <icon class="icon-color" name="folder-open"/>
-          Overblik
+          {{ $t('overview') }}
         </h4>
         <v-tree-view/>
       </div>
