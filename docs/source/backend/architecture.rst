@@ -14,5 +14,5 @@ The phonebook is supposed to be kept up to date by importing and
 reindexing regularly, normally once a day. When reindexing, the SOLR
 data are completely removed and reimported, which means that data may be
 unavailable for a brief period of time during the updates. This could be
-remedied in several ways, e.g. for caching, if it turns out to be a
+remedied in several ways, e.g. by caching, if it turns out to be a
 problem.

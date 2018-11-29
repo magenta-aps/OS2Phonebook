@@ -16,21 +16,21 @@ directory, in the file ``OS2-telefonbog_webversion.pdf``.
 This document follows the mockups, documenting the API by describing the
 necessary queries page by page. 
 
-In these examples, the backend (an SOLR server) is assumed to be running
-on localhost (``127.0.0.1``) and port 8983. In production, this will be
+In these examples, the backend (a SOLR server) is assumed to be running
+on localhost (``127.0.0.1``) and port 8983. In production, this may be
 different, and the URLs should be adjusted accordingly.
 
 .. note::
     For more advanced search combinations than described in this document, see this quick tutorial:
 
-    http://www.solrtutorial.com/solr-query-syntax.html
+        http://www.solrtutorial.com/solr-query-syntax.html
 
-For more information, please consult the SOLR reference manual:
+    For more thorough information, please consult the SOLR reference manual:
 
-    http://lucene.apache.org/solr/guide/7_5/overview-of-searching-in-solr.html#overview-of-searching-in-solr
+        http://lucene.apache.org/solr/guide/7_5/overview-of-searching-in-solr.html#overview-of-searching-in-solr
 
 It is possible to combine query parameters in many ways not described
-above.
+in this document.
 
 Here, only the SOLR search syntax specifically needed to reproduce the
 searches in the mockups is given. Suffice it to say that the full
@@ -103,7 +103,7 @@ In each of these objects, the fields ``id`` and ``_version_`` are not
 used. The actual contents of the found object are in the ``document``
 field, which is a JSON encoded string. 
 
-If the ``document`` field of any of these results is parsed, we may,
+If the ``document`` field of one of these results is parsed, we may,
 e.g., get an organisation unit that looks like this:
 
 .. sourcecode:: json
@@ -153,7 +153,7 @@ e.g., get an organisation unit that looks like this:
 Of course, there will be the number of ``docs`` corresponding to the
 ``numFound`` parameter in the ``response``.
 
-In the present example, there is only one document and the name to be
+In the present example there is only one document and the name to be
 dislayed is "Budget og Planlægning".  The members are, apart from the
 obvious ones, to be interpreted like this:
 
@@ -167,7 +167,7 @@ obvious ones, to be interpreted like this:
 * ``employees`` correspond to ``engagement`` in MO. They are four-tuples,
   *[name, UUID, engagement type, job function]*.
 * ``departments`` are the children of the current node, i.e. the
-  subsections etc. They are couples, *[name, UUID]*.
+  subsections etc. They are pairs, *[name, UUID]*.
 * ``associated`` correspond to ``association`` in MO. They are
   four-tuples, *[name, UUID, association type, job function]*.
 * ``managers`` correspond to ``manager`` in MO and are triplets,
@@ -175,8 +175,7 @@ obvious ones, to be interpreted like this:
 
 
 .. note::
-    The UUIs for employees, associated and managers are the person
-    UUIDs, found under the MO API's ``/e/`` section.
+    The UUIDs for employees, associated and managers are the person UUIDs, found under the MO API's ``/e/`` section.
 
 Employees
 .........
@@ -237,7 +236,6 @@ This record has the following non-trivial (composite) members:
 * ``associated`` - corresponds to ``association`` in MO and organized as
   ``departments``. Departments to which the person is associated.
   Association type might e.g. be "Konsulent".
-  (tilknyttet).
 * ``managing`` - the departments which the user is managing. These are
   triplets consisting of *[department name, UUID, manager type]*.
   Manager type might e.g. be "Afdelingsleder" or "Direktør".
