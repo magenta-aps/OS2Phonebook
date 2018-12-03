@@ -7,20 +7,22 @@
       </div>
     </div>
 
-    <h4 v-if="items.length" class="mt-3 mb-2">{{ $t('results') }}</h4>
-    <h4 v-if="!items.length" class="mt-3 mb-2">{{ $t('no_results') }}</h4>
+    <h4 v-if="items.length" class="mt-3 mb-2 ml-2">{{ $t('results') }}</h4>
+    <h4 v-if="!items.length" class="mt-3 mb-2 ml-2">{{ $t('no_results') }}</h4>
 
     <div class="card mt-2 mb-2" v-for="item in items" :key="item.uuid" v-if="!item.parent">
       <div class="card-body">
         <router-link class="link-color" :to="{ name: 'person', params: { uuid: item.uuid } }">
           <b-list-group>
-            <b-list-group-item class="active">
+            <b-list-group-item class="bg-light">
                 {{ item.name }}
             </b-list-group-item>
-            <b-list-group-item v-if="item.locations && item.locations.length" v-for="(location, idx) in item.locations" :key="item.locations[idx][0]">
+          <div v-if="item.locations && item.locations.length">
+            <b-list-group-item v-for="(location, index) in item.locations" :key="item.locations[index][0]">
               <icon class="mb-1" v-if="getIcon(location[0])" :name="getIcon(location[0])"/>
               <span class="col">{{ location[1] }}</span>
             </b-list-group-item>
+          </div>
           </b-list-group>
         </router-link>
       </div>
@@ -30,13 +32,15 @@
       <div class="card-body">
         <router-link class="link-color" :to="{ name: 'organisation', params: { uuid: item.uuid } }">
         <b-list-group>
-          <b-list-group-item class="active">
+          <b-list-group-item class="bg-light">
             {{item.name}}
           </b-list-group-item>
-          <b-list-group-item v-if="item.locations && item.locations.length" v-for="(location, idx) in item.locations" :key="item.locations[idx][0]">
+          <div v-if="item.locations && item.locations.length">
+          <b-list-group-item v-for="(location, index) in item.locations" :key="item.locations[index][0]">
             <icon class="mb-1" v-if="getIcon(location[0])" :name="getIcon(location[0])"/>
             <span class="col">{{ location[1] }}</span>
           </b-list-group-item>
+          </div>
         </b-list-group>
         </router-link>
       </div>
@@ -48,9 +52,12 @@
 import VSearch from '@/components/VSearch'
 import VSearchOption from '@/components/VSearchOption'
 import VTreeView from '@/components/VTreeView'
+import GetIcon from '@/mixins/GetIcon'
 
 export default {
   name: 'Result',
+
+  mixins: [GetIcon],
 
   components: {
     VSearch,
@@ -72,19 +79,6 @@ export default {
         }
       }
       return results
-    }
-  },
-
-  methods: {
-    getIcon (locationType) {
-      if (locationType === 'PHONE') {
-        return 'phone'
-      } else if (locationType === 'DAR') {
-        return 'map-marker-alt'
-      } else if (locationType === 'EMAIL') {
-        return 'envelope'
-      }
-      return null
     }
   }
 }

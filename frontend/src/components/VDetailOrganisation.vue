@@ -1,18 +1,16 @@
 <template>
   <div>
-    <b-list-group>
-      <b-list-group-item class="header-item active">
-        <icon class="mb-1" name="users"/>
+      <h4 class="card-title ml-2">
+        <icon class="mb-1 mr-1" name="users"/>
         {{result.name}}
-      </b-list-group-item>
-    </b-list-group>
+      </h4>
 
     <div v-if="result.locations.length" class="card mt-2 mb-2">
       <div class="card-body">
-        <b-list-group-item variant="dark">
+        <b-list-group-item class="mb-2 bg-light">
           {{ $t('contact_info') }}
         </b-list-group-item>
-        <b-list-group-item v-if="result.locations && result.locations.length" v-for="(location, idx) in result.locations" :key="Object.keys(location)[idx]">
+        <b-list-group-item v-for="(location, index) in result.locations" :key="Object.keys(location)[index]">
           <icon  class="mb-1" v-if="getIcon(location[0])" :name="getIcon(location[0])"/>
           <span class="col">{{ location[1] }}</span>
         </b-list-group-item>
@@ -21,10 +19,10 @@
 
     <div class="card mt-2">
       <div class="card-body">
-        <b-list-group-item variant="dark">
+        <b-list-group-item class="bg-light">
           {{ $t('department') }}
         </b-list-group-item>
-        <b-list-group-item>
+        <b-list-group-item class="mt-2">
           <v-tree-view/>
         </b-list-group-item>
       </div>
@@ -32,17 +30,17 @@
 
     <div v-if="result.managers.length" class="card mt-2">
       <div class="card-body">
-          <b-list-group-item variant="dark">
+          <b-list-group-item class="bg-light">
             {{ $t('managers') }}
           </b-list-group-item>
-           <b-list-group class="mt-2" v-for="val in result.managers" :key="val[2]">
+           <b-list-group class="mt-2" v-for="manager in result.managers" :key="manager[2]">
           <b-list-group-item>
-            <router-link :to="{ name: 'person', params: { uuid: val[2] } }">
-              {{val[1]}}
+            <router-link :to="{ name: 'person', params: { uuid: manager[2] } }">
+              {{manager[1]}}
             </router-link>
           </b-list-group-item>
           <b-list-group-item>
-            {{val[0]}}
+            {{manager[0]}}
           </b-list-group-item>
           </b-list-group>
       </div>
@@ -50,17 +48,17 @@
 
     <div v-if="result.employees.length" class="card mt-2">
       <div class="card-body">
-          <b-list-group-item variant="dark">
+          <b-list-group-item class="bg-light">
             {{ $t('employees') }}
           </b-list-group-item>
-          <b-list-group class="mt-2" v-for="val in result.employees" :key="val[1]">
+          <b-list-group class="mt-2" v-for="employee in result.employees" :key="employee[1]">
           <b-list-group-item>
-            <router-link :to="{ name: 'person', params: { uuid: val[1] } }">
-              {{val[0]}}
+            <router-link :to="{ name: 'person', params: { uuid: employee[1] } }">
+              {{employee[0]}}
             </router-link>
           </b-list-group-item>
           <b-list-group-item>
-            {{val[2]}}, {{val[3]}}
+            {{employee[2]}}, {{employee[3]}}
           </b-list-group-item>
           </b-list-group>
       </div>
@@ -68,17 +66,17 @@
 
     <div v-if="result.associated.length" class="card mt-2">
       <div class="card-body">
-          <b-list-group-item variant="dark">
+          <b-list-group-item class="bg-light">
             {{ $t('associated') }}
           </b-list-group-item>
-           <b-list-group class="mt-2" v-for="val in result.associated" :key="val[1]">
+           <b-list-group class="mt-2" v-for="associated in result.associated" :key="associated[1]">
           <b-list-group-item>
-            <router-link :to="{ name: 'person', params: { uuid: val[1] } }">
-              {{val[0]}}
+            <router-link :to="{ name: 'person', params: { uuid: associated[1] } }">
+              {{associated[0]}}
             </router-link>
           </b-list-group-item>
           <b-list-group-item>
-            {{val[2]}}, {{val[3]}}
+            {{associated[2]}}, {{associated[3]}}
           </b-list-group-item>
           </b-list-group>
       </div>
@@ -86,13 +84,13 @@
 
     <div class="card mt-2 mb-2">
       <div class="card-body">
-          <b-list-group-item variant="dark">
+          <b-list-group-item class="bg-light">
             Opgaver
           </b-list-group-item>
-          <b-list-group-item>
+          <b-list-group-item class="mt-2">
             Ferieydelse optjent under barsel (34.30.10)
           </b-list-group-item>
-          <b-list-group-item>
+          <b-list-group-item class="mt-2">
             Ferieydelse optjent under barsel (34.30.10)
           </b-list-group-item>
       </div>
@@ -102,9 +100,12 @@
 
 <script>
 import VTreeView from '@/components/VTreeView'
+import GetIcon from '@/mixins/GetIcon'
 
 export default {
   name: 'VDetailOrganisation',
+
+  mixins: [GetIcon],
 
   components: {
     VTreeView
@@ -113,19 +114,6 @@ export default {
   props: {
     uuid: String,
     result: Object
-  },
-
-  methods: {
-    getIcon (locationType) {
-      if (locationType === 'PHONE') {
-        return 'phone'
-      } else if (locationType === 'DAR') {
-        return 'map-marker-alt'
-      } else if (locationType === 'EMAIL') {
-        return 'envelope'
-      }
-      return null
-    }
   }
 }
 </script>
