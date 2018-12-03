@@ -3,11 +3,10 @@
     <v-autocomplete
       class="col"
       type="search"
-      placeholder="Søg"
+      :placeholder="$t('search')"
       :items="searchItems"
       v-model="item"
       ref="searchWord"
-      :get-label="getLabel"
       :component-item='template'
       @item-clicked="selected(item)"
       @update-items="updateItems"
@@ -54,10 +53,6 @@ export default {
   },
 
   methods: {
-    getLabel (item) {
-      return item ? item.name : null
-    },
-
     /**
      * Update employee or organisation suggestions based on search query.
      */
