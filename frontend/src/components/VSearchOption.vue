@@ -3,24 +3,24 @@
     <b-form-select v-model="selected" class="col">
       <option :value="null" disabled>Vælg søgekriterier</option>
       <option>
-          Afdelinger
+        {{ $t('searchOptions.departments') }}
       </option>
       <option>
-          Email adresser
+        {{ $t('searchOptions.emails') }}
       </option>
       <option>
-          Opgaver
+        {{ $t('searchOptions.tasks') }}
       </option>
       <option>
-          Personer
+        {{ $t('searchOptions.employees') }}
       </option>
       <option>
-          Stillingsbetegnelser
+        {{ $t('searchOptions.job_titles') }}
       </option>
       <option>
-          Telefonnummer
+        {{ $t('searchOptions.phone_numbers') }}
       </option>
-    </b-form-select>
+    </b-form-select>{{selected}}
   </div>
 </template>
 

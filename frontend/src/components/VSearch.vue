@@ -1,28 +1,35 @@
 <template>
-  <b-nav-form>
-    <v-autocomplete
-      class="col"
-      type="search"
-      :placeholder="$t('search')"
-      :items="searchItems"
-      v-model="item"
-      ref="searchWord"
-      :component-item='template'
-      @item-clicked="selected(item)"
-      @update-items="updateItems"
-      :auto-select-one-item="false"
-      :min-len="2"
-    />
+  <b-form>
+    <div class="form-row">
+      <v-autocomplete
+        class="col"
+        type="search"
+        :placeholder="$t('search')"
+        :items="searchItems"
+        v-model="item"
+        ref="searchWord"
+        :component-item='template'
+        @item-clicked="selected(item)"
+        @update-items="updateItems"
+        :auto-select-one-item="false"
+        :min-len="2"
+      />
 
-    <b-button class="col-2 bg-primary" type="submit" v-on:click.prevent="viewSearchResults">
-      <icon name="search"/>
-    </b-button>
-  </b-nav-form>
+      <b-button class="float-right col-2 bg-primary" type="submit" v-on:click.prevent="viewSearchResults">
+        <icon name="search"/>
+      </b-button>
+    </div>
+
+    <div class="mt-2 form-row">
+      <v-search-option class="col-10"/>
+    </div>
+  </b-form>
 </template>
 
 <script>
-import Search from '@/api/Search'
+import { SearchMultipleFields } from '@/api/SearchMultipleFields'
 import VSearchBarTemplate from './VSearchBarTemplate'
+import VSearchOption from './VSearchOption'
 import VAutocomplete from 'v-autocomplete'
 import '../../node_modules/v-autocomplete/dist/v-autocomplete.css'
 
@@ -30,7 +37,8 @@ export default {
   name: 'Search',
 
   components: {
-    VAutocomplete
+    VAutocomplete,
+    VSearchOption
   },
 
   data () {
@@ -60,19 +68,7 @@ export default {
       let vm = this
       vm.searchItems = []
 
-      const employees = Search.employees('name', inputVal)
-        .then(response => {
-          let employeeResults = response.response.docs.length > 0 ? response.response.docs : []
-          return employeeResults
-        })
-
-      const departments = Search.departments('name', inputVal)
-        .then(response => {
-          let departmentResults = response.response.docs.length > 0 ? response.response.docs : []
-          return departmentResults
-        })
-
-      Promise.all([employees, departments])
+      SearchMultipleFields(inputVal, ['name', 'locations', 'departments'])
         .then(res => {
           let results = []
           res.forEach(result => {

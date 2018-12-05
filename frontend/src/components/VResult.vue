@@ -3,7 +3,6 @@
     <div class="card">
       <div class="card-body">
         <v-search/>
-        <v-search-option class="mt-3"/>
       </div>
     </div>
 
@@ -15,7 +14,7 @@
         <router-link class="link-color" :to="{ name: 'person', params: { uuid: item.uuid } }">
           <b-list-group>
             <b-list-group-item class="bg-light">
-                {{ item.name }}
+              {{ item.name }}
             </b-list-group-item>
           <div v-if="item.locations && item.locations.length">
             <b-list-group-item v-for="(location, index) in item.locations" :key="item.locations[index][0]">
@@ -50,7 +49,6 @@
 
 <script>
 import VSearch from '@/components/VSearch'
-import VSearchOption from '@/components/VSearchOption'
 import VTreeView from '@/components/VTreeView'
 import GetIcon from '@/mixins/GetIcon'
 
@@ -61,7 +59,6 @@ export default {
 
   components: {
     VSearch,
-    VSearchOption,
     VTreeView
   },
 
