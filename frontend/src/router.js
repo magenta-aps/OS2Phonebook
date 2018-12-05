@@ -5,6 +5,7 @@ import Result from '@/components/VResult'
 import Person from '@/components/VDetailPerson'
 import Organisation from '@/components/VDetailOrganisation'
 import Search from '@/api/Search'
+import { SearchMultipleFields } from '@/api/SearchMultipleFields'
 
 Vue.use(Router)
 
@@ -23,19 +24,7 @@ export default new Router({
       component: Result,
       props: true,
       beforeEnter (to, from, next) {
-        const employees = Search.employees('name', to.query.q)
-          .then(response => {
-            let employeeResults = response.response.docs.length > 0 ? response.response.docs : []
-            return employeeResults
-          })
-
-        const departments = Search.departments('name', to.query.q)
-          .then(response => {
-            let departmentResults = response.response.docs.length > 0 ? response.response.docs : []
-            return departmentResults
-          })
-
-        Promise.all([employees, departments])
+        SearchMultipleFields(to.query.q, ['name', 'locations', 'departments'])
           .then(res => {
             let results = []
             res.forEach(result => {
