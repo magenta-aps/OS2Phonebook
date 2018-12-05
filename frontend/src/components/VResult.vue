@@ -51,7 +51,6 @@
 <script>
 import VSearch from '@/components/VSearch'
 import VSearchOption from '@/components/VSearchOption'
-import VTreeView from '@/components/VTreeView'
 import GetIcon from '@/mixins/GetIcon'
 
 export default {
@@ -61,8 +60,7 @@ export default {
 
   components: {
     VSearch,
-    VSearchOption,
-    VTreeView
+    VSearchOption
   },
 
   props: {
