@@ -11,5 +11,15 @@
   "associated_departments": "Tilknyttede enheder",
   "associated": "Tilknyttede",
   "employees": "Ansatte",
-  "search": "Søg"
+  "search": "Søg",
+  "job_title": "Stillingsbetegnelse",
+
+ "searchOptions": {
+    "departments": "Afdelinger",
+    "emails": "Email adresser",
+    "tasks": "Opgaver",
+    "employees": "Personer",
+    "job_titles": "Stillingsbetegnelser",
+    "phone_numbers": "Telefonnummer"
+  }
 }
