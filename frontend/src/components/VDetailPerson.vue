@@ -17,6 +17,22 @@
       </div>
     </div>
 
+    <div v-if="result.departments.length" class="card mt-2 mb-2">
+      <div class="card-body">
+        <b-list-group-item class="bg-light">
+          {{ $t('job_title') }}
+        </b-list-group-item>
+        <b-list-group class="mt-2" v-for="department in result.departments" :key="department[1]">
+          <b-list-group-item>
+              {{department[2]}}
+          </b-list-group-item>
+          <b-list-group-item>
+            {{department[3]}}
+          </b-list-group-item>
+        </b-list-group>
+      </div>
+    </div>
+
     <div class="card mt-2 mb-2">
       <div class="card-body">
         <b-list-group-item class="bg-light">
