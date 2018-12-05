@@ -5,7 +5,7 @@ import axios from 'axios'
  */
 
 const Service = axios.create({
-  baseURL: '10.0.3.187/solr',
+  baseURL: '/service',
   headers: {}
 })
 
