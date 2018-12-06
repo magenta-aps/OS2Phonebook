@@ -87,14 +87,6 @@ export default {
 </script>
 
 <style scoped>
-.card-body {
-  background-color: #ffffff;
-}
-
-.list-group-item {
-  padding: 0.25rem 0.5rem;
-}
-
 .header-item {
   font-size: 1.2em;
 }

@@ -83,14 +83,6 @@ export default {
 </script>
 
 <style scoped>
-.card-body {
-  background-color: #ffffff;
-}
-
-.list-group-item {
-    padding: 0.25rem 0.5rem;
-}
-
 .link-color {
   color: #212529;
   text-decoration: none;

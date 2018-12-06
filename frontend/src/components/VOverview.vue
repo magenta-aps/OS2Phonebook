@@ -31,9 +31,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.card-body {
-  background-color: #ffffff;
-}
-</style>
