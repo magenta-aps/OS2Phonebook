@@ -20,7 +20,7 @@
       <option>
         {{ $t('searchOptions.phone_numbers') }}
       </option>
-    </b-form-select>{{selected}}
+    </b-form-select>
   </div>
 </template>
 

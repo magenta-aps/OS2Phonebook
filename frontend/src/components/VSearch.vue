@@ -21,7 +21,8 @@
     </div>
 
     <div class="mt-2 form-row">
-      <v-search-option class="col-10"/>
+      <v-search-option class="col-10" v-model="selected"/>
+      {{selected}}
     </div>
   </b-form>
 </template>
