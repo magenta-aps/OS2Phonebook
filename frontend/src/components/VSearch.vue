@@ -1,23 +1,29 @@
 <template>
-  <b-nav-form>
-    <v-autocomplete
-      class="col"
-      type="search"
-      :placeholder="$t('search')"
-      :items="searchItems"
-      v-model="item"
-      ref="searchWord"
-      :component-item='template'
-      @item-clicked="selected(item)"
-      @update-items="updateItems"
-      :auto-select-one-item="false"
-      :min-len="2"
-    />
+  <b-form>
+    <div class="form-row">
+      <v-autocomplete
+        class="col"
+        type="search"
+        :placeholder="$t('search')"
+        :items="searchItems"
+        v-model="item"
+        ref="searchWord"
+        :component-item='template'
+        @item-clicked="selected(item)"
+        @update-items="updateItems"
+        :auto-select-one-item="false"
+        :min-len="2"
+      />
 
-    <b-button class="col-2 bg-primary" type="submit" v-on:click.prevent="viewSearchResults">
-      <icon name="search"/>
-    </b-button>
-  </b-nav-form>
+      <b-button class="float-right col-2 bg-primary" type="submit" v-on:click.prevent="viewSearchResults">
+        <icon name="search"/>
+      </b-button>
+    </div>
+
+    <div class="mt-2 form-row">
+      <v-search-option v-model="selectedOption" class="col-10"/>
+    </div>
+  </b-form>
 </template>
 
 <script>
@@ -35,6 +41,7 @@ export default {
 
   data () {
     return {
+      selectedOption: null,
       item: null,
       searchItems: [],
       template: VSearchBarTemplate,

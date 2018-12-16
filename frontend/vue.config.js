@@ -10,8 +10,8 @@ module.exports = {
 
   devServer: {
     proxy: {
-      '/service': {
-        target: process.env.BASE_URL || '10.0.3.187/solr',
+      '/solr': {
+        target: 'http://10.0.3.187/',
         changeOrigin: true
       }
     }
