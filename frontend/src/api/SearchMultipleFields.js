@@ -15,8 +15,8 @@ function SearchMultipleFields (searchTerm = '*', searchFields = ['*']) {
       })
     const departmentSearch = Search.departments(field, searchTerm)
       .then(response => {
-        let employeeResults = response.response.docs.length > 0 ? response.response.docs : []
-        return employeeResults
+        let departmentResults = response.response.docs.length > 0 ? response.response.docs : []
+        return departmentResults
       })
     searchResults = searchResults.concat([employeeSearch, departmentSearch])
   })

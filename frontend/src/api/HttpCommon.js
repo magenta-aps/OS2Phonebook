@@ -5,8 +5,13 @@ import axios from 'axios'
  */
 
 const Service = axios.create({
-  baseURL: '/service',
-  headers: {}
+  baseURL: '/solr',
+  headers: {
+    'X-Requested-With': 'XMLHttpRequest',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, PUT'
+  }
 })
 
 export default {

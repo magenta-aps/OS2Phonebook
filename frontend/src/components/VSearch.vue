@@ -21,8 +21,7 @@
     </div>
 
     <div class="mt-2 form-row">
-      <v-search-option class="col-10" v-model="selected"/>
-      {{selected}}
+      <v-search-option v-model="selectedOption" class="col-10"/>
     </div>
   </b-form>
 </template>
@@ -44,6 +43,7 @@ export default {
 
   data () {
     return {
+      selectedOption: null,
       item: null,
       searchItems: [],
       template: VSearchBarTemplate,
