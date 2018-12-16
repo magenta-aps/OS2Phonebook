@@ -5,10 +5,7 @@
         <icon class="icon" :name="open ? 'caret-down' : 'caret-right'"/>
       </span>
 
-      <router-link
-        class="link-color"
-        :to="{ name: 'result'}"
-      >
+      <router-link class="link-color" :to="{ name: 'organisation' }">
         <icon class="icon-color" name="users"/>
         Ballerup Kommune
       </router-link>
