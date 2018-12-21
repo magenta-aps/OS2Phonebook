@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import VTreeView from '@/components/VTreeView'
+import VTreeView from '@/components/VTreeView/VTreeView'
 import GetIcon from '@/mixins/GetIcon'
 
 export default {

@@ -20,7 +20,7 @@
 
 <script>
 import VSearch from '@/components/VSearch'
-import VTreeView from '@/components/VTreeView'
+import VTreeView from '@/components/VTreeView/VTreeView'
 
 export default {
   name: 'Overview',

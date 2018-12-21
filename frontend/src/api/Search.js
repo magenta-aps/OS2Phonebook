@@ -35,5 +35,17 @@ export default {
       .catch(error => {
         console.log(error.response)
       })
+  },
+
+  treeView (key, value) {
+    key = key || '*'
+    value = value || '*'
+    return Service.get(`/departments/select?q=parent:ROOT`)
+      .then(response => {
+        return response.data
+      })
+      .catch(error => {
+        console.log(error.response)
+      })
   }
 }
