@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { SearchMultipleFields } from '@/api/SearchMultipleFields'
-import { GetFilterSelectedOption } from '@/mixins/GetFilterSelectedOption'
+import GetFilterSelectedOption from '@/mixins/GetFilterSelectedOption'
 
 const state = {
   searchItems: [],
