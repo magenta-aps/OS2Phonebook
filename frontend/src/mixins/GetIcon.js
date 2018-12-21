@@ -1,5 +1,4 @@
 export default {
-
   methods: {
     getIcon (locationType) {
       if (locationType === 'PHONE') {

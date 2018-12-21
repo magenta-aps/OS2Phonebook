@@ -6,6 +6,8 @@ import Person from '@/components/VDetailPerson'
 import Organisation from '@/components/VDetailOrganisation'
 import Search from '@/api/Search'
 import { SearchMultipleFields } from '@/api/SearchMultipleFields'
+import GetSearchFields from '@/mixins/GetSearchFields'
+import GetFilterSelectedOption from '@/mixins/GetFilterSelectedOption'
 
 Vue.use(Router)
 
@@ -24,12 +26,17 @@ export default new Router({
       component: Result,
       props: true,
       beforeEnter (to, from, next) {
-        SearchMultipleFields(to.query.q, ['name', 'locations', 'departments'])
+        SearchMultipleFields(to.query.q, GetSearchFields.methods.getSearchFields(to.query.criteria))
           .then(res => {
             let results = []
             res.forEach(result => {
               results = results.concat(result)
             })
+
+            // If we are searching within a specific field, we need only to return results where
+            // inputVal was within that specific field.
+            results = GetFilterSelectedOption.methods.getFilterSelectedOption(to.query.criteria, results, to.inputVal)
+
             to.params.results = results
           })
           .catch(() => {
