@@ -1,14 +1,12 @@
 <template>
   <div id="app">
-    <router-link
-      :to="{ name: 'home'}"
-    >
-      <b-navbar class="bg-primary">
+    <router-link :to="{ name: 'home'}">
+      <b-navbar class="bg-primary" type="dark">
         <b-navbar-brand class="mx-auto">{{ $t('phonebook') }}</b-navbar-brand>
       </b-navbar>
     </router-link>
 
-    <main class="container container-fluid container-top-margin">
+    <main class="container container-fluid mt-4">
       <router-view/>
     </main>
   </div>
@@ -18,9 +16,5 @@
   #app {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-
-  .container-top-margin {
-    margin-top: 1em;
   }
 </style>

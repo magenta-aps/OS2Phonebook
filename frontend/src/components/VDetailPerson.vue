@@ -1,89 +1,108 @@
 <template>
   <div>
-        <b-list-group>
-          <b-list-group-item class="header-item active">
-            <icon class="icon-color" name="user"/>
-            Hans Pedersen
+      <h4 class="card-title ml-2">
+        <icon class="mb-1 mr-1" name="user"/>
+        {{result.name}}
+      </h4>
+
+    <div v-if="result.locations.length" class="card mt-2 mb-2">
+      <div class="card-body">
+        <b-list-group-item class="mb-2 bg-light">
+          {{ $t('contact_info') }}
+        </b-list-group-item>
+        <b-list-group-item v-for="(location, index) in result.locations" :key="Object.keys(location)[index]">
+          <icon  class="mb-1" v-if="getIcon(location[0])" :name="getIcon(location[0])"/>
+          <span class="col">{{ location[1] }}</span>
+        </b-list-group-item>
+      </div>
+    </div>
+
+    <div v-if="result.departments.length" class="card mt-2 mb-2">
+      <div class="card-body">
+        <b-list-group-item class="bg-light">
+          {{ $t('job_title') }}
+        </b-list-group-item>
+        <b-list-group class="mt-2" v-for="department in result.departments" :key="department[1]">
+          <b-list-group-item>
+              {{department[2]}}
+          </b-list-group-item>
+          <b-list-group-item>
+            {{department[3]}}
           </b-list-group-item>
         </b-list-group>
-
-    <div class="card mt-2">
-      <div class="card-body">
-          <b-list-group-item variant="dark">
-            Adresse
-          </b-list-group-item>
-          <b-list-group-item>
-            <icon name="map-marker-alt"/>
-            <span class="col">Hold-an vej 7</span>
-          </b-list-group-item>
-          <b-list-group-item>
-            <icon name="phone"/>
-            <span class="col">34233350</span>
-          </b-list-group-item>
-          <b-list-group-item>
-            <icon name="envelope"/>
-            <span class="col">mila@gmail.dk</span>
-          </b-list-group-item>
       </div>
     </div>
 
-    <div class="card mt-2">
+    <div v-if="result.departments.length" class="card mt-2 mb-2">
       <div class="card-body">
-          <b-list-group-item variant="dark">
-            Afdeling
-          </b-list-group-item>
+        <b-list-group-item class="bg-light">
+          {{ $t('department') }}
+        </b-list-group-item>
+        <b-list-group class="mt-2" v-for="department in result.departments" :key="department[1]">
+          <router-link class="link-color" :to="{ name: 'organisation', params: { uuid: department[1] } }">
           <b-list-group-item>
-            <v-tree-view/>
+              {{department[0]}}
           </b-list-group-item>
+          </router-link>
+        </b-list-group>
       </div>
     </div>
 
-    <div class="card mt-2">
+    <div v-if="result.managing.length" class="card mt-2 mb-2">
       <div class="card-body">
-          <b-list-group-item variant="dark">
-            Ledertilknytninger
+        <b-list-group-item class="bg-light">
+          {{ $t('managing') }}
+        </b-list-group-item>
+        <b-list-group class="mt-2" v-for="manager in result.managing" :key="manager[1]">
+          <b-list-group-item>
+            <router-link :to="{ name: 'organisation', params: { uuid: manager[1] } }">
+              {{manager[0]}}
+            </router-link>
           </b-list-group-item>
           <b-list-group-item>
-            Leder Digitalisering
+            {{manager[2]}}
           </b-list-group-item>
+        </b-list-group>
       </div>
     </div>
 
-    <div class="card mt-2 mb-2">
+    <div v-if="result.associated.length" class="card mt-2 mb-2">
       <div class="card-body">
-          <b-list-group-item variant="dark">
-            Tilknyttet enheder
+        <b-list-group-item class="bg-light">
+          {{ $t('associated_departments') }}
+        </b-list-group-item>
+        <b-list-group class="mt-2" v-for="associated in result.associated" :key="associated[1]">
+          <b-list-group-item>
+            <router-link :to="{ name: 'organisation', params: { uuid: associated[1] } }">
+              {{associated[0]}}
+            </router-link>
           </b-list-group-item>
           <b-list-group-item>
-            IT afdelingen
+            {{associated[2]}}, {{associated[3]}}
           </b-list-group-item>
+        </b-list-group>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import VTreeView from '@/components/VTreeView'
+import GetIcon from '@/mixins/GetIcon'
 
 export default {
   name: 'VDetailPerson',
 
-  components: {
-    VTreeView
+  mixins: [GetIcon],
+
+  props: {
+    uuid: String,
+    result: Object
   }
 }
 </script>
 
 <style scoped>
-.card-body {
-  background-color: #ffffff;
-}
-
-.list-group-item {
-    padding: 0.25rem 0.5rem;
-}
-
 .header-item {
-    font-size: 1.2em;
+  font-size: 1.2em;
 }
 </style>
