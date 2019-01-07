@@ -3,7 +3,6 @@
     <div class="card">
       <div class="card-body">
         <v-search/>
-        <v-search-option class="mt-3"/>
       </div>
     </div>
 

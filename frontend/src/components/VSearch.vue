@@ -21,14 +21,17 @@
     </div>
 
     <div class="mt-2 form-row">
-      <v-search-option v-model="selectedOption" class="col-10"/>
+      <v-search-option class="col-10" @change-option="updateSelection"/>
     </div>
   </b-form>
 </template>
 
 <script>
-import Search from '@/api/Search'
+import { SearchMultipleFields } from '@/api/SearchMultipleFields'
+import GetSearchFields from '@/mixins/GetSearchFields'
+import GetFilterSelectedOption from '@/mixins/GetFilterSelectedOption'
 import VSearchBarTemplate from './VSearchBarTemplate'
+import VSearchOption from './VSearchOption'
 import VAutocomplete from 'v-autocomplete'
 import '../../node_modules/v-autocomplete/dist/v-autocomplete.css'
 
@@ -36,7 +39,8 @@ export default {
   name: 'Search',
 
   components: {
-    VAutocomplete
+    VAutocomplete,
+    VSearchOption
   },
 
   data () {
@@ -46,7 +50,7 @@ export default {
       searchItems: [],
       template: VSearchBarTemplate,
       /**
-       * The noItem component value.
+       * The noItem value.
        * Used to give a default name.
        */
       noItem: [
@@ -59,6 +63,8 @@ export default {
     }
   },
 
+  mixins: [GetSearchFields, GetFilterSelectedOption],
+
   methods: {
     /**
      * Update employee or organisation suggestions based on search query.
@@ -67,28 +73,27 @@ export default {
       let vm = this
       vm.searchItems = []
 
-      const employees = Search.employees('name', inputVal)
-        .then(response => {
-          let employeeResults = response.response.docs.length > 0 ? response.response.docs : []
-          return employeeResults
-        })
-
-      const departments = Search.departments('name', inputVal)
-        .then(response => {
-          let departmentResults = response.response.docs.length > 0 ? response.response.docs : []
-          return departmentResults
-        })
-
-      Promise.all([employees, departments])
+      SearchMultipleFields(inputVal, ['name', 'locations', 'departments'])
         .then(res => {
           let results = []
           res.forEach(result => {
             results = results.concat(result)
           })
+
+          /**
+         * If we are searching within a specific field, we need only to return results
+         * where inputVal was within that specific field.
+         */
+          results = this.getFilterSelectedOption(this.selectedOption, results, inputVal)
+
           if (!results.length) {
             results = results.concat(vm.noItem)
           }
-          // We need to use Vue.set() to update the searchItems object, because otherwise searchItems would no longer be reactive.
+
+          /**
+         * We need to use Vue.set() to update the searchItems object,
+         * because otherwise searchItems would no longer be reactive.
+         */
           vm.$set(vm, 'searchItems', results)
         })
         .catch(() => {
@@ -112,11 +117,24 @@ export default {
      */
     viewSearchResults () {
       if (this.searchItems.length) {
-        // this.$refs.searchWord poins to the v-autocomplete component.
-        // Within this, we can get the current search string with searchText attribute.
-        this.$router.push({ name: 'result', query: { q: this.$refs.searchWord.searchText } })
+        /**
+         * this.$refs.searchWord poins to the v-autocomplete component.
+         * Within this, we can get the current search string with searchText attribute.
+         */
+        this.$router.push({ name: 'result', query: { q: this.$refs.searchWord.searchText, criteria: this.selectedOption } })
       }
+    },
+
+    /**
+     * Update which search criteria is selected, based on event value from child component.
+     */
+    updateSelection (val) {
+      this.selectedOption = val
     }
+  },
+
+  mounted () {
+    this.$refs.searchWord.searchText = this.$route.query.q || ''
   }
 }
 </script>

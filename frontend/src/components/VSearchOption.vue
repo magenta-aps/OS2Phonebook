@@ -1,24 +1,24 @@
 <template>
   <div>
     <b-form-select v-model="selected" class="col">
-      <option :value="null" disabled>Vælg søgekriterier</option>
-      <option>
-          Afdelinger
+      <option :value="null">Vælg søgekriterier</option>
+      <option value="departments">
+        {{ $t('searchOptions.departments') }}
+      </option>
+      <option value="emails">
+        {{ $t('searchOptions.emails') }}
       </option>
       <option>
-          Email adresser
+        {{ $t('searchOptions.tasks') }}
       </option>
-      <option>
-          Opgaver
+      <option value="name">
+        {{ $t('searchOptions.employees') }}
       </option>
-      <option>
-          Personer
+      <option value="job_titles">
+        {{ $t('searchOptions.job_titles') }}
       </option>
-      <option>
-          Stillingsbetegnelser
-      </option>
-      <option>
-          Telefonnummer
+      <option value="phone_numbers">
+        {{ $t('searchOptions.phone_numbers') }}
       </option>
     </b-form-select>
   </div>
@@ -31,6 +31,12 @@ export default {
   data () {
     return {
       selected: null
+    }
+  },
+
+  watch: {
+    selected (val) {
+      this.$emit('change-option', val)
     }
   }
 }
