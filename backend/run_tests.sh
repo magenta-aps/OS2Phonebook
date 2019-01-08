@@ -7,6 +7,7 @@ echo $DIR
 
 python3 -m venv $DIR/test-venv
 source $DIR/test-venv/bin/activate
+pip install --upgrade pip
 pip install -r $DIR/import/requirements-test.txt
 
 cd $DIR
