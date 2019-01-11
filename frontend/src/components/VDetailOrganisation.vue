@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <!-- <div class="card mt-2">
+    <div class="card mt-2">
       <div class="card-body">
         <b-list-group-item class="bg-light">
           {{ $t('department') }}
@@ -26,7 +26,7 @@
           <v-tree-view/>
         </b-list-group-item>
       </div>
-    </div> -->
+    </div>
 
     <div v-if="result.managers.length" class="card mt-2">
       <div class="card-body">
@@ -99,7 +99,7 @@
 </template>
 
 <script>
-// import VTreeView from '@/components/VTreeView'
+import VTreeView from '@/components/VTreeView'
 import GetIcon from '@/mixins/GetIcon'
 
 export default {
@@ -107,9 +107,9 @@ export default {
 
   mixins: [GetIcon],
 
-  // components: {
-  //   VTreeView
-  // },
+  components: {
+    VTreeView
+  },
 
   props: {
     uuid: String,

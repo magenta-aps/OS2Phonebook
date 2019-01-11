@@ -1,6 +1,7 @@
 <template>
   <div class="orgunit-tree">
-    <liquor-tree v-if="treeData"
+    <liquor-tree
+      v-if="treeData"
       :ref="nameId"
       :data="treeData"
     >
@@ -29,7 +30,7 @@ export default {
 
   computed: {
     nameId () {
-      return 'moTreeView' + this._uid
+      return 'VTreeView' + this._uid
     },
 
     tree () {
@@ -52,13 +53,36 @@ export default {
     getTreeData () {
       TreeData.treeView('uuid')
         .then(res => {
-          this.treeData = res.response.docs.map(function (d) {
-            let doc = JSON.parse(d.document)
+          let parsedResults = res.response.docs.map(d => JSON.parse(d.document))
+          parsedResults.forEach(d => {
+            const parentUuid = d.parent
+            let parentDoc = parsedResults.find(parent => {
+              return parent.uuid === parentUuid
+            })
+            if (parentDoc) {
+              if (parentDoc.hasOwnProperty('children')) {
+                parentDoc.children.push(d)
+              } else {
+                parentDoc.children = [d]
+              }
+            }
+          })
+          // remove all non-root items from the 0th level of the tree, as they have been added as children.
+          parsedResults = parsedResults.filter(doc => doc.parent === 'ROOT')
+          this.treeData = parsedResults
+          this.treeData = parsedResults.map(d => {
             return {
-              'id': doc.uuid,
-              'text': doc.name,
-              'data': doc,
-              'children': [doc.parent]
+              'id': d.uuid,
+              'text': d.name,
+              'data': d,
+              'children': (d.children || []).map(function recursive (child) {
+                return {
+                  'id': child.uuid,
+                  'text': child.text,
+                  'data': child,
+                  'children': child.children
+                }
+              })
             }
           })
         })
@@ -68,8 +92,8 @@ export default {
      * Go to the selected route.
      */
     goToRoute () {
-      console.log(this.treeData)
-      this.$router.push({ name: 'organisation', params: { uuid: this.node } })
+      console.log(this.treeData[0].id)
+      this.$router.push({ name: 'organisation', params: { uuid: this.treeData[0].id } })
     }
   }
 
