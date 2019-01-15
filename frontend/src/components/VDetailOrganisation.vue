@@ -2,7 +2,7 @@
   <div>
       <h4 class="card-title ml-2">
         <icon class="mb-1 mr-1" name="users"/>
-        {{result.name}}
+        {{ result.name }}
       </h4>
 
     <div v-if="result.locations.length" class="card mt-2 mb-2">
