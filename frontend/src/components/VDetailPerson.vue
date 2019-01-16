@@ -39,11 +39,11 @@
           {{ $t('department') }}
         </b-list-group-item>
         <b-list-group class="mt-2" v-for="department in result.departments" :key="department[1]">
-          <router-link class="link-color" :to="{ name: 'organisation', params: { uuid: department[1] } }">
           <b-list-group-item>
+            <router-link class="link-color" :to="{ name: 'organisation', params: { uuid: department[1] } }">
               {{department[0]}}
+            </router-link>
           </b-list-group-item>
-          </router-link>
         </b-list-group>
       </div>
     </div>

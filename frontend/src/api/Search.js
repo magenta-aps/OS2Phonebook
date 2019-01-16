@@ -35,5 +35,17 @@ export default {
       .catch(error => {
         console.log(error.response)
       })
+  },
+
+  treeView (key, value) {
+    key = key || '*'
+    value = value || '*'
+    return Service.get(`/departments/select?q=${key}:${value}&rows=100000`)
+      .then(response => {
+        return response.data
+      })
+      .catch(error => {
+        console.log(error.response)
+      })
   }
 }
