@@ -16,8 +16,6 @@ import requests
 
 from cached_property import cached_property
 
-global_session = requests.Session()
-
 
 DEFAULT_MO_URL = os.environ.get(
         'MO_URL', 'http://morademo.atlas.magenta.dk/service'
@@ -25,6 +23,13 @@ DEFAULT_MO_URL = os.environ.get(
 ORG_ROOT = os.environ.get(
     'MO_ORG_ROOT', '293089ba-a1d7-4fff-a9d0-79bd8bab4e5b'
 )
+
+# Handle authentication for global session.
+API_TOKEN = os.environ.get('API_TOKEN', None)
+global_session = requests.Session()
+
+if API_TOKEN:
+    global_session.headers.update({'session': API_TOKEN})
 
 
 def mo_get(url, session=None):
@@ -42,11 +47,13 @@ def mo_get(url, session=None):
 class MOData:
     """Abstract base class to interface with MO objects."""
 
-    def __init__(self, uuid):
+    def __init__(self, uuid, session=global_session):
         """Initialize object from ``uuid``."""
         self.uuid = uuid
         self._stored_details = defaultdict(list)
-        self.session = global_session
+        self.session = session
+        if API_TOKEN:
+            self.session.headers.update({'session': API_TOKEN})
         self.get = functools.partial(mo_get, session=self.session)
 
     @cached_property

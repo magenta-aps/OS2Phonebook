@@ -4,13 +4,14 @@ VAR_DIR=$(dirname $0)/var
 
 MO_URL=http://morademo.atlas.magenta.dk/service
 MO_ORG_ROOT=293089ba-a1d7-4fff-a9d0-79bd8bab4e5b
+API_TOKEN=ba10dd03-c1dc-4871-a3d0-a1f88bd62081
 
 # Remove old exported files, if any
 rm -rf $VAR_DIR/ous/*
 rm -rf $VAR_DIR/employees/*
 
 # Do the deed
-MO_URL=$MO_URL MO_ORG_ROOT=$MO_ORG_ROOT $PYTHON $PROGRAM
+API_TOKEN=$API_TOKEN MO_URL=$MO_URL MO_ORG_ROOT=$MO_ORG_ROOT $PYTHON $PROGRAM
 
 # Bail out if there's an error
 status=$?
