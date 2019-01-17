@@ -98,6 +98,9 @@ then
 fi
 source venv/bin/activate
 
+# Silence warning about old pip version.
+pip install --upgrade pip
+
 pip install -r import/requirements.txt
 
 echo "Everything installed."

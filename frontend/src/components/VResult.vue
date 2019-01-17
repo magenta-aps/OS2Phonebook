@@ -3,91 +3,115 @@
     <div class="card">
       <div class="card-body">
         <v-search/>
-        <v-search-option class="mt-3"/>
       </div>
     </div>
 
-    <h4 class="mt-3 mb-2">Resultater</h4>
-    <div class="card mt-2">
-      <div class="card-body">
-        <router-link
-          :to="{ name: 'person'}"
-        >
+    <h4 v-if="items.length" class="mt-3 mb-2 ml-2">{{ $t('results') }}</h4>
+    <h4 v-if="!items.length" class="mt-3 mb-2 ml-2">{{ $t('no_results') }}</h4>
+
+      <div
+        class="card mt-2 mb-2"
+        v-for="item in items" :key="item.uuid"
+      >
+        <!-- Employees -->
+        <div class="card-body" v-if="!item.parent">
           <b-list-group>
-            <b-list-group-item class="active">
-                Hans Pedersen
-            </b-list-group-item>
-            <b-list-group-item>
-              <icon name="phone"/>
-              <span class="col">34233350</span>
-            </b-list-group-item>
+            <router-link :to="{ name: 'person', params: { uuid: item.uuid } }">
+              <b-list-group-item class="bg-light">
+                {{ item.name }}
+              </b-list-group-item>
+            </router-link>
+            <template v-if="item.departments && item.departments.length">
+              <template v-for="department in item.departments">
+                <b-list-group-item v-b-toggle="item.name" :key="department[1]">
+                  <span>{{ department[3] }}</span>
+                  <icon class="mt-1 float-right" name="info-circle"/>
+                </b-list-group-item>
+              </template>
+            </template>
+            <template v-if="item.locations && item.locations.length">
+              <b-collapse :id="item.name">
+                <template v-for="department in item.departments">
+                  <b-list-group-item :key="department[1]">
+                    <router-link class="link-color" :to="{ name: 'organisation', params: { uuid: department[1] } }">
+                        <span>{{ department[0] }}</span>
+                    </router-link>
+                  </b-list-group-item>
+                </template>
+                <b-list-group-item v-for="(location, index) in item.locations" :key="item.locations[index][0]">
+                  <icon class="mb-1" v-if="getIcon(location[0])" :name="getIcon(location[0])"/>
+                  <span class="col">{{ location[1] }}</span>
+                </b-list-group-item>
+              </b-collapse>
+            </template>
           </b-list-group>
-        </router-link>
-      </div>
-      </div>
+        </div>
 
-    <div class="card mt-2">
-      <div class="card-body">
-        <b-list-group>
-          <b-list-group-item class="active">Mia Larsen</b-list-group-item>
-          <b-list-group-item>
-            <icon name="envelope"/>
-            <span class="col">mila@gmail.dk</span>
-          </b-list-group-item>
-        </b-list-group>
+        <!-- Departments -->
+        <div class="card-body" v-if="item.parent">
+          <b-list-group>
+            <router-link class="link-color" :to="{ name: 'organisation', params: { uuid: item.uuid } }">
+              <b-list-group-item class="bg-light">
+                {{ item.name }}
+              </b-list-group-item>
+            </router-link>
+            <template v-if="item.locations && item.locations.length">
+                <b-list-group-item v-for="(location, index) in item.locations" :key="item.locations[index][0]">
+                  <icon class="mb-1" v-if="getIcon(location[0])" :name="getIcon(location[0])"/>
+                  <span class="col">{{ location[1] }}</span>
+                </b-list-group-item>
+            </template>
+          </b-list-group>
+        </div>
       </div>
-    </div>
-
-    <div class="card mt-2 mb-2">
-      <div class="card-body">
-        <router-link
-          :to="{ name: 'organisation'}"
-        >
-        <b-list-group>
-          <b-list-group-item class="active">
-            <span class="float-left">Digitalisering</span>
-            <b-btn v-b-toggle.collapse1 variant="primary" class="float-right"><icon name="angle-down"/></b-btn>
-          </b-list-group-item>
-          <b-list-group-item>
-            <icon name="phone"/>
-            <span class="col mb-3">34233350</span>
-          </b-list-group-item>
-
-          <b-collapse id="collapse1">
-            <b-list-group-item>
-              <b-list-group-item variant="dark">Afdeling</b-list-group-item>
-              <v-tree-view/>
-            </b-list-group-item>
-          </b-collapse>
-        </b-list-group>
-        </router-link>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
 import VSearch from '@/components/VSearch'
-import VSearchOption from '@/components/VSearchOption'
-import VTreeView from '@/components/VTreeView'
+import GetIcon from '@/mixins/GetIcon'
+import bCollapse from 'bootstrap-vue/es/components/collapse/collapse'
+import bToggleDirective from 'bootstrap-vue/es/directives/toggle/toggle'
 
 export default {
   name: 'Result',
 
+  mixins: [GetIcon],
+
   components: {
     VSearch,
-    VSearchOption,
-    VTreeView
+    'b-collapse': bCollapse
+  },
+
+  directives: {
+    'b-toggle': bToggleDirective
+  },
+
+  props: {
+    q: String,
+    results: Array
+  },
+
+  data () {
+    return {
+      open: false
+    }
+  },
+
+  computed: {
+    nameId () {
+      return 'mo-collapse-' + this._uid
+    },
+
+    items () {
+      var results = []
+      for (var item = 0; item < this.results.length; item++) {
+        if (this.results[item].document) {
+          results.push(JSON.parse(this.results[item].document))
+        }
+      }
+      return results
+    }
   }
 }
 </script>
-
-<style scoped>
-.card-body {
-  background-color: #ffffff;
-}
-
-.list-group-item {
-    padding: 0.25rem 0.5rem;
-}
-</style>

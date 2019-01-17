@@ -6,5 +6,14 @@ module.exports = {
       localeDir: 'i18n',
       enableInSFC: true
     }
+  },
+
+  devServer: {
+    proxy: {
+      '/solr': {
+        target: 'http://10.0.3.187/',
+        changeOrigin: true
+      }
+    }
   }
 }

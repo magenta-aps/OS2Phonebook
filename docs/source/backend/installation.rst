@@ -24,8 +24,12 @@ the following on a computer with a modern version of GNU/Linux::
     deploying SOLR for production.
 
 To import data to the system, you need to modify the variables
-``MO_URL`` and ``MO_ORG_ROOT`` in the ``import_data.sh`` script. After
-doing this, simply run the command ::
+``MO_URL`` and ``MO_ORG_ROOT`` in the ``import_data.sh`` script. You also
+need to set up authentication. To do this, obtain a MO API token for the
+user you wish to use for the phone book and set the ``API_TOKEN`` variable 
+also in the ``import_data.sh`` script.
+
+After doing this, simply run the command ::
 
     ./import_data.sh
 
