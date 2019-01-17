@@ -13,7 +13,7 @@ import json
 
 from multiprocessing.dummy import Pool
 
-import mo_api
+from os2mo_tools import mo_api
 
 
 def get_orgunit_data(ou):

@@ -12,7 +12,7 @@ import json
 
 import pytest
 
-import mo_api
+from os2mo_tools import mo_api
 import do_import
 
 CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
