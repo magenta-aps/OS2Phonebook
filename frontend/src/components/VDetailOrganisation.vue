@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="result">
       <h4 class="card-title ml-2">
         <icon class="mb-1 mr-1" name="users"/>
         {{ result.name }}
@@ -101,6 +101,7 @@
 <script>
 import VTreeView from '@/components/VTreeView'
 import GetIcon from '@/mixins/GetIcon'
+import Search from '@/api/Search'
 
 export default {
   name: 'VDetailOrganisation',
@@ -111,9 +112,37 @@ export default {
     VTreeView
   },
 
+  data () {
+    return {
+      result: null
+    }
+  },
+
   props: {
-    uuid: String,
-    result: Object
+    uuid: String
+  },
+
+  methods: {
+    setData (payload) {
+      this.result = payload
+    }
+  },
+
+  beforeRouteEnter (to, from, next) {
+    Search.departments('uuid', to.params.uuid)
+      .then(res => {
+        const parsedRes = JSON.parse(res.response.docs[0].document)
+        next(vm => vm.setData(parsedRes))
+      })
+  },
+
+  beforeRouteUpdate (to, from, next) {
+    Search.departments('uuid', to.params.uuid)
+      .then(res => {
+        const parsedRes = JSON.parse(res.response.docs[0].document)
+        this.setData(parsedRes)
+        next()
+      })
   }
 }
 </script>
