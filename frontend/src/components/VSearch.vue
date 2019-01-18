@@ -34,6 +34,7 @@ import VSearchBarTemplate from './VSearchBarTemplate'
 import VSearchOption from './VSearchOption'
 import VAutocomplete from 'v-autocomplete'
 import '../../node_modules/v-autocomplete/dist/v-autocomplete.css'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Search',
@@ -47,7 +48,6 @@ export default {
     return {
       selectedOption: null,
       item: null,
-      searchItems: [],
       template: VSearchBarTemplate,
       /**
        * The noItem value.
@@ -56,7 +56,8 @@ export default {
       noItem: [
         {
           document: JSON.stringify({
-            name: 'Ingen resultater matcher din søgning'
+            name: 'Ingen resultater matcher din søgning',
+            type: 'noresult_placeholder'
           })
         }
       ]
@@ -65,13 +66,18 @@ export default {
 
   mixins: [GetSearchFields, GetFilterSelectedOption],
 
+  computed: {
+    ...mapGetters({
+      searchItems: 'searchResults/GET_ITEMS'
+    })
+  },
+
   methods: {
     /**
      * Update employee or organisation suggestions based on search query.
      */
     updateItems (inputVal) {
       let vm = this
-      vm.searchItems = []
 
       SearchMultipleFields(inputVal, ['name', 'locations', 'departments'])
         .then(res => {
@@ -94,10 +100,10 @@ export default {
          * We need to use Vue.set() to update the searchItems object,
          * because otherwise searchItems would no longer be reactive.
          */
-          vm.$set(vm, 'searchItems', results)
+          vm.$store.commit('searchResults/SET_SEARCH', results)
         })
         .catch(() => {
-          vm.$set(vm, 'searchItems', vm.noItem)
+          vm.$store.commit('searchResults/SET_SEARCH', vm.noItem)
         })
     },
 
@@ -121,6 +127,7 @@ export default {
          * this.$refs.searchWord poins to the v-autocomplete component.
          * Within this, we can get the current search string with searchText attribute.
          */
+        this.$store.dispatch('searchResults/UPDATE_RESULTS')
         this.$router.push({ name: 'result', query: { q: this.$refs.searchWord.searchText, criteria: this.selectedOption } })
       }
     },
