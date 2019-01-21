@@ -72,6 +72,7 @@ import VSearch from '@/components/VSearch'
 import GetIcon from '@/mixins/GetIcon'
 import bCollapse from 'bootstrap-vue/es/components/collapse/collapse'
 import bToggleDirective from 'bootstrap-vue/es/directives/toggle/toggle'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Result',
@@ -99,19 +100,9 @@ export default {
   },
 
   computed: {
-    nameId () {
-      return 'mo-collapse-' + this._uid
-    },
-
-    items () {
-      var results = []
-      for (var item = 0; item < this.results.length; item++) {
-        if (this.results[item].document) {
-          results.push(JSON.parse(this.results[item].document))
-        }
-      }
-      return results
-    }
+    ...mapGetters({
+      items: 'searchResults/GET_FORMATTED_ITEMS'
+    })
   }
 }
 </script>

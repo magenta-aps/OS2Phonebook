@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import { SearchMultipleFields } from '@/api/SearchMultipleFields'
 import GetFilterSelectedOption from '@/mixins/GetFilterSelectedOption'
 
@@ -7,10 +6,13 @@ const state = {
   noItem: [
     {
       document: JSON.stringify({
-        name: 'Ingen resultater matcher din søgning'
+        name: 'Ingen resultater matcher din søgning',
+        type: 'noresult_placeholder'
       })
     }
-  ]
+  ],
+  refresh: false,
+  formattedItems: []
 }
 
 const actions = {
@@ -44,17 +46,41 @@ const actions = {
       .catch(() => {
         vm.$set(vm, 'searchItems', state.noItem)
       })
+  },
+
+  UPDATE_RESULTS ({ commit, state }) {
+    var results = []
+
+    // first filter out the 'noItem' item if it's present, because we don't want it in the full result list
+    const filteredResults = state.searchItems.filter(item => {
+      const document = JSON.parse(item.document)
+      return document.type !== 'noresult_placeholder'
+    })
+
+    for (var item = 0; item < filteredResults.length; item++) {
+      if (filteredResults[item].document) {
+        results.push(JSON.parse(filteredResults[item].document))
+      }
+    }
+    commit('SET_FORMATTED_ITEMS', results)
   }
 }
 
 const mutations = {
-  SET_SEARCH (state) {
-    Vue.set(state)
+  SET_SEARCH (state, payload) {
+    state.searchItems = payload
+  },
+  UPDATE_RESULTS (state, payload) {
+    state.refresh = payload
+  },
+  SET_FORMATTED_ITEMS (state, payload) {
+    state.formattedItems = payload
   }
 }
 
 const getters = {
-  GET_SEARCH: (state) => (id) => state[id] || []
+  GET_ITEMS: state => state.searchItems,
+  GET_FORMATTED_ITEMS: state => state.formattedItems
 }
 
 export default {
