@@ -12,7 +12,7 @@ import json
 
 import pytest
 
-import mo_api
+from os2mo_tools import mo_api
 import do_import
 
 CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -30,9 +30,9 @@ def test_mo_data():
     employee_uuid = '0014209a-8832-44b3-b7a0-4cc209a71993'
     ou_uuid = '0418617c-242f-4d9a-81cc-abb269ad27b4'
 
-    ou = mo_api.MOOrgUnit(ou_uuid)
+    ou = mo_api.OrgUnit(ou_uuid)
     ou.get = my_mo_get
-    e = mo_api.MOEmployee(employee_uuid)
+    e = mo_api.Employee(employee_uuid)
     e.get = my_mo_get
 
     # Test json function
@@ -45,7 +45,7 @@ def test_mo_data():
 def test_get_employee_data():
     """Test the get_employee_data function in the do_import module."""
     employee_uuid = '0014209a-8832-44b3-b7a0-4cc209a71993'
-    e = mo_api.MOEmployee(employee_uuid)
+    e = mo_api.Employee(employee_uuid)
     e.get = my_mo_get
     e_data = do_import.get_employee_data(e)
     # Normalize to convert tuples to lists - JSON doesn't have tuples.
@@ -62,7 +62,7 @@ def test_get_employee_data():
 def test_get_orgunit_data():
     """Test the get_orgunit_data function in the do_import module."""
     orgunit_uuid = '0418617c-242f-4d9a-81cc-abb269ad27b4'
-    ou = mo_api.MOOrgUnit(orgunit_uuid)
+    ou = mo_api.OrgUnit(orgunit_uuid)
     ou.get = my_mo_get
     ou_data = do_import.get_orgunit_data(ou)
     # Normalize to convert tuples to lists - JSON doesn't have tuples.
@@ -96,7 +96,7 @@ def test_write_phonebook_data():
 
 def test_nosuchattribute():
     orgunit_uuid = '0418617c-242f-4d9a-81cc-abb269ad27b4'
-    ou = mo_api.MOOrgUnit(orgunit_uuid)
+    ou = mo_api.OrgUnit(orgunit_uuid)
     ou.get = my_mo_get
     with pytest.raises(AttributeError):
         print(ou.nosuchattribute)
