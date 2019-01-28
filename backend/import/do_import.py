@@ -1,4 +1,4 @@
-#
+# https://magenta.dk
 # Copyright (c) 2018, Magenta ApS
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
@@ -161,7 +161,8 @@ def file_writer(directory, field_name='uuid'):
     return writer
 
 
-if __name__ == '__main__':  # pragma: no cover
+def main():  # pragma: no cover
+    # Main program.
     orgunit_writer = file_writer('ous')
     employee_writer = file_writer('employees')
 
@@ -175,4 +176,7 @@ if __name__ == '__main__':  # pragma: no cover
         )
         sys.exit(-1)
 
+
+if __name__ == '__main__':  # pragma: no cover
+    main()
     print("done")
