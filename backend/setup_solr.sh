@@ -19,12 +19,11 @@ then
         exit 1
     fi
 
-    tar xvf solr-7.5.0.tgz
-    rm solr-7.5.0.tgz
+    tar xzf solr-7.6.0.tgz solr-7.6.0/bin/install_solr_service.sh --strip-components=2
+    bash ./install_solr_service.sh solr-7.6.0.tgz
 
-    solr-7.5.0/bin/solr start
-    solr-7.5.0/bin/solr create -c departments -s 2 -rf 2
-    solr-7.5.0/bin/solr create -c employees -s 2 -rf 2
+    /opt/solr/bin/solr create -c departments -s 2 -rf 2
+    /opt/solr/bin/solr create -c employees -s 2 -rf 2
 
     # Create schema for departments
     
