@@ -4,11 +4,9 @@
 
 cd $(dirname $0)
 
-if [ ! -d "solr-7.5.0" ]
-then
 
     #Get SOLR
-    wget http://dk.mirrors.quenda.co/apache/lucene/solr/7.5.0/solr-7.5.0.tgz
+    wget http://dk.mirrors.quenda.co/apache/lucene/solr/7.6.0/solr-7.6.0.tgz
 
     # Verify SOLR download
     if shasum -s -c docs/solr.sha1 
@@ -20,10 +18,10 @@ then
     fi
 
     tar xzf solr-7.6.0.tgz solr-7.6.0/bin/install_solr_service.sh --strip-components=2
-    bash ./install_solr_service.sh solr-7.6.0.tgz
+    sudo bash ./install_solr_service.sh solr-7.6.0.tgz
 
-    /opt/solr/bin/solr create -c departments -s 2 -rf 2
-    /opt/solr/bin/solr create -c employees -s 2 -rf 2
+    sudo -u solr /opt/solr/bin/solr create -c departments -s 2 -rf 2
+    sudo -u solr /opt/solr/bin/solr create -c employees -s 2 -rf 2
 
     # Create schema for departments
     
@@ -49,7 +47,4 @@ then
     echo "SOLR installed, SOlR started."
 
 
-else
-    echo "SOLR already installed; use solr-7.5.0/bin/solr status to check."
-fi
 
