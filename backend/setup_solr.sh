@@ -19,7 +19,7 @@ cd $(dirname $0)
 
     tar xzf solr-7.5.0.tgz solr-7.5.0/bin/install_solr_service.sh --strip-components=2
     sed -i -e "/status/d" ./install_solr_service.sh
-    sudo bash ./install_solr_service.sh solr-7.5.0.tgz
+    bash ./install_solr_service.sh solr-7.5.0.tgz
 
     sudo -u solr /opt/solr/bin/solr create -c departments -s 2 -rf 2
     sudo -u solr /opt/solr/bin/solr create -c employees -s 2 -rf 2
