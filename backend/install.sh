@@ -1,4 +1,4 @@
-#/usr/bin/env bash
+#!/usr/bin/env bash
 # NOTE: This installer is for development purposes. It is designed to
 # get up and running quickly.
 #

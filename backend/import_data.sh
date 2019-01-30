@@ -1,10 +1,10 @@
+#!/usr/bin/env bash
+
 PYTHON=$(dirname $0)/venv/bin/python
 PROGRAM=$(dirname $0)/import/do_import.py
 VAR_DIR=$(dirname $0)/var
 
 source $(dirname $0)/config.sh
-
-echo $API_TOKEN
 
 # Remove old exported files, if any
 rm -rf $VAR_DIR/ous/*
