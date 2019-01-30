@@ -2,6 +2,8 @@
 # NOTE: This script will install and setup SOLR for use in the phone
 # book.
 
+set -x
+
 cd $(dirname $0)
 
 
@@ -19,6 +21,7 @@ cd $(dirname $0)
 
     tar xzf solr-7.5.0.tgz solr-7.5.0/bin/install_solr_service.sh --strip-components=2
     sed -i -e "/status/d" ./install_solr_service.sh
+    whoami
     bash ./install_solr_service.sh solr-7.5.0.tgz
 
     sudo -u solr /opt/solr/bin/solr create -c departments -s 2 -rf 2
