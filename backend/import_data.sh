@@ -24,7 +24,6 @@ fi
 
 # Now transfer to SOLR
 
-SOLR_POST=solr-7.5.0/bin/post
 
 # First, clean index for existing data.
 $SOLR_POST -c departments -d "<delete><query>*:*</query></delete>"
