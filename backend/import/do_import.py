@@ -15,6 +15,13 @@ from multiprocessing.dummy import Pool
 
 from os2mo_tools import mo_api
 
+SECRET = 'Hemmelig'
+
+
+def is_visible(a):
+    """Decide if address is visible or protected (secret)."""
+    return not ('visibility' in a and a['visibility']['user_key'] == SECRET)
+
 
 def get_orgunit_data(ou):
     """Get the data we need to display for this particular org. func."""
@@ -38,7 +45,9 @@ def get_orgunit_data(ou):
     departments = [(c['name'], c['uuid']) for c in ou.children]
     # For locations, their type and content.
     locations = [
-        (a['address_type']['scope'], a['name']) for a in ou.address
+        (
+            a['address_type']['scope'], a['name']
+        ) for a in ou.address if is_visible(a)
     ]
     # For managers, manager type and name and UUID.
     managers = [
@@ -68,7 +77,9 @@ def get_employee_data(employee):
     """Get the data we need to display this employee."""
     # For locations, their type and content.
     locations = [
-        (a['address_type']['scope'], a['name']) for a in employee.address
+        (
+            a['address_type']['scope'], a['name']
+        ) for a in employee.address if is_visible(a)
     ]
     # For departments, department name, UUID as well as engagement and
     # job function name.
