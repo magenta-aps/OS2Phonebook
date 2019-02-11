@@ -1,5 +1,5 @@
-mo\_api module
-==============
+test\_mo\_api module
+====================
 
 .. automodule:: test_mo_api
     :members:
