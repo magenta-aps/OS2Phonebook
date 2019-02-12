@@ -20,6 +20,7 @@ SECRET = 'Hemmelig'
 
 def is_visible(a):
     """Decide if address is visible or protected (secret)."""
+    # TODO: Change when backend starts using scope to indicate visibility.
     return not ('visibility' in a and a['visibility']['user_key'] == SECRET)
 
 
