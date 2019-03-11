@@ -11,14 +11,14 @@ rm -rf $VAR_DIR/ous/*
 rm -rf $VAR_DIR/employees/*
 
 # Do the deed
-API_TOKEN=$API_TOKEN MO_URL=$MO_URL MO_ORG_ROOT=$MO_ORG_ROOT $PYTHON $PROGRAM
+IMPORT_LOG_FILE=$IMPORT_LOG_FILE API_TOKEN=$API_TOKEN MO_URL=$MO_URL MO_ORG_ROOT=$MO_ORG_ROOT $PYTHON $PROGRAM
 
 # Bail out if there's an error
 status=$?
 
 if [ $status -ne 0 ]
 then
-    echo "Import from MO failed."
+    echo "Import from MO failed. See $IMPORT_LOG_FILE for details."
     exit 1
 fi
 

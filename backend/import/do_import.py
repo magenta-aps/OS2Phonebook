@@ -10,12 +10,16 @@
 import os
 import sys
 import json
+import datetime
+import traceback
 
 from multiprocessing.dummy import Pool
 
 from os2mo_tools import mo_api
 
 SECRET = 'Hemmelig'
+
+IMPORT_LOG_FILE = os.environ.get('IMPORT_LOG_FILE', 'logfile.txt')
 
 
 def is_visible(a):
@@ -36,15 +40,12 @@ def get_orgunit_data(ou):
         ) for e in ou.engagement
     ]
     # For associateds: Association type, job function, name and UUID.
-    try:
-        associated = [
-            (
-                a['person']['name'], a['person']['uuid'],
-                a['association_type']['name']
-            ) for a in ou.association if a
-        ]
-    except TypeError:
-        print(ou.uuid)
+    associated = [
+        (
+            a['person']['name'], a['person']['uuid'],
+            a['association_type']['name']
+        ) for a in ou.association if a
+    ]
 
     # For departments, we need name and UUID.
     departments = [(c['name'], c['uuid']) for c in ou.children]
@@ -185,11 +186,14 @@ def main():  # pragma: no cover
     try:
         write_phonebook_data(orgunit_writer, employee_writer)
     except Exception as e:
-        print(
-            "Failed to import phonebook data: {}".format(str(e)),
-            file=sys.stderr
-        )
-        raise
+        with open(IMPORT_LOG_FILE, 'a') as log_file:
+            tb = traceback.format_exc()
+            now = datetime.datetime.now()
+            print(
+                "{} - Failed to import phonebook data: {}".format(now, str(e)),
+                file=log_file
+            )
+            print('STACK TRACE:\n {}'.format(tb), file=log_file)
         sys.exit(-1)
 
 
