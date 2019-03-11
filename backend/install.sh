@@ -8,6 +8,9 @@
 
 # Only try to install dependencies if we actually need them.
 
+set -e
+set -x
+
 PKG_FILE=/tmp/installed-package-list.txt
 DEPENDENCIES="python3-venv default-jre"
 TO_INSTALL=""
@@ -40,14 +43,14 @@ fi
 # We'll work here
 cd $(dirname $0)
 
-if [ ! -d "solr-7.5.0" ]
+if [ ! -d "solr-7.7.1" ]
 then
 
     #Get SOLR
-    wget http://dk.mirrors.quenda.co/apache/lucene/solr/7.5.0/solr-7.5.0.tgz
+    wget http://dk.mirrors.quenda.co/apache/lucene/solr/7.7.1/solr-7.7.1.tgz
 
     # Verify SOLR download
-    if shasum -s -c docs/solr.sha1 
+    if sha512sum --status -c docs/solr.sha1 
     then 
         echo 'SOLR download OK'
     else 
@@ -55,12 +58,12 @@ then
         exit 1
     fi
 
-    tar xvf solr-7.5.0.tgz
-    rm solr-7.5.0.tgz
+    tar xvf solr-7.7.1.tgz
+    rm solr-7.7.1.tgz
 
-    solr-7.5.0/bin/solr start
-    solr-7.5.0/bin/solr create -c departments -s 2 -rf 2
-    solr-7.5.0/bin/solr create -c employees -s 2 -rf 2
+    solr-7.7.1/bin/solr start
+    solr-7.7.1/bin/solr create -c departments -s 2 -rf 2
+    solr-7.7.1/bin/solr create -c employees -s 2 -rf 2
 
     # Create schema for departments
     
@@ -87,7 +90,7 @@ then
 
 
 else
-    echo "SOLR already installed; use solr-7.5.0/bin/solr status to check."
+    echo "SOLR already installed; use solr-7.7.1/bin/solr status to check."
 fi
 
 # Install importer

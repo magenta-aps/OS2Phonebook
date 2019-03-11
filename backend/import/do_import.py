@@ -36,12 +36,16 @@ def get_orgunit_data(ou):
         ) for e in ou.engagement
     ]
     # For associateds: Association type, job function, name and UUID.
-    associated = [
-        (
-            a['person']['name'], a['person']['uuid'],
-            a['association_type']['name'], a['job_function']['name']
-        ) for a in ou.association
-    ]
+    try:
+        associated = [
+            (
+                a['person']['name'], a['person']['uuid'],
+                a['association_type']['name']
+            ) for a in ou.association if a
+        ]
+    except TypeError:
+        print(ou.uuid)
+
     # For departments, we need name and UUID.
     departments = [(c['name'], c['uuid']) for c in ou.children]
     # For locations, their type and content.
@@ -102,8 +106,7 @@ def get_employee_data(employee):
     associated_units = [
         (
             a['org_unit']['name'],
-            a['org_unit']['uuid'], a['association_type']['name'],
-            a['job_function']['name']
+            a['org_unit']['uuid'], a['association_type']['name']
          ) for a in employee.association
     ]
     employee_data = dict(
@@ -129,8 +132,8 @@ def write_phonebook_data(orgunit_writer, employee_writer):
     employees = mo_api.get_employees()
 
     def handler(getter, writer):
-        def handle_this(uuid):
-            data = getter(uuid)
+        def handle_this(obj):
+            data = getter(obj)
             writer(data)
         return handle_this
 
@@ -186,6 +189,7 @@ def main():  # pragma: no cover
             "Failed to import phonebook data: {}".format(str(e)),
             file=sys.stderr
         )
+        raise
         sys.exit(-1)
 
 

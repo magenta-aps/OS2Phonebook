@@ -6,10 +6,10 @@ cd $(dirname $0)
 
 
     #Get SOLR
-    wget http://dk.mirrors.quenda.co/apache/lucene/solr/7.5.0/solr-7.5.0.tgz
+    wget http://dk.mirrors.quenda.co/apache/lucene/solr/7.7.1/solr-7.7.1.tgz
 
     # Verify SOLR download
-    if shasum -s -c docs/solr.sha1 
+    if sha512sum --status -c docs/solr.sha1 
     then 
         echo 'SOLR download OK'
     else 
@@ -17,9 +17,9 @@ cd $(dirname $0)
         exit 1
     fi
 
-    tar xzf solr-7.5.0.tgz solr-7.5.0/bin/install_solr_service.sh --strip-components=2
+    tar xzf solr-7.7.1.tgz solr-7.7.1/bin/install_solr_service.sh --strip-components=2
     sed -i -e "/status/d" ./install_solr_service.sh
-    bash ./install_solr_service.sh solr-7.5.0.tgz
+    bash ./install_solr_service.sh solr-7.7.1.tgz
 
     sudo -u solr /opt/solr/bin/solr create -c departments -s 2 -rf 2
     sudo -u solr /opt/solr/bin/solr create -c employees -s 2 -rf 2
