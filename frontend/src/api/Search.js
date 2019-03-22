@@ -10,7 +10,7 @@ export default {
   employees (key, value) {
     key = key || '*'
     value = value || '*'
-    return Service.get(`/employees/select?q=${key}:${value}`)
+    return Service.get(`/employees/select?q=${key}:${value}&rows=100000`)
       .then(response => {
         return response.data
       })
@@ -28,7 +28,7 @@ export default {
   departments (key, value) {
     key = key || '*'
     value = value || '*'
-    return Service.get(`/departments/select?q=${key}:${value}`)
+    return Service.get(`/departments/select?q=${key}:${value}&rows=100000`)
       .then(response => {
         return response.data
       })

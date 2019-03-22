@@ -121,7 +121,7 @@ export default {
      transition-duration: 150ms;
    }
   .tree-node.selected > .tree-content {
-    background: #007bff;
+    background: #007bff!important
   }
   .tree-node.selected > .tree-content > .tree-anchor {
     color: #fff;
