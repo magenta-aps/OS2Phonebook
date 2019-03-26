@@ -29,7 +29,7 @@
                 </b-list-group-item>
               </template>
             </template>
-            <template v-if="item.locations && item.locations.length">
+            <template v-if="item.departments && item.departments.length">
               <b-collapse :id="item.name">
                 <template v-for="department in item.departments">
                   <b-list-group-item :key="department[1]">

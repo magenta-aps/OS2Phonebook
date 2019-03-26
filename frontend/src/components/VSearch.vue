@@ -1,5 +1,9 @@
 <template>
   <b-form>
+    <div class="mb-2 form-row">
+      <v-search-option class="col-10" @change-option="updateSelection"/>
+    </div>
+
     <div class="form-row">
       <v-autocomplete
         class="col"
@@ -18,10 +22,6 @@
       <b-button class="float-right col-2 bg-primary" type="submit" v-on:click.prevent="viewSearchResults">
         <icon name="search"/>
       </b-button>
-    </div>
-
-    <div class="mt-2 form-row">
-      <v-search-option class="col-10" @change-option="updateSelection"/>
     </div>
   </b-form>
 </template>
@@ -57,7 +57,8 @@ export default {
         {
           document: JSON.stringify({
             name: 'Ingen resultater matcher din søgning',
-            type: 'noresult_placeholder'
+            type: 'noresult_placeholder',
+            clickable: false
           })
         }
       ]
@@ -111,10 +112,17 @@ export default {
      * Go to the selected route.
      */
     selected (searchResult) {
-      if (JSON.parse(this.item.document).parent) {
-        this.$router.push({ name: 'organisation', params: { uuid: JSON.parse(searchResult.document).uuid } })
-      } else {
-        this.$router.push({ name: 'person', params: { uuid: JSON.parse(searchResult.document).uuid } })
+      let vm = this
+      const parsedDocument = JSON.parse(this.item.document)
+      if (!parsedDocument.hasOwnProperty('clickable')) {
+        if (JSON.parse(this.item.document).parent) {
+          this.$router.push({ name: 'organisation', params: { uuid: JSON.parse(searchResult.document).uuid } })
+        } else {
+          this.$router.push({ name: 'person', params: { uuid: JSON.parse(searchResult.document).uuid } })
+        }
+      } 
+      else if (parsedDocument.clickable == false) {
+        this.$refs.searchWord.searchText = ''
       }
     },
 
