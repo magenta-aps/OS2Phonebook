@@ -26,8 +26,8 @@ fi
 
 
 # First, clean index for existing data.
-$SOLR_POST -c departments -d "<delete><query>*:*</query></delete>"
-$SOLR_POST -c employees -d "<delete><query>*:*</query></delete>"
+echo "<delete><query>*:*</query></delete>" | $SOLR_POST -c departments -d
+echo "<delete><query>*:*</query></delete>" | $SOLR_POST -c employees -d
 
 # Reindex
 $SOLR_POST -c departments $VAR_DIR/ous
