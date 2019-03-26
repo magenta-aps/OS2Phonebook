@@ -112,7 +112,6 @@ export default {
      * Go to the selected route.
      */
     selected (searchResult) {
-      let vm = this
       const parsedDocument = JSON.parse(this.item.document)
       if (!parsedDocument.hasOwnProperty('clickable')) {
         if (JSON.parse(this.item.document).parent) {
@@ -120,8 +119,7 @@ export default {
         } else {
           this.$router.push({ name: 'person', params: { uuid: JSON.parse(searchResult.document).uuid } })
         }
-      } 
-      else if (parsedDocument.clickable == false) {
+      } else if (parsedDocument.clickable === false) {
         this.$refs.searchWord.searchText = ''
       }
     },
