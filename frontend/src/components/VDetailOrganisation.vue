@@ -8,7 +8,7 @@
     <div v-if="!result.locations.length" class="card mt-2">
       <div class="card-body">
         <b-list-group-item class="bg-light">
-          {{ $t('no_info') }}
+          {{ $t('no_info_available') }}
         </b-list-group-item>
       </div>
     </div>
