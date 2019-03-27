@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-form-select v-model="selected" class="col">
-      <option :value="null">Vælg søgekriterier</option>
+      <option :value="null">{{ $t('searchOptions.search_criteria_option') }}</option>
       <option value="departments">
         {{ $t('searchOptions.departments') }}
       </option>
