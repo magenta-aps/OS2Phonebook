@@ -37,6 +37,16 @@ export default {
       })
   },
 
+  roots () {
+    return Service.get(`/departments/select?q=parent:ROOT&rows=100000`)
+      .then(response => {
+        return response.data
+      })
+      .catch(error => {
+        console.log(error.response)
+      })
+  },
+
   treeView (key, value) {
     key = key || '*'
     value = value || '*'
