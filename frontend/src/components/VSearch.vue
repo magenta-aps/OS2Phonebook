@@ -3,7 +3,7 @@
     <div class="mb-2 form-row">
       <v-organisation-option class="col-10" @change-option="updateOrgSelection"/>
     </div>
-{{selectedCriteriaOption}}{{selectedOrgOption}}
+
     <div class="mb-2 form-row">
       <v-search-option class="col-10" @change-option="updateCriteriaSelection"/>
     </div>
