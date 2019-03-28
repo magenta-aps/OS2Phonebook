@@ -6,6 +6,7 @@ import i18n from './i18n'
 import BootstrapVue from 'bootstrap-vue'
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon'
+import '@babel/polyfill'
 
 require('../node_modules/bootstrap/dist/css/bootstrap.css')
 require('../node_modules/bootstrap-vue/dist/bootstrap-vue')
