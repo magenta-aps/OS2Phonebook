@@ -31,7 +31,7 @@ const actions = {
          * If we are searching within a specific field, we need only to return results
          * where inputVal was within that specific field.
          */
-        results = GetFilterSelectedOption.methods.getFilterSelectedOption(this.selectedOption, results)
+        results = GetFilterSelectedOption.methods.getFilterSelectedOption(this.selectedCriteriaOption, results)
 
         if (!results.length) {
           results = results.concat(state.noItem)
