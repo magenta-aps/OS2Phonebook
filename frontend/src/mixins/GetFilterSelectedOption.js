@@ -23,6 +23,20 @@ export default {
             // only include results where the 3rd item in departments array contains our search string (3rd item is job title).
             return res.departments.some(dept => dept[3].indexOf(inputVal) !== -1)
           })
+        } else if (option === 'persons') {
+          return results.filter(result => {
+            const res = JSON.parse(result.document)
+            if (!res.parent) {
+              return res.name
+            }
+          })
+        } else if (option === 'departments') {
+          return results.filter(result => {
+            const res = JSON.parse(result.document)
+            if (res.parent) {
+              return res.name
+            }
+          })
         }
       }
       return results
