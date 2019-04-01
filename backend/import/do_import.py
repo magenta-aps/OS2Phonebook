@@ -208,7 +208,6 @@ def main():  # pragma: no cover
                 file=log_file
             )
             print('STACK TRACE:\n {}'.format(tb), file=log_file)
-        raise
         sys.exit(-1)
 
 
