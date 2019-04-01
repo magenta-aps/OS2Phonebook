@@ -20,6 +20,7 @@ from os2mo_tools import mo_api
 SECRET = 'Hemmelig'
 
 IMPORT_LOG_FILE = os.environ.get('IMPORT_LOG_FILE', 'logfile.txt')
+SOLR_URL = os.environ.get('SOLR_URL', 'http://127.0.0.1:8983')
 
 
 def is_visible(a):
@@ -190,6 +191,18 @@ def file_writer(directory, field_name='uuid'):
 
     return writer
 
+
+def solr_writer(core_name):
+    """Return a function that writes data to a given SOLR core.
+
+    The data must be in JSON format."""
+    core_url = '/'.join([SOLR_URL, core_name])
+
+    def writer(data):
+        # TODO: Complete this
+        pass
+
+    return writer
 
 def main():  # pragma: no cover
     # Main program.
