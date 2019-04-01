@@ -28,14 +28,13 @@ def is_visible(a):
     return not ('visibility' in a and a['visibility']['user_key'] == SECRET)
 
 
-def get_root(ou):
+def get_root_uuid(ou):
     """Get root of current org unit."""
-    parent = ou.json['parent']
-    if not parent:
-        return ou
-    else:
-        parent = mo_api.OrgUnit(parent['uuid'])
-        return get_root(parent)
+    ou_dict = ou.json
+
+    while ou_dict['parent']:
+        ou_dict = ou_dict['parent']
+    return ou_dict['uuid']
 
 
 def get_orgunit_data(ou):
@@ -75,12 +74,12 @@ def get_orgunit_data(ou):
     ]
 
     # Get root UUID of current org unit.
-    root = get_root(ou)
+    root_uuid = get_root_uuid(ou)
 
     orgunit_data = dict(
         uuid=ou.json['uuid'],
         name=ou.json['name'],
-        root_uuid=root.json['uuid'],
+        root_uuid=root_uuid,
         parent=parent,
         locations=locations,
         employees=employees,
