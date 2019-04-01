@@ -28,6 +28,16 @@ def is_visible(a):
     return not ('visibility' in a and a['visibility']['user_key'] == SECRET)
 
 
+def get_root(ou):
+    """Get root of current org unit."""
+    parent = ou.json['parent']
+    if not parent:
+        return ou
+    else:
+        parent = mo_api.OrgUnit(parent['uuid'])
+        return get_root(parent)
+
+
 def get_orgunit_data(ou):
     """Get the data we need to display for this particular org. func."""
     # Parent - UUID if exists, ROOT if not.
@@ -64,15 +74,19 @@ def get_orgunit_data(ou):
         ) for m in ou.manager
     ]
 
+    # Get root UUID of current org unit.
+    root = get_root(ou)
+
     orgunit_data = dict(
-            uuid=ou.json['uuid'],
-            name=ou.json['name'],
-            parent=parent,
-            locations=locations,
-            employees=employees,
-            departments=departments,
-            associated=associated,
-            managers=managers
+        uuid=ou.json['uuid'],
+        name=ou.json['name'],
+        root_uuid=root.json['uuid'],
+        parent=parent,
+        locations=locations,
+        employees=employees,
+        departments=departments,
+        associated=associated,
+        managers=managers
     )
     orgunit_data['document'] = json.dumps(orgunit_data, sort_keys=True)
 
@@ -194,6 +208,7 @@ def main():  # pragma: no cover
                 file=log_file
             )
             print('STACK TRACE:\n {}'.format(tb), file=log_file)
+        raise
         sys.exit(-1)
 
 

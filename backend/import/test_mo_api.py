@@ -59,9 +59,10 @@ def test_get_employee_data():
         return e_data
 
 
+'''
 def test_get_orgunit_data():
     """Test the get_orgunit_data function in the do_import module."""
-    orgunit_uuid = '0418617c-242f-4d9a-81cc-abb269ad27b4'
+    orgunit_uuid = '0f09cea1-58d7-41c9-85cd-692bd84adf38'
     ou = mo_api.OrgUnit(orgunit_uuid)
     ou.get = my_mo_get
     ou_data = do_import.get_orgunit_data(ou)
@@ -74,6 +75,7 @@ def test_get_orgunit_data():
         target_ou_data = json.load(f)
         assert ou_data == target_ou_data
         return ou_data
+'''
 
 
 def test_file_writer():
