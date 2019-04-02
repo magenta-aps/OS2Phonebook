@@ -28,6 +28,15 @@ def is_visible(a):
     return not ('visibility' in a and a['visibility']['user_key'] == SECRET)
 
 
+def get_root_uuid(ou):
+    """Get root of current org unit."""
+    ou_dict = ou.json
+
+    while ou_dict['parent']:
+        ou_dict = ou_dict['parent']
+    return ou_dict['uuid']
+
+
 def get_orgunit_data(ou):
     """Get the data we need to display for this particular org. func."""
     # Parent - UUID if exists, ROOT if not.
@@ -52,6 +61,7 @@ def get_orgunit_data(ou):
     # For locations, their type and content.
     locations = [
         (
+            a['address_type']['name'], a['address_type']['user_key'],
             a['address_type']['scope'], a['name']
         ) for a in ou.address if is_visible(a)
     ]
@@ -64,15 +74,19 @@ def get_orgunit_data(ou):
         ) for m in ou.manager
     ]
 
+    # Get root UUID of current org unit.
+    root_uuid = get_root_uuid(ou)
+
     orgunit_data = dict(
-            uuid=ou.json['uuid'],
-            name=ou.json['name'],
-            parent=parent,
-            locations=locations,
-            employees=employees,
-            departments=departments,
-            associated=associated,
-            managers=managers
+        uuid=ou.json['uuid'],
+        name=ou.json['name'],
+        root_uuid=root_uuid,
+        parent=parent,
+        locations=locations,
+        employees=employees,
+        departments=departments,
+        associated=associated,
+        managers=managers
     )
     orgunit_data['document'] = json.dumps(orgunit_data, sort_keys=True)
 
