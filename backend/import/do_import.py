@@ -61,7 +61,7 @@ def get_orgunit_data(ou):
     # For locations, their type and content.
     locations = [
         (
-            a['address_type']['scope'], a['name']
+            a['address_type']['name'], a['address_type']['scope'], a['name']
         ) for a in ou.address if is_visible(a)
     ]
     # For managers, manager type and name and UUID.
