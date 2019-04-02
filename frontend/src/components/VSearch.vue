@@ -141,7 +141,7 @@ export default {
          * Within this, we can get the current search string with searchText attribute.
          */
         this.$store.dispatch('searchResults/UPDATE_RESULTS')
-        this.$router.push({ name: 'result', query: { q: this.$refs.searchWord.searchText, criteria: this.selectedCriteriaOption && this.selectedOrgOption } })
+        this.$router.push({ name: 'result', query: { q: this.$refs.searchWord.searchText, criteria: this.selectedCriteriaOption, rootUuid: this.selectedOrgOption } })
       }
     },
 
