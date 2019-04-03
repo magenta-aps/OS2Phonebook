@@ -14,3 +14,5 @@ pytest-flake8==1.0.2
 pytest-cov
 coverage
 mock
+pysolr
+click

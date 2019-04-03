@@ -7,20 +7,27 @@
 #
 """Import org units and employees from MO."""
 
-import os
-import sys
-import json
+import abc
+import contextlib
 import datetime
+import json
+import multiprocessing.dummy
+import pathlib
+import shutil
 import traceback
 
-from multiprocessing.dummy import Pool
+import click
+import pysolr
 
 from os2mo_tools import mo_api
 
 SECRET = 'Hemmelig'
 
-IMPORT_LOG_FILE = os.environ.get('IMPORT_LOG_FILE', 'logfile.txt')
-SOLR_URL = os.environ.get('SOLR_URL', 'http://127.0.0.1:8983')
+
+def log(msg, *args, **kwargs):
+    ts = datetime.datetime.now().strftime('%c')
+
+    print(("[{}] " + msg).format(ts, *args, **kwargs))
 
 
 def is_visible(a):
@@ -138,7 +145,7 @@ def get_employee_data(employee):
     return employee_data
 
 
-def write_phonebook_data(orgunit_writer, employee_writer):
+def write_phonebook_data(writer, jobs):
     """Write data to store in backend DB.
 
     The ``_writer`` arguments are functions to store/index employees and org
@@ -153,77 +160,141 @@ def write_phonebook_data(orgunit_writer, employee_writer):
             writer(data)
         return handle_this
 
-    ou_handler = handler(get_orgunit_data, orgunit_writer)
-    employee_handler = handler(get_employee_data, employee_writer)
+    ou_handler = handler(get_orgunit_data, writer.write_unit)
+    employee_handler = handler(get_employee_data, writer.write_employee)
 
-    p = Pool(10)
+    p = multiprocessing.dummy.Pool(jobs)
     # First, org units
     p.map(ou_handler, (mo_api.OrgUnit(ou['uuid']) for ou in ous))
-    p.close()
-    p.join()
 
-    p = Pool(10)
     # Now, employees
     p.map(employee_handler, (mo_api.Employee(e['uuid']) for e in employees))
+
+    # Finally, wait
     p.close()
     p.join()
 
 
-def file_writer(directory, field_name='uuid'):
-    """Return a function that writes data to a given directory.
+class AbstractWriter(abc.ABC):
+    def __init__(self, verbose=False):
+        self.__verbose = verbose
 
-    The data must be JSON and is  stored in a file name taken from the
-    data's field as indicated by the ``field_name`` parameter."""
-
-    base_dir = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), '..', 'var')
-    )
-    target_dir = os.path.join(base_dir, directory)
-
-    if not os.path.exists(target_dir):
-        os.makedirs(target_dir)
-
-    def writer(data):
-        out_file = "{}.json".format(data[field_name].replace(' ', ''))
-        out_file = os.path.join(target_dir, out_file)
-        with open(out_file, 'w') as f:
-            json.dump(data, f)
-
-    return writer
-
-
-def solr_writer(core_name):
-    """Return a function that writes data to a given SOLR core.
-
-    The data must be in JSON format."""
-    core_url = '/'.join([SOLR_URL, core_name])
-
-    def writer(data):
-        # TODO: Complete this
+    @abc.abstractmethod
+    def write(self, type, data):
         pass
 
-    return writer
+    @abc.abstractmethod
+    def clean(self, type):
+        pass
 
-def main():  # pragma: no cover
+    def _do_write(self, type, data):
+        if self.__verbose:
+            log("{}: {}", type, data['uuid'])
+
+        self.write(type, data)
+
+    def write_unit(self, data):
+        self._do_write('departments', data)
+
+    def write_employee(self, data):
+        self._do_write('employees', data)
+
+
+class FileWriter(AbstractWriter):
+    def __init__(self, base_dir, verbose=False):
+        super().__init__(verbose)
+        self.base_dir = pathlib.Path(base_dir)
+
+    def clean(self):
+        if self.base_dir.exists():
+            shutil.rmtree(str(self.base_dir))
+
+    def write(self, type, data):
+        basename = data['uuid']
+        destdir = self.base_dir / type
+        destfile = destdir / (basename + '.json')
+
+        destdir.mkdir(parents=True, exist_ok=True)
+
+        with open(str(destfile), 'w') as fp:
+            json.dump(data, fp, indent=2)
+
+
+class SolrWriter(AbstractWriter):
+    def __init__(self, base_url, verbose=False):
+        super().__init__(verbose)
+        self.base_url = base_url
+        self.cores = {
+            type: pysolr.Solr('/'.join((self.base_url, type)),
+                              always_commit=True)
+            for type in ('employees', 'departments')
+        }
+
+    def clean(self):
+        for core in self.cores.values():
+            core.delete(q='*:*')
+
+    def write(self, type, data):
+        self.cores[type].add([data])
+
+
+@click.command(context_settings={
+    'help_option_names': ('-h', '--help'),
+})
+@click.option('-v', '--verbose', is_flag=True)
+@click.option('-u', '--url', 'output_url', envvar='SOLR_URL', show_envvar=True)
+@click.option(
+    '-l',
+    '--log-file',
+    'logf',
+    type=click.File('a'),
+    default='-',
+    envvar='LOGFILE',
+    show_envvar=True,
+)
+@click.option(
+    '-d',
+    '--dir',
+    'output_dir',
+    type=click.Path(dir_okay=True, file_okay=False),
+    envvar='OUTPUT_DIR',
+    show_envvar=True,
+)
+@click.option(
+    '-j',
+    '--jobs',
+    metavar='N',
+    envvar='IMPORT_JOBS',
+    type=int,
+    default=multiprocessing.cpu_count(),
+    help='',
+    show_envvar=True,
+    show_default=True,
+)
+def main(output_dir, output_url, verbose, logf, jobs):  # pragma: no cover
     # Main program.
-    orgunit_writer = file_writer('ous')
-    employee_writer = file_writer('employees')
+    if output_url:
+        writer = SolrWriter(output_url, verbose=verbose)
+    elif output_dir:
+        writer = FileWriter(output_dir, verbose=verbose)
+    else:
+        raise click.UsageError('please specify a destination')
 
-    print("Writing data ...")
-    try:
-        write_phonebook_data(orgunit_writer, employee_writer)
-    except Exception as e:
-        with open(IMPORT_LOG_FILE, 'a') as log_file:
-            tb = traceback.format_exc()
-            now = datetime.datetime.now()
-            print(
-                "{} - Failed to import phonebook data: {}".format(now, str(e)),
-                file=log_file
-            )
-            print('STACK TRACE:\n {}'.format(tb), file=log_file)
-        sys.exit(-1)
+    with contextlib.redirect_stdout(logf), contextlib.redirect_stderr(logf):
+        log("Cleaning...")
+
+        writer.clean()
+
+        log("Import begun...")
+
+        try:
+            write_phonebook_data(writer, jobs)
+        except Exception:
+            log("Import failed: " + traceback.format_exc())
+            raise
+
+        log("Import complete!")
 
 
 if __name__ == '__main__':  # pragma: no cover
     main()
-    print("done")
