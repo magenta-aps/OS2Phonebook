@@ -16,3 +16,4 @@ coverage
 mock
 pysolr
 click
+click-log

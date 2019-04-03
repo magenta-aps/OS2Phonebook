@@ -8,26 +8,22 @@
 """Import org units and employees from MO."""
 
 import abc
-import contextlib
-import datetime
 import json
+import logging
 import multiprocessing.dummy
 import pathlib
 import shutil
-import traceback
+import sys
 
 import click
+import click_log
 import pysolr
 
 from os2mo_tools import mo_api
 
 SECRET = 'Hemmelig'
 
-
-def log(msg, *args, **kwargs):
-    ts = datetime.datetime.now().strftime('%c')
-
-    print(("[{}] " + msg).format(ts, *args, **kwargs))
+logger = logging.getLogger('do_import')
 
 
 def is_visible(a):
@@ -177,22 +173,18 @@ def write_phonebook_data(writer, jobs):
 
 
 class AbstractWriter(abc.ABC):
-    def __init__(self, verbose=False):
-        self.__verbose = verbose
-
     @abc.abstractmethod
-    def write(self, type, data):
+    def write(self, datatype, data):
         pass
 
     @abc.abstractmethod
-    def clean(self, type):
+    def clean(self, datatype):
         pass
 
-    def _do_write(self, type, data):
-        if self.__verbose:
-            log("{}: {}", type, data['uuid'])
+    def _do_write(self, datatype, data):
+        logger.debug("%s: %s", datatype, data['uuid'])
 
-        self.write(type, data)
+        self.write(datatype, data)
 
     def write_unit(self, data):
         self._do_write('departments', data)
@@ -202,17 +194,16 @@ class AbstractWriter(abc.ABC):
 
 
 class FileWriter(AbstractWriter):
-    def __init__(self, base_dir, verbose=False):
-        super().__init__(verbose)
+    def __init__(self, base_dir):
         self.base_dir = pathlib.Path(base_dir)
 
     def clean(self):
         if self.base_dir.exists():
             shutil.rmtree(str(self.base_dir))
 
-    def write(self, type, data):
+    def write(self, datatype, data):
         basename = data['uuid']
-        destdir = self.base_dir / type
+        destdir = self.base_dir / datatype
         destfile = destdir / (basename + '.json')
 
         destdir.mkdir(parents=True, exist_ok=True)
@@ -222,35 +213,44 @@ class FileWriter(AbstractWriter):
 
 
 class SolrWriter(AbstractWriter):
-    def __init__(self, base_url, verbose=False):
-        super().__init__(verbose)
+    def __init__(self, base_url):
         self.base_url = base_url
         self.cores = {
-            type: pysolr.Solr('/'.join((self.base_url, type)),
-                              always_commit=True)
-            for type in ('employees', 'departments')
+            datatype: pysolr.Solr(
+                '/'.join((self.base_url, datatype)),
+                always_commit=True,
+            )
+            for datatype in ('employees', 'departments')
         }
 
     def clean(self):
         for core in self.cores.values():
             core.delete(q='*:*')
 
-    def write(self, type, data):
-        self.cores[type].add([data])
+    def write(self, datatype, data):
+        self.cores[datatype].add([data])
 
 
 @click.command(context_settings={
     'help_option_names': ('-h', '--help'),
 })
-@click.option('-v', '--verbose', is_flag=True)
-@click.option('-u', '--url', 'output_url', envvar='SOLR_URL', show_envvar=True)
+@click_log.simple_verbosity_option(
+    logger,
+    envvar='IMPORT_LOG_LEVEL',
+    show_envvar=True,
+)
+@click.option(
+    '-u',
+    '--url',
+    'output_url',
+    envvar='SOLR_URL',
+    show_envvar=True,
+)
 @click.option(
     '-l',
     '--log-file',
-    'logf',
-    type=click.File('a'),
-    default='-',
-    envvar='LOGFILE',
+    type=click.Path(),
+    envvar='IMPORT_LOG_FILE',
     show_envvar=True,
 )
 @click.option(
@@ -272,29 +272,33 @@ class SolrWriter(AbstractWriter):
     show_envvar=True,
     show_default=True,
 )
-def main(output_dir, output_url, verbose, logf, jobs):  # pragma: no cover
+def main(output_dir, output_url, log_file, jobs):  # pragma: no cover
+    if log_file:
+        logger.addHandler(logging.FileHandler(log_file))
+    else:
+        logger.addHandler(logging.StreamHandler(sys.stderr))
+
     # Main program.
     if output_url:
-        writer = SolrWriter(output_url, verbose=verbose)
+        writer = SolrWriter(output_url)
     elif output_dir:
-        writer = FileWriter(output_dir, verbose=verbose)
+        writer = FileWriter(output_dir)
     else:
         raise click.UsageError('please specify a destination')
 
-    with contextlib.redirect_stdout(logf), contextlib.redirect_stderr(logf):
-        log("Cleaning...")
+    logger.info("Cleaning...")
 
-        writer.clean()
+    writer.clean()
 
-        log("Import begun...")
+    logger.info("Import begun...")
 
-        try:
-            write_phonebook_data(writer, jobs)
-        except Exception:
-            log("Import failed: " + traceback.format_exc())
-            raise
+    try:
+        write_phonebook_data(writer, jobs)
+    except Exception:
+        logger.exception("Import failed!")
+        raise
 
-        log("Import complete!")
+    logger.info("done!")
 
 
 if __name__ == '__main__':  # pragma: no cover

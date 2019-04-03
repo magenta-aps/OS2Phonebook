@@ -8,3 +8,4 @@ six==1.11.0
 urllib3==1.24
 pysolr
 click
+click-log
