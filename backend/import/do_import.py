@@ -61,6 +61,7 @@ def get_orgunit_data(ou):
     # For locations, their type and content.
     locations = [
         (
+            a['address_type']['name'], a['address_type']['user_key'],
             a['address_type']['scope'], a['name']
         ) for a in ou.address if is_visible(a)
     ]
