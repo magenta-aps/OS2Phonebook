@@ -19,8 +19,8 @@
           {{ $t('contact_info') }}
         </b-list-group-item>
         <template v-if="result.locations && result.locations.length">
-          <b-list-group-item 
-            v-for="(location, index) in result.locations" :key="Object.keys(location)[index]" 
+          <b-list-group-item
+            v-for="(location, index) in result.locations" :key="Object.keys(location)[index]"
             :class="!getOrgIcon(location[0]) ? 'empty' : ''"
           >
             <template v-if="getOrgIcon(location[0])">

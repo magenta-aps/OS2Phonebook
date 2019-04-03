@@ -56,8 +56,8 @@
               </b-list-group-item>
             </router-link>
             <template v-if="item.locations && item.locations.length">
-                <b-list-group-item 
-                  v-for="(location, index) in item.locations" :key="item.locations[index][0]" 
+                <b-list-group-item
+                  v-for="(location, index) in item.locations" :key="item.locations[index][0]"
                   :class="!getOrgIcon(location[0]) ? 'empty' : ''"
                 >
                   <template v-if="getOrgIcon(location[0])">
@@ -117,4 +117,3 @@ export default {
     display: none;
   }
 </style>
-

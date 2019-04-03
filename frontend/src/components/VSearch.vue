@@ -82,19 +82,19 @@ export default {
       let vm = this
       let fields = ['name', 'locations', 'departments']
 
-      if (this.selectedOption == "job_titles"){
+      if (this.selectedOption === 'job_titles') {
         fields = ['departments']
       }
-      if (this.selectedOption == "emails"){
+      if (this.selectedOption === 'emails') {
         fields = ['locations']
       }
-      if (this.selectedOption == "phone_numbers"){
+      if (this.selectedOption === 'phone_numbers') {
         fields = ['locations']
       }
-      if (this.selectedOption == "persons"){
+      if (this.selectedOption === 'persons') {
         fields = ['name']
       }
-      if (this.selectedOption == "departments"){
+      if (this.selectedOption === 'departments') {
         fields = ['name']
       }
 
