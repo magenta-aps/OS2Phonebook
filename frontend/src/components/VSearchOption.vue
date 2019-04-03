@@ -11,7 +11,7 @@
       <option>
         {{ $t('searchOptions.tasks') }}
       </option>
-      <option value="name">
+      <option value="persons">
         {{ $t('searchOptions.employees') }}
       </option>
       <option value="job_titles">
