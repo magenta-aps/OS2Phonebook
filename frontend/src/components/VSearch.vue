@@ -78,9 +78,27 @@ export default {
      * Update employee or organisation suggestions based on search query.
      */
     updateItems (inputVal) {
+      inputVal = inputVal.trim()
       let vm = this
+      let fields = ['name', 'locations', 'departments']
 
-      SearchMultipleFields(inputVal, ['name', 'locations', 'departments'])
+      if (this.selectedOption == "job_titles"){
+        fields = ['departments']
+      }
+      if (this.selectedOption == "emails"){
+        fields = ['locations']
+      }
+      if (this.selectedOption == "phone_numbers"){
+        fields = ['locations']
+      }
+      if (this.selectedOption == "persons"){
+        fields = ['name']
+      }
+      if (this.selectedOption == "departments"){
+        fields = ['name']
+      }
+
+      SearchMultipleFields(inputVal, fields)
         .then(res => {
           let results = []
           res.forEach(result => {
@@ -134,7 +152,7 @@ export default {
          * Within this, we can get the current search string with searchText attribute.
          */
         this.$store.dispatch('searchResults/UPDATE_RESULTS')
-        this.$router.push({ name: 'result', query: { q: this.$refs.searchWord.searchText, criteria: this.selectedOption } })
+        this.$router.push({ name: 'result', query: { fq: this.$refs.searchWord.searchText, criteria: this.selectedOption } })
       }
     },
 
@@ -147,7 +165,7 @@ export default {
   },
 
   mounted () {
-    this.$refs.searchWord.searchText = this.$route.query.q || ''
+    this.$refs.searchWord.searchText = this.$route.query.fq || ''
   }
 }
 </script>
