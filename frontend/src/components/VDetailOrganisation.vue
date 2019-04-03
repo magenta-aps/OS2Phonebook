@@ -18,10 +18,17 @@
         <b-list-group-item class="mb-2 bg-light">
           {{ $t('contact_info') }}
         </b-list-group-item>
-        <b-list-group-item v-for="(location, index) in result.locations" :key="Object.keys(location)[index]">
-          <icon  class="mb-1" v-if="getIcon(location[0])" :name="getIcon(location[0])"/>
-          <span class="col">{{ location[1] }}</span>
-        </b-list-group-item>
+        <template v-if="result.locations && result.locations.length">
+          <b-list-group-item 
+            v-for="(location, index) in result.locations" :key="Object.keys(location)[index]" 
+            :class="!getOrgIcon(location[0]) ? 'empty' : ''"
+          >
+            <template v-if="getOrgIcon(location[0])">
+              <icon  class="mb-1" :name="getOrgIcon(location[0])"/>
+              <span class="col">{{ location[3] }}</span>
+            </template>
+          </b-list-group-item>
+        </template>
       </div>
     </div>
 
@@ -99,7 +106,7 @@
             Ferieydelse optjent under barsel (34.30.10)
           </b-list-group-item>
           <b-list-group-item class="mt-2">
-            Ferieydelse optjent under barsel (34.30.10)
+            Ferieydelse optjent under barsel (37.20.19)
           </b-list-group-item>
       </div>
     </div>
@@ -158,5 +165,8 @@ export default {
 <style scoped>
 .header-item {
     font-size: 1.2em;
+}
+.list-group-item.empty {
+  display: none;
 }
 </style>
