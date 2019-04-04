@@ -5,7 +5,7 @@
       v-model="selected"
     >
       <option :value="null">{{ $t('department_option') }}</option>
-      <option v-for="o in organisations" :key="o.uuid" :value="o.uuid">
+      <option v-for="o in organisations" :key="o.uuid" :value="o.root_uuid">
         {{o.name}}
       </option>
     </b-form-select>

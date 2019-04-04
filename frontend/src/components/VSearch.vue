@@ -88,24 +88,28 @@ export default {
       inputVal = inputVal.trim()
       let vm = this
       let fields = ['name', 'locations', 'departments']
+      let organisation = '*'
 
-      if (this.selectedOption === 'job_titles') {
+      if (this.selectedOrgOption) {
+        organisation = this.selectedOrgOption  
+      }
+      if (this.selectedCriteriaOption === 'job_titles') {
         fields = ['departments']
       }
-      if (this.selectedOption === 'emails') {
+      if (this.selectedCriteriaOption === 'emails') {
         fields = ['locations']
       }
-      if (this.selectedOption === 'phone_numbers') {
+      if (this.selectedCriteriaOption === 'phone_numbers') {
         fields = ['locations']
       }
-      if (this.selectedOption === 'persons') {
+      if (this.selectedCriteriaOption === 'persons') {
         fields = ['name']
       }
-      if (this.selectedOption === 'departments') {
+      if (this.selectedCriteriaOption === 'departments') {
         fields = ['name']
       }
 
-      SearchMultipleFields(inputVal, fields)
+      SearchMultipleFields(inputVal, fields, organisation)
         .then(res => {
           let results = []
           res.forEach(result => {
@@ -159,7 +163,7 @@ export default {
          * Within this, we can get the current search string with searchText attribute.
          */
         this.$store.dispatch('searchResults/UPDATE_RESULTS')
-        this.$router.push({ name: 'result', query: { fq: this.$refs.searchWord.searchText, criteria: this.selectedOption } })
+        this.$router.push({ name: 'result', query: { fq: this.$refs.searchWord.searchText, criteria: this.selectedCriteriaOption, root: this.selectedOrgOption } })
       }
     },
 
