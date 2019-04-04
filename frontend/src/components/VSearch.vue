@@ -91,7 +91,7 @@ export default {
       let organisation = '*'
 
       if (this.selectedOrgOption) {
-        organisation = this.selectedOrgOption  
+        organisation = this.selectedOrgOption
       }
       if (this.selectedCriteriaOption === 'job_titles') {
         fields = ['departments']
