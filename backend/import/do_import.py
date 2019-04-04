@@ -124,7 +124,14 @@ def get_employee_data(employee):
             a['org_unit']['uuid'], a['association_type']['name']
          ) for a in employee.association
     ]
+    # root uuids 
+    root_uuids=[
+        get_root_uuid(mo_api.OrgUnit(dp[1])) 
+        for dp in (departments + associated_units)
+    ]
+
     employee_data = dict(
+        root_uuid=list(set(root_uuids)),
         uuid=employee.json['uuid'],
         name=employee.json['name'],
         locations=locations,
