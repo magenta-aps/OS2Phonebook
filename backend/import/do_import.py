@@ -245,6 +245,7 @@ class SolrWriter(AbstractWriter):
     'output_url',
     envvar='SOLR_URL',
     show_envvar=True,
+    help='Upload import results to the given Apache SOLR URL.',
 )
 @click.option(
     '-l',
@@ -252,6 +253,7 @@ class SolrWriter(AbstractWriter):
     type=click.Path(),
     envvar='IMPORT_LOG_FILE',
     show_envvar=True,
+    help='Right the log to the given file.',
 )
 @click.option(
     '-d',
@@ -260,6 +262,7 @@ class SolrWriter(AbstractWriter):
     type=click.Path(dir_okay=True, file_okay=False),
     envvar='OUTPUT_DIR',
     show_envvar=True,
+    help='Dump the import results to the given location.',
 )
 @click.option(
     '-j',
@@ -268,11 +271,17 @@ class SolrWriter(AbstractWriter):
     envvar='IMPORT_JOBS',
     type=int,
     default=multiprocessing.cpu_count(),
-    help='',
     show_envvar=True,
     show_default=True,
+    help='Allow up to N parallel requests.',
 )
 def main(output_dir, output_url, log_file, jobs):  # pragma: no cover
+    """Command for importing an OS2mo installation into Apache SOLR.
+
+    The command requires a destination; either in the form of a SOLR
+    or directory.
+
+    """
     if log_file:
         logger.addHandler(logging.FileHandler(log_file))
     else:
