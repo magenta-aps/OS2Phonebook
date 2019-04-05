@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
 
-PYTHON=$(dirname $0)/venv/bin/python
-PROGRAM=$(dirname $0)/import/do_import.py
-VAR_DIR=$(dirname $0)/var
+BASEDIR=$(cd $(dirname $0); pwd)
 
-source $(dirname $0)/config.sh
+PYTHON=$BASEDIR/venv/bin/python
+PROGRAM=$BASEDIR/import/do_import.py
+VAR_DIR=$BASEDIR/var
+DATA_DIR=$VAR_DIR/data
 
-# Remove old exported files, if any
-rm -rf $VAR_DIR/ous/*
-rm -rf $VAR_DIR/employees/*
+source $BASEDIR/config.sh
 
 # Do the deed
-IMPORT_LOG_FILE=$IMPORT_LOG_FILE API_TOKEN=$API_TOKEN MO_URL=$MO_URL MO_ORG_ROOT=$MO_ORG_ROOT $PYTHON $PROGRAM
+export IMPORT_LOG_FILE API_TOKEN MO_URL MO_ORG_ROOT
+
+$PYTHON $PROGRAM -d "$DATA_DIR" -v DEBUG
 
 # Bail out if there's an error
 status=$?
@@ -30,9 +31,8 @@ echo "<delete><query>*:*</query></delete>" | $SOLR_POST -c departments -d
 echo "<delete><query>*:*</query></delete>" | $SOLR_POST -c employees -d
 
 # Reindex
-$SOLR_POST -c departments $VAR_DIR/ous
-$SOLR_POST -c employees $VAR_DIR/employees
+$SOLR_POST -c departments $DATA_DIR/ous
+$SOLR_POST -c employees $DATA_DIR/employees
 
 # Clean up after yourself.
-rm -rf $VAR_DIR/ous/*
-rm -rf $VAR_DIR/employees/*
+rm -rf $DATA_DIR
