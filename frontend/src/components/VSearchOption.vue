@@ -30,7 +30,7 @@ export default {
 
   data () {
     return {
-      selected: null
+      selected: this.$route.query.criteria || null
     }
   },
 

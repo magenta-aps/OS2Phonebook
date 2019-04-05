@@ -94,7 +94,6 @@ export default {
   },
 
   props: {
-    q: String,
     results: Array
   },
 

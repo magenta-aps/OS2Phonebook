@@ -20,7 +20,7 @@ export default {
 
   data () {
     return {
-      selected: null,
+      selected: this.$route.query.root || null,
       organisations: []
     }
   },
