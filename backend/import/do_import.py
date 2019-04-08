@@ -292,8 +292,9 @@ def main(output_dir, output_url, log_file, jobs):  # pragma: no cover
     """
     if log_file:
         log_path = pathlib.Path(log_file)
-        if not log_path.parent.exists():
-            pathlib.Path.mkdir(log_path.parent)
+        # Create log directory if it doesn't exist.
+        log_path.parent.mkdir(exist_ok=True)
+
         logger.addHandler(logging.FileHandler(log_file))
     else:
         logger.addHandler(logging.StreamHandler(sys.stderr))
