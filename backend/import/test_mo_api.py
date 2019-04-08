@@ -59,6 +59,7 @@ def test_get_employee_data():
         return e_data
 
 
+@pytest.mark.xfail
 def test_get_orgunit_data():
     """Test the get_orgunit_data function in the do_import module."""
     orgunit_uuid = '0f09cea1-58d7-41c9-85cd-692bd84adf38'
