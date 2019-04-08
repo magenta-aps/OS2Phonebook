@@ -19,7 +19,7 @@
           {{ $t('contact_info') }}
         </b-list-group-item>
         <b-list-group-item v-for="(location, index) in result.locations" :key="Object.keys(location)[index]">
-          <icon  class="mb-1" v-if="getPersonIcon(location[0])" :name="getPersonIcon(location[0])"/>
+          <icon  class="mb-1" v-if="getIcon(location[0])" :name="getIcon(location[0])"/>
           <span class="col">{{ location[1] }}</span>
         </b-list-group-item>
       </div>

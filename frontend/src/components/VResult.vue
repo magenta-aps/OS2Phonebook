@@ -39,7 +39,7 @@
                   </b-list-group-item>
                 </template>
                 <b-list-group-item v-for="(location, index) in item.locations" :key="item.locations[index][0]">
-                  <icon class="mb-1" v-if="getPersonIcon(location[0])" :name="getPersonIcon(location[0])"/>
+                  <icon class="mb-1" v-if="getIcon(location[0])" :name="getIcon(location[0])"/>
                   <span class="col">{{ location[1] }}</span>
                 </b-list-group-item>
               </b-collapse>
@@ -58,10 +58,10 @@
             <template v-if="item.locations && item.locations.length">
                 <b-list-group-item
                   v-for="(location, index) in item.locations" :key="item.locations[index][0]"
-                  :class="!getOrgIcon(location[0]) ? 'empty' : ''"
+                  :class="!getIcon(location[0]) ? 'empty' : ''"
                 >
-                  <template v-if="getOrgIcon(location[0])">
-                    <icon class="mb-1" :name="getOrgIcon(location[0])"/>
+                  <template v-if="getIcon(location[0])">
+                    <icon class="mb-1" :name="getIcon(location[0])"/>
                     <span class="col">{{ location[3] }}</span>
                   </template>
                 </b-list-group-item>
