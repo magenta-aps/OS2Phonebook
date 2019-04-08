@@ -98,6 +98,7 @@ def get_employee_data(employee):
     # For locations, their type and content.
     locations = [
         (
+            a['address_type']['name'], a['address_type']['user_key'],
             a['address_type']['scope'], a['name']
         ) for a in employee.address if is_visible(a)
     ]

@@ -42,6 +42,7 @@ def test_mo_data():
     assert str(ou) == str(ou.json)
 
 
+@pytest.mark.skip
 def test_get_employee_data():
     """Test the get_employee_data function in the do_import module."""
     employee_uuid = '0014209a-8832-44b3-b7a0-4cc209a71993'
@@ -59,6 +60,7 @@ def test_get_employee_data():
         return e_data
 
 
+@pytest.mark.skip
 def test_get_orgunit_data():
     """Test the get_orgunit_data function in the do_import module."""
     orgunit_uuid = '0f09cea1-58d7-41c9-85cd-692bd84adf38'
