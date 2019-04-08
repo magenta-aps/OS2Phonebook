@@ -31,7 +31,7 @@ echo "<delete><query>*:*</query></delete>" | $SOLR_POST -c departments -d
 echo "<delete><query>*:*</query></delete>" | $SOLR_POST -c employees -d
 
 # Reindex
-$SOLR_POST -c departments $DATA_DIR/ous
+$SOLR_POST -c departments $DATA_DIR/departments
 $SOLR_POST -c employees $DATA_DIR/employees
 
 # Clean up after yourself.

@@ -141,7 +141,7 @@ def get_employee_data(employee):
     return employee_data
 
 
-def write_phonebook_data(writer, jobs):
+def write_phonebook_data(writer, no_of_jobs):
     """Write data to store in backend DB.
 
     The ``writer`` argument are subclasses of
@@ -160,7 +160,7 @@ def write_phonebook_data(writer, jobs):
     ou_handler = handler(get_orgunit_data, writer.write_unit)
     employee_handler = handler(get_employee_data, writer.write_employee)
 
-    p = multiprocessing.dummy.Pool(jobs)
+    p = multiprocessing.dummy.Pool(no_of_jobs)
     # First, org units
     p.map(ou_handler, (mo_api.OrgUnit(ou['uuid']) for ou in ous))
 
@@ -270,7 +270,7 @@ class SolrWriter(AbstractWriter):
     metavar='N',
     envvar='IMPORT_JOBS',
     type=int,
-    default=multiprocessing.cpu_count(),
+    default=10,
     show_envvar=True,
     show_default=True,
     help='Allow up to N parallel requests.',
@@ -283,6 +283,9 @@ def main(output_dir, output_url, log_file, jobs):  # pragma: no cover
 
     """
     if log_file:
+        log_path = pathlib.Path(log_file)
+        if not log_path.parent.exists():
+            pathlib.Path.mkdir(log_path.parent)
         logger.addHandler(logging.FileHandler(log_file))
     else:
         logger.addHandler(logging.StreamHandler(sys.stderr))
