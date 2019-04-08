@@ -20,7 +20,6 @@ function SearchMultipleFields (searchTerm = '*', searchFields = ['*']) {
       })
     searchResults = searchResults.concat([employeeSearch, departmentSearch])
   })
-
   return Promise.all(searchResults)
 }
 
