@@ -7,19 +7,23 @@
 #
 """Import org units and employees from MO."""
 
-import os
-import sys
+import abc
 import json
-import datetime
-import traceback
+import logging
+import multiprocessing.dummy
+import pathlib
+import shutil
+import sys
 
-from multiprocessing.dummy import Pool
+import click
+import click_log
+import pysolr
 
 from os2mo_tools import mo_api
 
 SECRET = 'Hemmelig'
 
-IMPORT_LOG_FILE = os.environ.get('IMPORT_LOG_FILE', 'logfile.txt')
+logger = logging.getLogger('do_import')
 
 
 def is_visible(a):
@@ -145,11 +149,12 @@ def get_employee_data(employee):
     return employee_data
 
 
-def write_phonebook_data(orgunit_writer, employee_writer):
+def write_phonebook_data(writer, no_of_jobs):
     """Write data to store in backend DB.
 
-    The ``_writer`` arguments are functions to store/index employees and org
-    units, respectively.
+    The ``writer`` argument are subclasses of
+    :py:class:`AbstractWriter`.
+
     """
     ous = mo_api.get_ous()
     employees = mo_api.get_employees()
@@ -160,65 +165,162 @@ def write_phonebook_data(orgunit_writer, employee_writer):
             writer(data)
         return handle_this
 
-    ou_handler = handler(get_orgunit_data, orgunit_writer)
-    employee_handler = handler(get_employee_data, employee_writer)
+    ou_handler = handler(get_orgunit_data, writer.write_unit)
+    employee_handler = handler(get_employee_data, writer.write_employee)
 
-    p = Pool(10)
+    p = multiprocessing.dummy.Pool(no_of_jobs)
     # First, org units
     p.map(ou_handler, (mo_api.OrgUnit(ou['uuid']) for ou in ous))
-    p.close()
-    p.join()
 
-    p = Pool(10)
     # Now, employees
     p.map(employee_handler, (mo_api.Employee(e['uuid']) for e in employees))
+
+    # Finally, wait
     p.close()
     p.join()
 
 
-def file_writer(directory, field_name='uuid'):
-    """Return a function that writes data to a given directory.
+class AbstractWriter(abc.ABC):
+    @abc.abstractmethod
+    def write(self, datatype, data):
+        pass
 
-    The data must be JSON and is  stored in a file name taken from the
-    data's field as indicated by the ``field_name`` parameter."""
+    @abc.abstractmethod
+    def clean(self, datatype):
+        pass
 
-    base_dir = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), '..', 'var')
-    )
-    target_dir = os.path.join(base_dir, directory)
+    def _do_write(self, datatype, data):
+        logger.debug("%s: %s", datatype, data['uuid'])
 
-    if not os.path.exists(target_dir):
-        os.makedirs(target_dir)
+        self.write(datatype, data)
 
-    def writer(data):
-        out_file = "{}.json".format(data[field_name].replace(' ', ''))
-        out_file = os.path.join(target_dir, out_file)
-        with open(out_file, 'w') as f:
-            json.dump(data, f)
+    def write_unit(self, data):
+        self._do_write('departments', data)
 
-    return writer
+    def write_employee(self, data):
+        self._do_write('employees', data)
 
 
-def main():  # pragma: no cover
-    # Main program.
-    orgunit_writer = file_writer('ous')
-    employee_writer = file_writer('employees')
+class FileWriter(AbstractWriter):
+    def __init__(self, base_dir):
+        self.base_dir = pathlib.Path(base_dir)
 
-    print("Writing data ...")
-    try:
-        write_phonebook_data(orgunit_writer, employee_writer)
-    except Exception as e:
-        with open(IMPORT_LOG_FILE, 'a') as log_file:
-            tb = traceback.format_exc()
-            now = datetime.datetime.now()
-            print(
-                "{} - Failed to import phonebook data: {}".format(now, str(e)),
-                file=log_file
+    def clean(self):
+        if self.base_dir.exists():
+            shutil.rmtree(str(self.base_dir))
+
+    def write(self, datatype, data):
+        basename = data['uuid']
+        destdir = self.base_dir / datatype
+        destfile = destdir / (basename + '.json')
+
+        destdir.mkdir(parents=True, exist_ok=True)
+
+        with open(str(destfile), 'w') as fp:
+            json.dump(data, fp, indent=2)
+
+
+class SolrWriter(AbstractWriter):
+    def __init__(self, base_url):
+        self.base_url = base_url
+        self.cores = {
+            datatype: pysolr.Solr(
+                '/'.join((self.base_url, datatype)),
+                always_commit=True,
             )
-            print('STACK TRACE:\n {}'.format(tb), file=log_file)
-        sys.exit(-1)
+            for datatype in ('employees', 'departments')
+        }
+
+    def clean(self):
+        for core in self.cores.values():
+            core.delete(q='*:*')
+
+    def write(self, datatype, data):
+        self.cores[datatype].add([data])
+
+
+@click.command(context_settings={
+    'help_option_names': ('-h', '--help'),
+})
+@click_log.simple_verbosity_option(
+    logger,
+    envvar='IMPORT_LOG_LEVEL',
+    show_envvar=True,
+)
+@click.option(
+    '-u',
+    '--url',
+    'output_url',
+    envvar='SOLR_URL',
+    show_envvar=True,
+    help='Upload import results to the given Apache SOLR URL.',
+)
+@click.option(
+    '-l',
+    '--log-file',
+    type=click.Path(),
+    envvar='IMPORT_LOG_FILE',
+    show_envvar=True,
+    help='Right the log to the given file.',
+)
+@click.option(
+    '-d',
+    '--dir',
+    'output_dir',
+    type=click.Path(dir_okay=True, file_okay=False),
+    envvar='OUTPUT_DIR',
+    show_envvar=True,
+    help='Dump the import results to the given location.',
+)
+@click.option(
+    '-j',
+    '--jobs',
+    metavar='N',
+    envvar='IMPORT_JOBS',
+    type=int,
+    default=10,
+    show_envvar=True,
+    show_default=True,
+    help='Allow up to N parallel requests.',
+)
+def main(output_dir, output_url, log_file, jobs):  # pragma: no cover
+    """Command for importing an OS2mo installation into Apache SOLR.
+
+    The command requires a destination; either in the form of a SOLR
+    or directory.
+
+    """
+    if log_file:
+        log_path = pathlib.Path(log_file)
+        # Create log directory if it doesn't exist.
+        log_path.parent.mkdir(exist_ok=True)
+
+        logger.addHandler(logging.FileHandler(log_file))
+    else:
+        logger.addHandler(logging.StreamHandler(sys.stderr))
+
+    # Main program.
+    if output_url:
+        writer = SolrWriter(output_url)
+    elif output_dir:
+        writer = FileWriter(output_dir)
+    else:
+        raise click.UsageError('please specify a destination')
+
+    logger.info("Cleaning...")
+
+    writer.clean()
+
+    logger.info("Import begun...")
+
+    try:
+        write_phonebook_data(writer, jobs)
+    except Exception:
+        logger.exception("Import failed!")
+        raise
+
+    logger.info("done!")
 
 
 if __name__ == '__main__':  # pragma: no cover
     main()
-    print("done")
