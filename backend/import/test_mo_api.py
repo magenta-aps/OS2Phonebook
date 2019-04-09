@@ -79,15 +79,11 @@ def test_get_orgunit_data():
 
 
 def test_file_writer():
-    writer = do_import.file_writer('test', 'test')
-    writer({'test': 'Hej'})
-    assert True
-
-
-def test_write_phonebook_data():
-    """
-    do_import.write_phonebook_data(lambda d: None, lambda d: None)
-    """
+    writer = do_import.FileWriter(CURRENT_DIR + '/test')
+    writer.clean()
+    writer.write_employee({'test': 'Hej', 'uuid': '42'})
+    writer.write_unit({'test': 'Hej', 'uuid': '42'})
+    writer.clean()
     assert True
 
 
