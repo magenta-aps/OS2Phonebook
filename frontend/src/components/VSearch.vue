@@ -1,7 +1,11 @@
 <template>
   <b-form>
     <div class="mb-2 form-row">
-      <v-search-option class="col-10" @change-option="updateSelection"/>
+      <v-organisation-option class="col-10" @change-option="updateOrgSelection"/>
+    </div>
+
+    <div class="mb-2 form-row">
+      <v-search-option class="col-10" @change-option="updateCriteriaSelection"/>
     </div>
 
     <div class="form-row">
@@ -32,6 +36,7 @@ import GetSearchFields from '@/mixins/GetSearchFields'
 import GetFilterSelectedOption from '@/mixins/GetFilterSelectedOption'
 import VSearchBarTemplate from './VSearchBarTemplate'
 import VSearchOption from './VSearchOption'
+import VOrganisationOption from './VOrganisationOption'
 import VAutocomplete from 'v-autocomplete'
 import '../../node_modules/v-autocomplete/dist/v-autocomplete.css'
 import { mapGetters } from 'vuex'
@@ -41,12 +46,14 @@ export default {
 
   components: {
     VAutocomplete,
-    VSearchOption
+    VSearchOption,
+    VOrganisationOption
   },
 
   data () {
     return {
-      selectedOption: null,
+      selectedCriteriaOption: null,
+      selectedOrgOption: null,
       item: null,
       template: VSearchBarTemplate,
       /**
@@ -81,24 +88,28 @@ export default {
       inputVal = inputVal.trim()
       let vm = this
       let fields = ['name', 'locations', 'departments']
+      let organisation = '*'
 
-      if (this.selectedOption === 'job_titles') {
+      if (this.selectedOrgOption) {
+        organisation = this.selectedOrgOption
+      }
+      if (this.selectedCriteriaOption === 'job_titles') {
         fields = ['departments']
       }
-      if (this.selectedOption === 'emails') {
+      if (this.selectedCriteriaOption === 'emails') {
         fields = ['locations']
       }
-      if (this.selectedOption === 'phone_numbers') {
+      if (this.selectedCriteriaOption === 'phone_numbers') {
         fields = ['locations']
       }
-      if (this.selectedOption === 'persons') {
+      if (this.selectedCriteriaOption === 'persons') {
         fields = ['name']
       }
-      if (this.selectedOption === 'departments') {
+      if (this.selectedCriteriaOption === 'departments') {
         fields = ['name']
       }
 
-      SearchMultipleFields(inputVal, fields)
+      SearchMultipleFields(inputVal, fields, organisation)
         .then(res => {
           let results = []
           res.forEach(result => {
@@ -109,7 +120,7 @@ export default {
          * If we are searching within a specific field, we need only to return results
          * where inputVal was within that specific field.
          */
-          results = this.getFilterSelectedOption(this.selectedOption, results, inputVal)
+          results = this.getFilterSelectedOption(this.selectedCriteriaOption, results, inputVal)
 
           if (!results.length) {
             results = results.concat(vm.noItem)
@@ -152,15 +163,19 @@ export default {
          * Within this, we can get the current search string with searchText attribute.
          */
         this.$store.dispatch('searchResults/UPDATE_RESULTS')
-        this.$router.push({ name: 'result', query: { fq: this.$refs.searchWord.searchText, criteria: this.selectedOption } })
+        this.$router.push({ name: 'result', query: { fq: this.$refs.searchWord.searchText, criteria: this.selectedCriteriaOption, root: this.selectedOrgOption } })
       }
     },
 
     /**
-     * Update which search criteria is selected, based on event value from child component.
+     * Update which search criteria/organisation is selected, based on event value from child component.
      */
-    updateSelection (val) {
-      this.selectedOption = val
+    updateOrgSelection (val) {
+      this.selectedOrgOption = val
+    },
+
+    updateCriteriaSelection (val) {
+      this.selectedCriteriaOption = val
     }
   },
 

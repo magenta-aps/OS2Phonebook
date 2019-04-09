@@ -13,9 +13,11 @@
   "associated": "Tilknyttede",
   "employees": "Ansatte",
   "search": "Søg",
+  "department_option": "Vælg organisation",
   "job_title": "Stillingsbetegnelse",
 
  "searchOptions": {
+    "search_criteria_option": "Vælg søgekriterier",
     "departments": "Afdelinger",
     "emails": "Email adresser",
     "tasks": "Opgaver",
