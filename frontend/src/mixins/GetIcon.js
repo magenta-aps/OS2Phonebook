@@ -1,19 +1,27 @@
 export default {
   methods: {
     getIcon (locationType) {
-      if (locationType === 'Telefon') {
+      if (locationType === 'PhoneEmployee') {
         return 'phone'
-      } else if (locationType === 'Henvendelsessted') {
+      } else if (locationType === 'PhoneUnit') {
+        return 'phone'
+      } else if (locationType === 'AdresseHenvendelsessted') {
         return 'map-marker-alt'
-      } else if (locationType === 'Email') {
+      } else if (locationType === 'AdressePostEmployee') {
+        return 'map-marker-alt'
+      } else if (locationType === 'EmailEmployee') {
         return 'envelope'
-      } else if (locationType === 'Webadresse') {
+      } else if (locationType === 'EmailUnit') {
+        return 'envelope'
+      } else if (locationType === 'WebUnit') {
         return 'globe'
-      } else if (locationType === 'EAN Nummer') {
+      } else if (locationType === 'EAN') {
         return 'list-ol'
-      } else if (locationType === 'P-nummer') {
+      } else if (locationType === 'p-nummer') {
         return 'list-ol'
-      } else if (locationType === 'Lokation') {
+      } else if (locationType === 'LocationUnit') {
+        return 'book'
+      } else if (locationType === 'LocationEmployee') {
         return 'book'
       }
       return null

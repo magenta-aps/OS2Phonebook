@@ -21,10 +21,10 @@
         <template v-if="result.locations && result.locations.length">
           <b-list-group-item
             v-for="(location, index) in result.locations" :key="Object.keys(location)[index]"
-            :class="!getIcon(location[0]) ? 'empty' : ''"
+            :class="!getIcon(location[1]) ? 'empty' : ''"
           >
-            <template v-if="getIcon(location[0])">
-              <icon  class="mb-1" :name="getIcon(location[0])"/>
+            <template v-if="getIcon(location[1])">
+              <icon  class="mb-1" :name="getIcon(location[1])"/>
               <span class="col">{{ location[3] }}</span>
             </template>
           </b-list-group-item>
