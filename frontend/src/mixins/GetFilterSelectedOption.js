@@ -7,14 +7,14 @@ export default {
             const res = JSON.parse(result.document)
             return res.locations.some(loc => {
               // if we are searching in emails, inputVal needs to be on position 1 in a locations array whose 0th item === 'EMAIL' for the result to be valid.
-              return loc[0] === 'EMAIL' && loc[1].toLowerCase().indexOf(inputVal.toLowerCase()) !== -1
+              return loc[2] === 'EMAIL' && loc[3].toLowerCase().indexOf(inputVal.toLowerCase()) !== -1
             })
           })
         } else if (option === 'phone_numbers') {
           return results.filter(result => {
             const res = JSON.parse(result.document)
             return res.locations.some(loc => {
-              return loc[0] === 'PHONE' && loc[1].indexOf(inputVal) !== -1
+              return loc[2] === 'PHONE' && loc[3].indexOf(inputVal) !== -1
             })
           })
         } else if (option === 'job_titles') {
