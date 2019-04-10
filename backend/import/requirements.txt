@@ -1,0 +1,11 @@
+git+https://github.com/OS2mo/os2mo-tools#egg=os2mo_tools
+atomicwrites==1.2.1
+attrs==18.2.0
+certifi==2018.10.15
+chardet==3.0.4
+idna==2.7
+six==1.11.0
+urllib3==1.24
+pysolr
+click
+click-log

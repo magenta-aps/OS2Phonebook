@@ -1,0 +1,63 @@
+import Service from '@/api/HttpCommon'
+
+export default {
+  /**
+   * Search for employees.
+   * @param {String} key - search key.
+   * @param {String} value - search value.
+   * @returns {Array} a list of employees matching the query.
+   */
+  employees (key, value, org) {
+    key = key || '*'
+    value = value || '*'
+    org = org || '*'
+    return Service.get(`/employees/select?fq=${key}:"${value}" AND root_uuid:"${org}"&rows=100000&q=*:*`)
+      .then(response => {
+        return response.data
+      })
+      .catch(error => {
+        console.log(error.response)
+      })
+  },
+
+  /**
+   * Search for departments.
+   * @param {String} key - search key.
+   * @param {String} value - search value.
+   * @returns {Array} a list of departments matching the query.
+   */
+  departments (key, value, org) {
+    key = key || '*'
+    value = value || '*'
+    org = org || '*'
+    return Service.get(`/departments/select?fq=${key}:"${value}" AND root_uuid:"${org}"&rows=100000&q=*:*`)
+      .then(response => {
+        return response.data
+      })
+      .catch(error => {
+        console.log(error.response)
+      })
+  },
+
+  roots () {
+    return Service.get(`/departments/select?q=parent:ROOT&rows=100000`)
+      .then(response => {
+        return response.data
+      })
+      .catch(error => {
+        console.log(error.response)
+      })
+  },
+
+  treeView (key, value) {
+    key = key || '*'
+    value = value || '*'
+    return Service.get(`/departments/select?q=${key}:${value}&rows=100000`)
+      .then(response => {
+        return response.data
+      })
+      .catch(error => {
+        console.log(error.response)
+      })
+  }
+}
