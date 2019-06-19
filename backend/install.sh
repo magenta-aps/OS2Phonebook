@@ -43,27 +43,18 @@ fi
 # We'll work here
 cd $(dirname $0)
 
-if [ ! -d "solr-7.7.1" ]
+if [ ! -d "solr-7.7.2" ]
 then
 
     #Get SOLR
-    wget http://dk.mirrors.quenda.co/apache/lucene/solr/7.7.1/solr-7.7.1.tgz
+    wget http://dk.mirrors.quenda.co/apache/lucene/solr/7.7.2/solr-7.7.2.tgz
 
-    # Verify SOLR download
-    if sha512sum --status -c docs/solr.sha1 
-    then 
-        echo 'SOLR download OK'
-    else 
-        echo 'SOLR download failed!'
-        exit 1
-    fi
+    tar xvf solr-7.7.2.tgz
+    rm solr-7.7.2.tgz
 
-    tar xvf solr-7.7.1.tgz
-    rm solr-7.7.1.tgz
-
-    solr-7.7.1/bin/solr start
-    solr-7.7.1/bin/solr create -c departments -s 2 -rf 2
-    solr-7.7.1/bin/solr create -c employees -s 2 -rf 2
+    solr-7.7.2/bin/solr start
+    solr-7.7.2/bin/solr create -c departments -s 2 -rf 2
+    solr-7.7.2/bin/solr create -c employees -s 2 -rf 2
 
     # Create schema for departments
     
@@ -90,7 +81,7 @@ then
 
 
 else
-    echo "SOLR already installed; use solr-7.7.1/bin/solr status to check."
+    echo "SOLR already installed; use solr-7.7.2/bin/solr status to check."
 fi
 
 # Install importer
