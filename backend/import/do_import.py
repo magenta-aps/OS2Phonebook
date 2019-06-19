@@ -132,14 +132,19 @@ def get_employee_data(employee, excluded_root_ous=None):
             a['org_unit']['uuid'], a['association_type']['name']
          ) for a in employee.association
     ]
-    # Check roots of this organization
-    root_uuids = [
-        get_root(mo_api.OrgUnit(dp[1]))['uuid']
+    # Check roots of user's departments.
+    root_ous = [
+        get_root(mo_api.OrgUnit(dp[1]))
         for dp in (departments + associated_units)
     ]
+    root_uuids = {
+        r['uuid'] for r in root_ous if r['user_key'] not in excluded_root_ous
+    }
+    if not root_uuids:
+        return None
 
     employee_data = dict(
-        root_uuid=list(set(root_uuids)),
+        root_uuid=list(root_uuids),
         uuid=employee.json['uuid'],
         name=employee.json['name'],
         locations=locations,
