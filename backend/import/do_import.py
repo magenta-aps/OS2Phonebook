@@ -19,6 +19,7 @@ import click
 import click_log
 import pysolr
 
+
 from os2mo_tools import mo_api
 
 SECRET = 'Hemmelig'
@@ -32,17 +33,22 @@ def is_visible(a):
     return not ('visibility' in a and a['visibility']['user_key'] == SECRET)
 
 
-def get_root_uuid(ou):
+def get_root(ou):
     """Get root of current org unit."""
     ou_dict = ou.json
 
     while ou_dict['parent']:
         ou_dict = ou_dict['parent']
-    return ou_dict['uuid']
+    return ou_dict
 
 
-def get_orgunit_data(ou):
+def get_orgunit_data(ou, excluded_root_ous):
     """Get the data we need to display for this particular org. func."""
+
+    root_ou_json = get_root(ou)
+    if root_ou_json['user_key'] in excluded_root_ous:
+        return None
+
     # Parent - UUID if exists, ROOT if not.
     parent = ou.json['parent']['uuid'] if ou.json['parent'] else 'ROOT'
     # For employees, we need job function, name and UUID.
@@ -78,13 +84,10 @@ def get_orgunit_data(ou):
         ) for m in ou.manager
     ]
 
-    # Get root UUID of current org unit.
-    root_uuid = get_root_uuid(ou)
-
     orgunit_data = dict(
         uuid=ou.json['uuid'],
         name=ou.json['name'],
-        root_uuid=root_uuid,
+        root_uuid=root_ou_json['uuid'],
         parent=parent,
         locations=locations,
         employees=employees,
@@ -97,7 +100,7 @@ def get_orgunit_data(ou):
     return orgunit_data
 
 
-def get_employee_data(employee):
+def get_employee_data(employee, excluded_root_ous=None):
     """Get the data we need to display this employee."""
     # For locations, their type and content.
     locations = [
@@ -129,14 +132,19 @@ def get_employee_data(employee):
             a['org_unit']['uuid'], a['association_type']['name']
          ) for a in employee.association
     ]
-    # root uuid
-    root_uuids = [
-        get_root_uuid(mo_api.OrgUnit(dp[1]))
+    # Check roots of user's departments.
+    root_ous = [
+        get_root(mo_api.OrgUnit(dp[1]))
         for dp in (departments + associated_units)
     ]
+    root_uuids = {
+        r['uuid'] for r in root_ous if r['user_key'] not in excluded_root_ous
+    }
+    if not root_uuids:
+        return None
 
     employee_data = dict(
-        root_uuid=list(set(root_uuids)),
+        root_uuid=list(root_uuids),
         uuid=employee.json['uuid'],
         name=employee.json['name'],
         locations=locations,
@@ -149,7 +157,7 @@ def get_employee_data(employee):
     return employee_data
 
 
-def write_phonebook_data(writer, no_of_jobs):
+def write_phonebook_data(writer, no_of_jobs, excluded_root_ous):
     """Write data to store in backend DB.
 
     The ``writer`` argument are subclasses of
@@ -161,8 +169,9 @@ def write_phonebook_data(writer, no_of_jobs):
 
     def handler(getter, writer):
         def handle_this(obj):
-            data = getter(obj)
-            writer(data)
+            data = getter(obj, excluded_root_ous)
+            if data:
+                writer(data)
         return handle_this
 
     ou_handler = handler(get_orgunit_data, writer.write_unit)
@@ -283,7 +292,14 @@ class SolrWriter(AbstractWriter):
     show_default=True,
     help='Allow up to N parallel requests.',
 )
-def main(output_dir, output_url, log_file, jobs):  # pragma: no cover
+@click.option(
+    '-e',
+    '--exclude',
+    envvar='EXCLUDE',
+    multiple=True,
+    help='Exclude these top level org units'
+)
+def main(output_dir, output_url, log_file, jobs, exclude):  # pragma: no cover
     """Command for importing an OS2mo installation into Apache SOLR.
 
     The command requires a destination; either in the form of a SOLR
@@ -298,6 +314,9 @@ def main(output_dir, output_url, log_file, jobs):  # pragma: no cover
         logger.addHandler(logging.FileHandler(log_file))
     else:
         logger.addHandler(logging.StreamHandler(sys.stderr))
+
+    # The excluded top level orgs will be handled as a set.
+    excluded_root_ous = set(exclude)
 
     # Main program.
     if output_url:
@@ -314,7 +333,7 @@ def main(output_dir, output_url, log_file, jobs):  # pragma: no cover
     logger.info("Import begun...")
 
     try:
-        write_phonebook_data(writer, jobs)
+        write_phonebook_data(writer, jobs, excluded_root_ous)
     except Exception:
         logger.exception("Import failed!")
         raise
