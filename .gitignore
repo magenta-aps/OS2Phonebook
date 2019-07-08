@@ -6,3 +6,4 @@ solr-*
 .coverage
 build/
 coverage.xml
+.idea/
