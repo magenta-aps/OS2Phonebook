@@ -28,16 +28,22 @@
 export default {
   name: 'SearchOption',
 
-  data () {
-    return {
-      selected: this.$route.query.criteria || null
+  computed: {
+    selected: {
+      get () {
+        return this.$store.getters['searchResults/GET_SELECTED_CRITERIA_OPTION']
+      },
+      set (value) {
+        this.$store.commit('searchResults/SET_SELECTED_CRITERIA_OPTION', value)
+      }
     }
   },
-
-  watch: {
-    selected (val) {
-      this.$emit('change-option', val)
+  mounted () {
+    let selectedCriteria = this.$route.query.criteria
+    if (selectedCriteria) {
+      this.selected = selectedCriteria
     }
   }
+
 }
 </script>

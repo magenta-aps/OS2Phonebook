@@ -1,11 +1,11 @@
 <template>
   <b-form>
     <div class="mb-2 form-row">
-      <v-organisation-option class="col-10" @change-option="updateOrgSelection"/>
+      <v-organisation-option class="col-10"/>
     </div>
 
     <div class="mb-2 form-row">
-      <v-search-option class="col-10" @change-option="updateCriteriaSelection"/>
+      <v-search-option class="col-10"/>
     </div>
 
     <div class="form-row">
@@ -52,8 +52,6 @@ export default {
 
   data () {
     return {
-      selectedCriteriaOption: null,
-      selectedOrgOption: null,
       item: null,
       template: VSearchBarTemplate,
       /**
@@ -76,7 +74,9 @@ export default {
 
   computed: {
     ...mapGetters({
-      searchItems: 'searchResults/GET_ITEMS'
+      searchItems: 'searchResults/GET_ITEMS',
+      selectedCriteriaOption: 'searchResults/GET_SELECTED_CRITERIA_OPTION',
+      selectedOrgOption: 'searchResults/GET_SELECTED_ORG_OPTION'
     })
   },
 
@@ -165,22 +165,15 @@ export default {
         this.$store.dispatch('searchResults/UPDATE_RESULTS')
         this.$router.push({ name: 'result', query: { fq: this.$refs.searchWord.searchText, criteria: this.selectedCriteriaOption, root: this.selectedOrgOption } })
       }
-    },
-
-    /**
-     * Update which search criteria/organisation is selected, based on event value from child component.
-     */
-    updateOrgSelection (val) {
-      this.selectedOrgOption = val
-    },
-
-    updateCriteriaSelection (val) {
-      this.selectedCriteriaOption = val
     }
   },
 
   mounted () {
-    this.$refs.searchWord.searchText = this.$route.query.fq || ''
+    let searchText = this.$route.query.fq
+    if (searchText) {
+      this.$refs.searchWord.searchText = searchText
+      this.updateItems(searchText)
+    }
   }
 }
 </script>

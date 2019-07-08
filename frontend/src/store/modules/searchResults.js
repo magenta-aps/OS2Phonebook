@@ -3,6 +3,8 @@ import GetFilterSelectedOption from '@/mixins/GetFilterSelectedOption'
 
 const state = {
   searchItems: [],
+  selectedCriteriaOption: null,
+  selectedOrgOption: null,
   noItem: [
     {
       document: JSON.stringify({
@@ -70,6 +72,12 @@ const mutations = {
   SET_SEARCH (state, payload) {
     state.searchItems = payload
   },
+  SET_SELECTED_ORG_OPTION (state, payload) {
+    state.selectedOrgOption = payload
+  },
+  SET_SELECTED_CRITERIA_OPTION (state, payload) {
+    state.selectedCriteriaOption = payload
+  },
   UPDATE_RESULTS (state, payload) {
     state.refresh = payload
   },
@@ -80,7 +88,9 @@ const mutations = {
 
 const getters = {
   GET_ITEMS: state => state.searchItems,
-  GET_FORMATTED_ITEMS: state => state.formattedItems
+  GET_FORMATTED_ITEMS: state => state.formattedItems,
+  GET_SELECTED_ORG_OPTION: state => state.selectedOrgOption,
+  GET_SELECTED_CRITERIA_OPTION: state => state.selectedCriteriaOption
 }
 
 export default {
