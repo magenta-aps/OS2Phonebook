@@ -64,6 +64,12 @@ const actions = {
         results.push(JSON.parse(filteredResults[item].document))
       }
     }
+    // Sorting the data in SOLR requires extensions to the schema, due to the
+    // way the 'name' field is tokenized for searching. Sorting in the UI has
+    // minimal performance impact, so it should be good enough.
+    results.sort(function (a, b) {
+      return a.name.localeCompare(b.name, 'da')
+    })
     commit('SET_FORMATTED_ITEMS', results)
   }
 }
