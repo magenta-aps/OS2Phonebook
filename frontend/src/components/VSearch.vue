@@ -84,7 +84,7 @@ export default {
     /**
      * Update employee or organisation suggestions based on search query.
      */
-    updateItems (inputVal) {
+    async updateItems (inputVal) {
       inputVal = inputVal.trim()
       let vm = this
       let fields = ['name', 'locations', 'departments']
@@ -109,7 +109,7 @@ export default {
         fields = ['name']
       }
 
-      SearchMultipleFields(inputVal, fields, organisation)
+      return SearchMultipleFields(inputVal, fields, organisation)
         .then(res => {
           let results = []
           res.forEach(result => {
@@ -172,7 +172,7 @@ export default {
     let searchText = this.$route.query.fq
     if (searchText) {
       this.$refs.searchWord.searchText = searchText
-      this.updateItems(searchText)
+      this.updateItems(searchText).then(this.viewSearchResults)
     }
   }
 }
