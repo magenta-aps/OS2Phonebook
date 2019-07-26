@@ -169,6 +169,7 @@ export default {
   },
 
   mounted () {
+    this.$store.commit('searchResults/SET_SEARCH', [])
     let searchText = this.$route.query.fq
     if (searchText) {
       this.$refs.searchWord.searchText = searchText
