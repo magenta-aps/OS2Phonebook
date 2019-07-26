@@ -43,6 +43,8 @@ export default {
     let selectedCriteria = this.$route.query.criteria
     if (selectedCriteria) {
       this.selected = selectedCriteria
+    } else {
+      this.selected = 'departments'
     }
   }
 
