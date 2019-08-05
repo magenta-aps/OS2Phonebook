@@ -20,13 +20,23 @@ export default {
 
   data () {
     return {
-      selected: this.$route.query.root || null,
       organisations: []
     }
   },
 
   created () {
     this.getOrganisations()
+  },
+
+  computed: {
+    selected: {
+      get () {
+        return this.$store.getters['searchResults/GET_SELECTED_ORG_OPTION']
+      },
+      set (value) {
+        this.$store.commit('searchResults/SET_SELECTED_ORG_OPTION', value)
+      }
+    }
   },
 
   methods: {
@@ -41,9 +51,10 @@ export default {
     }
   },
 
-  watch: {
-    selected (val) {
-      this.$emit('change-option', val)
+  mounted () {
+    let selectedOrgOption = this.$route.query.root
+    if (selectedOrgOption) {
+      this.selected = selectedOrgOption
     }
   }
 }

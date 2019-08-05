@@ -81,6 +81,23 @@ export default {
               tree.push(node)
             }
           })
+
+          // Sorting the data in SOLR requires extensions to the schema, due
+          // to the way the 'name' field is tokenized for searching. Sorting
+          // in the UI has minimal performance impact so it should be good enough.
+          let sortTree = tree => {
+            tree.forEach(node => {
+              let children = node.children
+              if (children) {
+                children.sort((a, b) => {
+                  return a.name.localeCompare(b.name, 'da')
+                })
+                sortTree(children)
+              }
+            })
+          }
+          sortTree(tree)
+
           // remove all non-root items from the 0th level of the tree, as they have been added as children.
           this.treeData = tree
         })

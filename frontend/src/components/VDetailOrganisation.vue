@@ -53,9 +53,7 @@
             <router-link :to="{ name: 'person', params: { uuid: manager[2] } }">
               {{manager[1]}}
             </router-link>
-          </b-list-group-item>
-          <b-list-group-item>
-            {{manager[0]}}
+            - {{manager[0]}}
           </b-list-group-item>
           </b-list-group>
       </div>
@@ -71,9 +69,7 @@
             <router-link :to="{ name: 'person', params: { uuid: employee[1] } }">
               {{employee[0]}}
             </router-link>
-          </b-list-group-item>
-          <b-list-group-item>
-            {{employee[2]}}, {{employee[3]}}
+            - {{filterAndJoin(employee[2], employee[3])}}
           </b-list-group-item>
           </b-list-group>
       </div>
@@ -89,9 +85,7 @@
             <router-link :to="{ name: 'person', params: { uuid: associated[1] } }">
               {{associated[0]}}
             </router-link>
-          </b-list-group-item>
-          <b-list-group-item>
-            {{associated[2]}}, {{associated[3]}}
+            - {{filterAndJoin(associated[2], associated[3])}}
           </b-list-group-item>
           </b-list-group>
       </div>
@@ -140,6 +134,9 @@ export default {
   methods: {
     setData (payload) {
       this.result = payload
+    },
+    filterAndJoin (...args) {
+      return args.filter(x => x).join(', ')
     }
   },
 

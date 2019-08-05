@@ -3,6 +3,8 @@ import GetFilterSelectedOption from '@/mixins/GetFilterSelectedOption'
 
 const state = {
   searchItems: [],
+  selectedCriteriaOption: null,
+  selectedOrgOption: null,
   noItem: [
     {
       document: JSON.stringify({
@@ -62,6 +64,12 @@ const actions = {
         results.push(JSON.parse(filteredResults[item].document))
       }
     }
+    // Sorting the data in SOLR requires extensions to the schema, due to the
+    // way the 'name' field is tokenized for searching. Sorting in the UI has
+    // minimal performance impact, so it should be good enough.
+    results.sort(function (a, b) {
+      return a.name.localeCompare(b.name, 'da')
+    })
     commit('SET_FORMATTED_ITEMS', results)
   }
 }
@@ -69,6 +77,12 @@ const actions = {
 const mutations = {
   SET_SEARCH (state, payload) {
     state.searchItems = payload
+  },
+  SET_SELECTED_ORG_OPTION (state, payload) {
+    state.selectedOrgOption = payload
+  },
+  SET_SELECTED_CRITERIA_OPTION (state, payload) {
+    state.selectedCriteriaOption = payload
   },
   UPDATE_RESULTS (state, payload) {
     state.refresh = payload
@@ -80,7 +94,9 @@ const mutations = {
 
 const getters = {
   GET_ITEMS: state => state.searchItems,
-  GET_FORMATTED_ITEMS: state => state.formattedItems
+  GET_FORMATTED_ITEMS: state => state.formattedItems,
+  GET_SELECTED_ORG_OPTION: state => state.selectedOrgOption,
+  GET_SELECTED_CRITERIA_OPTION: state => state.selectedCriteriaOption
 }
 
 export default {

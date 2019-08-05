@@ -1,26 +1,27 @@
 <template>
   <div>
-    <b-form-select v-model="selected" class="col">
-      <option :value="null">{{ $t('searchOptions.search_criteria_option') }}</option>
-      <option value="departments">
-        {{ $t('searchOptions.departments') }}
-      </option>
-      <option value="emails">
-        {{ $t('searchOptions.emails') }}
-      </option>
-      <option>
-        {{ $t('searchOptions.tasks') }}
-      </option>
-      <option value="persons">
-        {{ $t('searchOptions.employees') }}
-      </option>
-      <option value="job_titles">
-        {{ $t('searchOptions.job_titles') }}
-      </option>
-      <option value="phone_numbers">
-        {{ $t('searchOptions.phone_numbers') }}
-      </option>
-    </b-form-select>
+    <b-form-group class="col">
+      <b-form-radio-group v-model="selected">
+        <b-form-radio value="departments">
+          {{ $t('searchOptions.departments') }}
+        </b-form-radio>
+        <b-form-radio value="emails">
+          {{ $t('searchOptions.emails') }}
+        </b-form-radio>
+        <b-form-radio>
+          {{ $t('searchOptions.tasks') }}
+        </b-form-radio>
+        <b-form-radio value="persons">
+          {{ $t('searchOptions.employees') }}
+        </b-form-radio>
+        <b-form-radio value="job_titles">
+          {{ $t('searchOptions.job_titles') }}
+        </b-form-radio>
+        <b-form-radio value="phone_numbers">
+          {{ $t('searchOptions.phone_numbers') }}
+        </b-form-radio>
+      </b-form-radio-group>
+    </b-form-group>
   </div>
 </template>
 
@@ -28,16 +29,24 @@
 export default {
   name: 'SearchOption',
 
-  data () {
-    return {
-      selected: this.$route.query.criteria || null
+  computed: {
+    selected: {
+      get () {
+        return this.$store.getters['searchResults/GET_SELECTED_CRITERIA_OPTION']
+      },
+      set (value) {
+        this.$store.commit('searchResults/SET_SELECTED_CRITERIA_OPTION', value)
+      }
     }
   },
-
-  watch: {
-    selected (val) {
-      this.$emit('change-option', val)
+  mounted () {
+    let selectedCriteria = this.$route.query.criteria
+    if (selectedCriteria) {
+      this.selected = selectedCriteria
+    } else {
+      this.selected = 'departments'
     }
   }
+
 }
 </script>

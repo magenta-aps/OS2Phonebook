@@ -32,10 +32,7 @@
         </b-list-group-item>
         <b-list-group class="mt-2" v-for="department in result.departments" :key="department[1]">
           <b-list-group-item>
-              {{department[2]}}
-          </b-list-group-item>
-          <b-list-group-item>
-            {{department[3]}}
+              {{department[2]}} - {{department[3]}}
           </b-list-group-item>
         </b-list-group>
       </div>
@@ -66,9 +63,7 @@
             <router-link :to="{ name: 'organisation', params: { uuid: manager[1] } }">
               {{manager[0]}}
             </router-link>
-          </b-list-group-item>
-          <b-list-group-item>
-            {{manager[2]}}
+            - {{manager[2]}}
           </b-list-group-item>
         </b-list-group>
       </div>
@@ -84,9 +79,7 @@
             <router-link :to="{ name: 'organisation', params: { uuid: associated[1] } }">
               {{associated[0]}}
             </router-link>
-          </b-list-group-item>
-          <b-list-group-item>
-            {{associated[2]}}, {{associated[3]}}
+            - {{filterAndJoin(associated[2], associated[3])}}
           </b-list-group-item>
         </b-list-group>
       </div>
@@ -105,6 +98,12 @@ export default {
   props: {
     uuid: String,
     result: Object
+  },
+
+  methods: {
+    filterAndJoin (...args) {
+      return args.filter(x => x).join(', ')
+    }
   }
 }
 </script>
