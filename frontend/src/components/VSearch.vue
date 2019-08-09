@@ -93,6 +93,7 @@ export default {
       if (this.selectedOrgOption) {
         organisation = this.selectedOrgOption
       }
+
       if (this.selectedCriteriaOption === 'job_titles') {
         fields = ['departments']
       }
@@ -141,14 +142,13 @@ export default {
      * Go to the selected route.
      */
     selected (searchResult) {
-      const parsedDocument = JSON.parse(this.item.document)
-      if (!parsedDocument.hasOwnProperty('clickable')) {
-        if (JSON.parse(this.item.document).parent) {
-          this.$router.push({ name: 'organisation', params: { uuid: JSON.parse(searchResult.document).uuid } })
+      if (!this.item.hasOwnProperty('clickable')) {
+        if (this.item.parent) {
+          this.$router.push({ name: 'organisation', params: { uuid: searchResult.uuid } })
         } else {
-          this.$router.push({ name: 'person', params: { uuid: JSON.parse(searchResult.document).uuid } })
+          this.$router.push({ name: 'person', params: { uuid: searchResult.uuid } })
         }
-      } else if (parsedDocument.clickable === false) {
+      } else if (this.item.clickable === false) {
         this.$refs.searchWord.searchText = ''
       }
     },

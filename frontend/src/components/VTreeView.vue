@@ -61,7 +61,7 @@ export default {
     getTreeData () {
       TreeData.treeView('uuid')
         .then(res => {
-          let parsedResults = res.response.docs.map(d => JSON.parse(d.document))
+          let parsedResults = res
           let dataMap = parsedResults.reduce(function (map, node) {
             map[node.uuid] = node
             return map

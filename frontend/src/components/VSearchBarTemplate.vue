@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span>{{ parsedItem.name }}</span>
+    <span>{{ item.name }}</span>
   </div>
 </template>
 
@@ -8,12 +8,6 @@
 export default {
   props: {
     item: { required: true }
-  },
-
-  computed: {
-    parsedItem () {
-      return JSON.parse(this.item.document)
-    }
   }
 }
 </script>
