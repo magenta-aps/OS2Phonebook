@@ -60,11 +60,9 @@ export default {
        */
       noItem: [
         {
-          document: JSON.stringify({
-            name: 'Ingen resultater matcher din søgning',
-            type: 'noresult_placeholder',
-            clickable: false
-          })
+          name: 'Ingen resultater matcher din søgning',
+          type: 'noresult_placeholder',
+          clickable: false
         }
       ]
     }

@@ -4,10 +4,8 @@ const state = {
   selectedOrgOption: null,
   noItem: [
     {
-      document: JSON.stringify({
-        name: 'Ingen resultater matcher din søgning',
-        type: 'noresult_placeholder'
-      })
+      name: 'Ingen resultater matcher din søgning',
+      type: 'noresult_placeholder'
     }
   ],
   refresh: false,
@@ -17,6 +15,7 @@ const state = {
 const actions = {
   UPDATE_RESULTS ({ commit, state }) {
     // first filter out the 'noItem' item if it's present, because we don't want it in the full result list
+    console.log(state.searchItems)
     const filteredResults = state.searchItems.filter(document => {
       return document.type !== 'noresult_placeholder'
     })
@@ -27,6 +26,7 @@ const actions = {
 
 const mutations = {
   SET_SEARCH (state, payload) {
+    console.log(payload)
     state.searchItems = payload
   },
   SET_SELECTED_ORG_OPTION (state, payload) {
