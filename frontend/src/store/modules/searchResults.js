@@ -1,6 +1,6 @@
 const state = {
   searchItems: [],
-  selectedCriteriaOption: null,
+  selectedCriteriaOption: 'departments',
   selectedOrgOption: null,
   noItem: [
     {
