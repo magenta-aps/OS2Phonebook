@@ -1,16 +1,11 @@
-import { SearchMultipleFields } from '@/api/SearchMultipleFields'
-import GetFilterSelectedOption from '@/mixins/GetFilterSelectedOption'
-
 const state = {
   searchItems: [],
-  selectedCriteriaOption: null,
+  selectedCriteriaOption: 'departments',
   selectedOrgOption: null,
   noItem: [
     {
-      document: JSON.stringify({
-        name: 'Ingen resultater matcher din søgning',
-        type: 'noresult_placeholder'
-      })
+      name: 'Ingen resultater matcher din søgning',
+      type: 'noresult_placeholder'
     }
   ],
   refresh: false,
@@ -18,64 +13,20 @@ const state = {
 }
 
 const actions = {
-  SET_SEARCH (state) {
-    let vm = this
-    vm.searchItems = []
-
-    SearchMultipleFields(state)
-      .then(res => {
-        let results = []
-        res.forEach(result => {
-          results = results.concat(result)
-        })
-
-        /**
-         * If we are searching within a specific field, we need only to return results
-         * where inputVal was within that specific field.
-         */
-        results = GetFilterSelectedOption.methods.getFilterSelectedOption(this.selectedCriteriaOption, results)
-
-        if (!results.length) {
-          results = results.concat(state.noItem)
-        }
-
-        /**
-         * We need to use Vue.set() to update the searchItems object,
-         * because otherwise searchItems would no longer be reactive.
-         */
-        vm.$set(vm, 'searchItems', results)
-      })
-      .catch(() => {
-        vm.$set(vm, 'searchItems', state.noItem)
-      })
-  },
-
   UPDATE_RESULTS ({ commit, state }) {
-    var results = []
-
     // first filter out the 'noItem' item if it's present, because we don't want it in the full result list
-    const filteredResults = state.searchItems.filter(item => {
-      const document = JSON.parse(item.document)
+    console.log(state.searchItems)
+    const filteredResults = state.searchItems.filter(document => {
       return document.type !== 'noresult_placeholder'
     })
 
-    for (var item = 0; item < filteredResults.length; item++) {
-      if (filteredResults[item].document) {
-        results.push(JSON.parse(filteredResults[item].document))
-      }
-    }
-    // Sorting the data in SOLR requires extensions to the schema, due to the
-    // way the 'name' field is tokenized for searching. Sorting in the UI has
-    // minimal performance impact, so it should be good enough.
-    results.sort(function (a, b) {
-      return a.name.localeCompare(b.name, 'da')
-    })
-    commit('SET_FORMATTED_ITEMS', results)
+    commit('SET_FORMATTED_ITEMS', filteredResults)
   }
 }
 
 const mutations = {
   SET_SEARCH (state, payload) {
+    console.log(payload)
     state.searchItems = payload
   },
   SET_SELECTED_ORG_OPTION (state, payload) {

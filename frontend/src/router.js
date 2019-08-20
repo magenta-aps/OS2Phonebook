@@ -31,7 +31,7 @@ export default new Router({
       beforeEnter (to, from, next) {
         Search.employees('uuid', to.params.uuid)
           .then(res => {
-            to.params.result = JSON.parse(res.response.docs[0].document)
+            to.params.result = res[0]
             return res
           })
           .finally(() =>

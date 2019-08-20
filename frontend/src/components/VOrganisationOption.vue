@@ -44,9 +44,7 @@ export default {
       let vm = this
       Search.roots()
         .then(res => {
-          vm.organisations = res.response.docs.map(doc => {
-            return JSON.parse(doc.document)
-          })
+          vm.organisations = res
         })
     }
   },

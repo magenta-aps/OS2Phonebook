@@ -1,5 +1,30 @@
 import Service from '@/api/HttpCommon'
 
+let parseAndSortResponseData = results => {
+  let docs = results.data.response.docs
+
+  if (docs.length === 0) {
+    return []
+  }
+
+  // Sorting the data in SOLR requires extensions to the schema, due to the
+  // way the 'name' field is tokenized for searching. Sorting in the UI has
+  // minimal performance impact, so it should be good enough.
+  let parsedDocs = docs.map(val => JSON.parse(val.document))
+    .sort(function (a, b) {
+      return a.name.localeCompare(b.name, 'da')
+    })
+
+  parsedDocs.forEach(doc => Object.values(doc).forEach(val => {
+    if (val.constructor === Array) {
+      val.sort(function (a, b) {
+        return a[0].localeCompare(b[0], 'da')
+      })
+    }
+  }))
+  return parsedDocs
+}
+
 export default {
   /**
    * Search for employees.
@@ -13,7 +38,7 @@ export default {
     org = org || '*'
     return Service.get(`/employees/select?fq=${key}:"${value}" AND root_uuid:"${org}"&rows=100000&q=*:*`)
       .then(response => {
-        return response.data
+        return parseAndSortResponseData(response)
       })
       .catch(error => {
         console.log(error.response)
@@ -32,7 +57,7 @@ export default {
     org = org || '*'
     return Service.get(`/departments/select?fq=${key}:"${value}" AND root_uuid:"${org}"&rows=100000&q=*:*`)
       .then(response => {
-        return response.data
+        return parseAndSortResponseData(response)
       })
       .catch(error => {
         console.log(error.response)
@@ -42,7 +67,7 @@ export default {
   roots () {
     return Service.get(`/departments/select?q=parent:ROOT&rows=100000`)
       .then(response => {
-        return response.data
+        return parseAndSortResponseData(response)
       })
       .catch(error => {
         console.log(error.response)
@@ -54,7 +79,7 @@ export default {
     value = value || '*'
     return Service.get(`/departments/select?q=${key}:${value}&rows=100000`)
       .then(response => {
-        return response.data
+        return parseAndSortResponseData(response)
       })
       .catch(error => {
         console.log(error.response)

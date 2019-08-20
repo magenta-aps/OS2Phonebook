@@ -143,7 +143,7 @@ export default {
   beforeRouteEnter (to, from, next) {
     Search.departments('uuid', to.params.uuid)
       .then(res => {
-        const parsedRes = JSON.parse(res.response.docs[0].document)
+        const parsedRes = res[0]
         next(vm => vm.setData(parsedRes))
       })
   },
@@ -151,7 +151,7 @@ export default {
   beforeRouteUpdate (to, from, next) {
     Search.departments('uuid', to.params.uuid)
       .then(res => {
-        const parsedRes = JSON.parse(res.response.docs[0].document)
+        const parsedRes = res[0]
         this.setData(parsedRes)
         next()
       })
