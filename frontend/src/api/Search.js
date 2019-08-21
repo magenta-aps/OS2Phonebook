@@ -32,11 +32,14 @@ export default {
    * @param {String} value - search value.
    * @returns {Array} a list of employees matching the query.
    */
-  employees (key, value, org) {
+  employees (key, value, org, exactSearch = true) {
     key = key || '*'
     value = value || '*'
     org = org || '*'
-    return Service.get(`/employees/select?fq=${key}:"${value}" AND root_uuid:"${org}"&rows=100000&q=*:*`)
+    if (!exactSearch) {
+      value += '*'
+    }
+    return Service.get(`/employees/select?fq=${key}:${value} AND root_uuid:"${org}"&rows=100000&q=*:*`)
       .then(response => {
         return parseAndSortResponseData(response)
       })
@@ -51,11 +54,14 @@ export default {
    * @param {String} value - search value.
    * @returns {Array} a list of departments matching the query.
    */
-  departments (key, value, org) {
+  departments (key, value, org, exactSearch = true) {
     key = key || '*'
     value = value || '*'
     org = org || '*'
-    return Service.get(`/departments/select?fq=${key}:"${value}" AND root_uuid:"${org}"&rows=100000&q=*:*`)
+    if (!exactSearch) {
+      value += '*'
+    }
+    return Service.get(`/departments/select?fq=${key}:${value} AND root_uuid:"${org}"&rows=100000&q=*:*`)
       .then(response => {
         return parseAndSortResponseData(response)
       })
