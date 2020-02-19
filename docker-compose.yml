@@ -101,7 +101,7 @@ services:
     
         volumes:
             - ./dev-environment/cache:/cache
-            - ./dev-environment/snapshot/log:/log
+            - ./dev-environment/logs:/log
             - ./os2phonebook_service:/app
 
         environment:
