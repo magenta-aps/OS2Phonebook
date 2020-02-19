@@ -1,0 +1,51 @@
+FROM python:3.7.4 AS dist
+# Force the stdout and stderr streams from python to be unbuffered. See
+# https://docs.python.org/3/using/cmdline.html#cmdoption-u
+ENV PYTHONUNBUFFERED=1
+
+COPY os2phonebook_service/cli.py /app/cli.py
+COPY os2phonebook_service/wsgi.py /app/wsgi.py
+COPY os2phonebook_service/requirements.txt /app/requirements.txt
+COPY os2phonebook_service/os2phonebook /app/os2phonebook
+
+# Install requirements
+RUN pip install --upgrade pip
+RUN pip install -r /app/requirements.txt
+RUN pip install gunicorn
+RUN pip install gevent
+
+# Create service account / uid and gid
+RUN groupadd -g 72085 -r sys_magenta_os2phonebook
+RUN useradd -u 72085 --no-log-init -r -g sys_magenta_os2phonebook sys_magenta_os2phonebook
+
+# Cache for data import files
+RUN mkdir /cache
+
+RUN mkdir /log
+
+# Entrypoint
+COPY docker/entrypoint.sh /entrypoint/os2phonebook-entrypoint.sh
+
+# Default configuration (should be overridden)
+ENV OS2PHONEBOOK_COMPANY_NAME=Magenta
+ENV OS2PHONEBOOK_CACHE_ROOT=/cache
+ENV OS2PHONEBOOK_LOG_ROOT=/log
+ENV ELASTICSEARCH_HOST=elasticsearch
+ENV ELASTICSEARCH_PORT=9200
+
+# Set Permissions
+RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /app
+RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /cache
+RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /configuration
+RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /log
+RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /entrypoint
+
+USER sys_magenta_os2phonebook:sys_magenta_os2phonebook
+
+WORKDIR /app
+
+EXPOSE 9090
+
+ENTRYPOINT ["sh", "/entrypoint/os2phonebook-entrypoint.sh"]
+
+CMD ["gunicorn", "-b", "0.0.0.0:9090", "--worker-class=gevent", "--reload", "--worker-connections=1000", "wsgi:app"]
