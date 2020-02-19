@@ -1,9 +1,12 @@
+# Development
+venv-*
+.idea
+.vscode
+
+# Python
 __pycache__
-venv/
 *.pyc
-var/
-solr-*
+
+# Tests
 .coverage
-build/
 coverage.xml
-.idea/
