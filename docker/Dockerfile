@@ -36,7 +36,6 @@ ENV ELASTICSEARCH_PORT=9200
 # Set Permissions
 RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /app
 RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /cache
-RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /configuration
 RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /log
 RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /entrypoint
 
