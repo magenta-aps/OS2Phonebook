@@ -21,13 +21,6 @@ log = log_factory()
 api = Blueprint("routes", __name__)
 
 
-@api.before_request
-def generate_request_id() -> None:
-    """Generate request id for each request for tracking purposes"""
-
-    g.request_id = uuid4().hex
-
-
 @api.route("/")
 def index() -> Response:
     """Serve frontend application.
@@ -53,7 +46,6 @@ def show_status() -> Response:
     organisation_name = current_app.organisation_name
 
     status_response = {
-        "request_id": g.request_id,
         "version": version,
         "organisation": organisation_name,
     }
@@ -104,12 +96,7 @@ def all_org_units() -> Response:
     if not results:
         log.warning(f"NO_RESULTS_ALL_ORG_UNITS")
 
-    response = {
-        "request_id": g.request_id,
-        "results": results
-    }
-
-    return jsonify(response)
+    return jsonify(results)
 
 
 @api.route("/api/org_unit/<uuid:uuid>", methods=["GET"])
@@ -130,12 +117,7 @@ def show_org_unit(uuid) -> Response:
         uuid=uuid
     )
 
-    response = {
-        "request_id": g.request_id,
-        "org_unit": results
-    }
-
-    return jsonify(response)
+    return jsonify(results)
 
 
 @api.route("/api/employee/<uuid:uuid>", methods=["GET"])
@@ -157,12 +139,7 @@ def show_employee(uuid) -> Response:
         uuid=uuid
     )
 
-    response = {
-        "request_id": g.request_id,
-        "employee": results
-    }
-
-    return jsonify(response)
+    return jsonify(results)
 
 
 @api.route("/api/search", methods=["GET"])
@@ -187,7 +164,6 @@ def show_search_schema():
     """
 
     search_schema = {
-        "request_id": g.request_id,
         "method": "POST",
         "format": "json",
         "schema": {
@@ -264,12 +240,7 @@ def call_search_method():
             f"NO_SEARCH_RESULTS search_type={search_type} search_value={search_value} # 2"
         )
 
-    response = {
-        "request_id": g.request_id,
-        "results": results
-    }
-
-    return jsonify(response)
+    return jsonify(results)
 
 
 #####################################################################
@@ -302,7 +273,6 @@ def invalid_validation_handler(error) -> Response:
         error.status_code = 200
 
     response = {
-        "request_id": g.request_id,
         "error": {
             "type": error.__class__.__name__,
             "message": str(error)
@@ -334,7 +304,6 @@ def all_exception_handler(error):
     error_class = error.__class__.__name__
 
     response = {
-        "request_id": g.request_id,
         "error": {
             "type": error_class,
             "message": "Unknow error occured, please contact administrator"
