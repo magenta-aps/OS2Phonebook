@@ -18,11 +18,12 @@ services:
         
         ports:
             - "5000:5000"
-            
-        volumes:
-            - ./dev-environment/config/mora_config.toml:/user-settings.toml
+
         environment:
             - FLASK_ENV=production
+        
+        volumes:
+            - ./dev-environment/config/mo-dev.toml:/user-settings.toml
                     
         depends_on:
             - mox
@@ -32,10 +33,12 @@ services:
     mox:
         container_name: mox_service
         image: magentaaps/lora:1.6.0
-        volumes:
-            - ./dev-environment/config/mox_config.toml:/user-settings.toml
+
         ports:
             - "8080:8080"
+        
+        volumes:
+            - ./dev-environment/config/mox-dev.toml:/user-settings.toml
 
         depends_on:
             - mox-db
@@ -48,7 +51,7 @@ services:
         environment:
             DB_NAME: mox
             DB_USER: mox
-            DB_PASSWORD: 1.jZ/fDqDv1U74=3v0S}
+            DB_PASSWORD: mox
             
             CONF_DB_NAME: mora
             CONF_DB_USER: mora
@@ -61,7 +64,7 @@ services:
         volumes:
             - os2mo_db_storage:/var/lib/postgresql/data
             - ./dev-environment/snapshot:/database_snapshot
-            
+
         restart: unless-stopped
 
     elasticsearch:
@@ -108,7 +111,7 @@ services:
             OS2PHONEBOOK_COMPANY_NAME: Magenta Aps
             OS2PHONEBOOK_CACHE_ROOT: /cache
             OS2PHONEBOOK_LOG_ROOT: /log
-            OS2MO_SERVICE_URL: http://mo:5000
+            OS2MO_SERVICE_URL: https://morademo.magenta.dk
             OS2MO_API_TOKEN: Supersecrettoken
             ELASTICSEARCH_HOST: elasticsearch
             ELASTICSEARCH_PORT: 9200
