@@ -111,7 +111,7 @@ services:
             OS2PHONEBOOK_COMPANY_NAME: Magenta Aps
             OS2PHONEBOOK_CACHE_ROOT: /cache
             OS2PHONEBOOK_LOG_ROOT: /log
-            OS2MO_SERVICE_URL: https://morademo.magenta.dk
+            OS2MO_SERVICE_URL: http://mo:5000
             OS2MO_API_TOKEN: Supersecrettoken
             ELASTICSEARCH_HOST: elasticsearch
             ELASTICSEARCH_PORT: 9200
