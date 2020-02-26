@@ -9,9 +9,5 @@ host = "mox-db"
 [configuration.database]
 host = "mox-db"
 
-[amqp]
-enable = true
-host = "msg_broker"
-
 [log]
 log_level = "INFO"
