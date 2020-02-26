@@ -649,12 +649,14 @@ class OS2MOImportClient:
         # Get batches of 250 employees
         batch_size = 250
 
-        log.info(f"OS2MO_IMPORT_ROUTINE - Procced to import employees in batches of {batch_size}")
-
         while total >= offset:
 
-            # Logging
-            log.info(f"OS2MO_IMPORT_ROUTINE - Import batch with {offset}")
+            # Silly math for logging purposes
+            current_batch_end = offset + batch_size
+            if current_batch_end > total:
+                current_batch_end = total
+
+            log.info(f"OS2MO_IMPORT_ROUTINE - Import batch {offset}-{current_batch_end}")
 
             employees = self.get_batch_of_employees(
                 offset=offset,
@@ -665,17 +667,37 @@ class OS2MOImportClient:
                 # We'll need this in a bit
                 uuid = employee["uuid"]
 
-                log.info(f"OS2MO_IMPORT_ROUTINE - Import employee with identifier {uuid}")
-
-                # Enrich employee
-                employee["addresses"] = self.get_employee_address_references(uuid)
+                # Enrich employee         
                 employee["engagements"] = self.get_employee_engagement_references(uuid)
                 employee["associations"] = self.get_employee_association_references(uuid)
+
+                # Do NOT import employees without an engagement or association
+                # https://redmine.magenta-aps.dk/issues/34812
+
+                total_engagements = len(employee["engagements"])
+                total_associations = len(employee["associations"])
+
+                if not employee["associations"] and not employee["engagements"]:
+                    log.info(
+                        f"OS2MO_IMPORT_ROUTINE - Employee has no engagements/associations, skipping"
+                    )
+
+                    # Debugging
+                    log.debug(
+                        f"OS2MO_IMPORT_ROUTINE - Employee={uuid},"
+                        f"engagements={total_engagements},"
+                        f"associations={total_associations}"
+                    )
+
+                    continue
+
+                employee["addresses"] = self.get_employee_address_references(uuid)
                 employee["management"] = self.get_employee_manager_references(uuid)
 
+                log.info(f"OS2MO_IMPORT_ROUTINE - Import employee {uuid}")
                 self.employee_map[uuid] = employee
 
-            log.info(f"OS2MO_IMPORT_ROUTINE - Batch with {offset}")
+            log.info(f"OS2MO_IMPORT_ROUTINE - Batch {current_batch_end}-{current_batch_end} completed")
             
             # Hacky offset update
             offset = offset + batch_size
