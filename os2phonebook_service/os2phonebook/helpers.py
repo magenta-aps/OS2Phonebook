@@ -13,13 +13,14 @@ def config_factory():
 
     The following parameters should be generated:
 
-        "OS2PHONEBOOK_COMPANY_NAME",
-        "OS2PHONEBOOK_CACHE_ROOT",
-        "OS2PHONEBOOK_LOG_ROOT",
-        "OS2MO_SERVICE_URL",
-        "OS2MO_API_TOKEN",
-        "ELASTICSEARCH_HOST",
-        "ELASTICSEARCH_PORT"
+        * OS2PHONEBOOK_COMPANY_NAME
+        * OS2PHONEBOOK_STATIC_ROOT
+        * OS2PHONEBOOK_CACHE_ROOT
+        * OS2PHONEBOOK_LOG_ROOT
+        * OS2MO_SERVICE_URL
+        * OS2MO_API_TOKEN
+        * ELASTICSEARCH_HOST
+        * ELASTICSEARCH_PORT
 
     Raises:
         EnvironmentError:
@@ -30,6 +31,7 @@ def config_factory():
 
     required_parameters = [
         "OS2PHONEBOOK_COMPANY_NAME",
+        "OS2PHONEBOOK_STATIC_ROOT",
         "OS2PHONEBOOK_CACHE_ROOT",
         "OS2PHONEBOOK_LOG_ROOT",
         "OS2MO_SERVICE_URL",
