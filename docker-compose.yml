@@ -68,8 +68,8 @@ services:
         restart: unless-stopped
 
     elasticsearch:
-        image: elasticsearch:7.3.1
-        container_name: elastic_backend
+        image: elasticsearch:7.6.0
+        container_name: elasticsearch
         # For development purposes a single node configuration should be sufficient
         environment:
           - discovery.type=single-node
