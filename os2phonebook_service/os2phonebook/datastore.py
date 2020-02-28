@@ -309,19 +309,42 @@ class DataStore(object):
         ]
 
         if fuzzy_search:
-            search_field = "givenname"
-            query = self._query_match_phrase_prefix(search_field, name, 15, source_filter)
+            # Split name in order to retrieve lastname(ish)
+            names = name.split(" ")
+            lastname = names[-1]
+            query = {
+                "_source": {
+                    "includes": list(source_filter),
+                },
+                "query": {
+                    "bool": {
+                        "must": [
+                            {
+                                "match": {
+                                    "name": name
+                                }
+                            }
+                        ], 
+                        "should": [
+                            {
+                                "match_phrase_prefix": {
+                                    "surname": lastname
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
         else:
             query = {
                 "_source": {
-                    "includes": list(source_filter)
+                    "includes": list(source_filter),
                 },
                 "query": {
-                    "multi_match": {
+                    "multi_match" : {
                         "query": str(name),
-                        "type": "cross_fields",
-                        "fields": ["surname", "givenname"],
-                        "tie_breaker": 0.3
+                        "type": "phrase_prefix",
+                        "fields": ["surname", "name"],
                     }
                 }
             }
@@ -353,7 +376,7 @@ class DataStore(object):
             query = self._query_match_phrase_prefix(search_field, phone_number, 15, source_filter)
         else:
             query = self._query_match(
-                search_field, phone_number, 15, *source_filter
+                search_field, phone_number, 15, source_filter
             )
 
         return (index, query)
@@ -380,6 +403,32 @@ class DataStore(object):
         ]
 
         query = self._query_match_phrase_prefix(search_field, email_address, 15, source_filter)
+        return (index, query)
+
+    def query_for_employee_by_engagement(self, engagement: str, fuzzy_search: bool):
+        """Search query for an engagement
+
+        Args:
+            engagement (str): Name of the engagement, e.g. `Deck officer`
+            fuzzy_search (bool): Search wider if True.
+
+        Returns:
+            Tuple[str, dict]: Index name (str) and Elastic search query (dict)
+
+        """
+
+        print("ENGAGEMENTS")
+        index = "employees"
+
+        search_field = "engagements.title"
+
+        source_filter = [
+            "uuid",
+            "name",
+            "engagements"
+        ]
+
+        query = self._query_match_phrase_prefix(search_field, engagement, 15, source_filter)
         return (index, query)
 
     def query_for_org_unit_by_name(self, name: str, fuzzy_search: bool):
