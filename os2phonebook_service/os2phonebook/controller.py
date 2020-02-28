@@ -9,8 +9,7 @@ from flask import (
     jsonify,
     current_app,
     request,
-    render_template,
-    g,
+    render_template
 )
 
 
@@ -20,7 +19,6 @@ log = log_factory()
 # Controller blueprint
 api = Blueprint("routes", __name__)
 
-
 @api.route("/")
 def index() -> Response:
     """Serve frontend application.
@@ -29,7 +27,6 @@ def index() -> Response:
         :obj:`Response`: Response with text/html body.
 
     """
-
     return render_template("index.html")
 
 
