@@ -1,5 +1,5 @@
-from flask import Flask
-
+from flask import Flask, Response
+import os
 from os2phonebook import __version__
 from os2phonebook.controller import api
 from os2phonebook import helpers
@@ -22,13 +22,14 @@ def initiate_application(config: dict) -> Flask:
 
     # Config parameters
     organisation_name = config["OS2PHONEBOOK_COMPANY_NAME"]
+    static_root = config["OS2PHONEBOOK_STATIC_ROOT"]
     db_host = config["ELASTICSEARCH_HOST"]
     db_port = config["ELASTICSEARCH_PORT"]
 
     log.info("INITIATE_SERVICE - Config parameters loaded")
 
     # Init flask instance
-    app = Flask(__name__, template_folder="/tmp/production/static")
+    app = Flask(__name__, template_folder=static_root)
 
     # Set metadata values
     app.os2phonebook_version = __version__
