@@ -19,6 +19,7 @@ log = log_factory()
 # Controller blueprint
 api = Blueprint("routes", __name__)
 
+
 @api.route("/")
 def index() -> Response:
     """Serve frontend application.
@@ -214,7 +215,6 @@ def call_search_method():
 
     db = DataStore(current_app.connection)
 
-    print("SEARCH ONE")
     results = db.search(
         search_type=search_type,
         search_value=search_value,
@@ -225,7 +225,7 @@ def call_search_method():
         log.debug(
             f"NO_SEARCH_RESULTS search_type={search_type} search_value={search_value} # 1"
         )
-        print("SEARCH TWO")
+
         results = db.search(
             search_type=search_type,
             search_value=search_value,
