@@ -256,8 +256,9 @@ def invalid_validation_handler(error) -> Response:
         * InvalidRequestBody
 
     All error types above carry a `status_code`.
-    Although NotFoundError should not return 404
-    and as such the error code is hard set to 200.
+    
+    NotFoundError is thrown when no record can be found
+    by identifier, as such this will return status 404. 
 
     Args:
         error (Exception): An exception type error object
@@ -266,8 +267,6 @@ def invalid_validation_handler(error) -> Response:
         :obj:`Response`: Response with error description.
 
     """
-    if isinstance(error, NotFoundError):
-        error.status_code = 200
 
     response = {
         "error": {
