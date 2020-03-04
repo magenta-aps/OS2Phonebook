@@ -355,7 +355,29 @@ class DataStore(object):
         return query
 
     def query_for_employee_by_name(self, name: str, fuzzy_search: bool) -> Tuple[str, dict]:
-        """Search query for an employee by his or her name.
+        """Search query for an employee by the full name (passed as a string).
+
+        For a regular search we are using a `multi_match` query in order to
+        match the full name against the `name` and the `surname` fields,
+        thus allowing the user to either search for a person by a full name,
+        only the first name or the last name.
+
+        Example:
+            Searching for `Picard` will yield the following matches:
+            * Jean Luc Picard
+            * Robert Picard
+            * Mario Picardo
+
+        When performing a fuzzy search we are extending the same
+        search principle but with a `bool` query where besides matching
+        on the the (full) `name` string we are additionally matching
+        on the last name prefix.
+
+        Example: 
+            Searching for `Jean Picard` will yield the following matches:
+            * Jean Luc Picard
+
+            But not: Mario Picardo
 
         Args:
             name (str): Name of the document field to search in.
@@ -420,6 +442,23 @@ class DataStore(object):
     def query_for_employee_by_phone(self, phone_number: str, fuzzy_search: bool) -> Tuple[str, dict]:
         """Search query for an employee by phone number.
 
+        We are using a regular token match or a phrase prefix match.
+        This mean we are trying to match the entire value.
+
+        Example:
+            Search value `22722222` will match the following only:
+            * 22722222
+
+        A fuzzy query will use `phrase_prefix` matching in order to match on the given
+        prefix, the search for `2272` will yield following results:
+            * 22722222
+            * 22723333
+            * 22724444
+
+        But will not match
+            * 43227233
+            * 44442272
+
         Args:
             phone_number (str): Phone number, e.g. 21223344.
             fuzzy_search (bool): Search wider if True.
@@ -450,6 +489,16 @@ class DataStore(object):
     def query_for_employee_by_email(self, email_address: str, fuzzy_search: bool) -> Tuple[str, dict]:
         """Search query for an employee by email address.
 
+        We are only using `phrase_prefix` matching for email addresses.
+        As a consequence, it is not possible to search by domain, e.g. `@example.com`.
+
+        Search value `picard` will yield the following results:
+        * picard@example.com
+        * picard@starfleet.com
+
+        But will not match:
+        * info@picard.com
+
         Args:
             email_address (str): Email address, e.g. mail@example.com.
             fuzzy_search (bool): Search wider if True.
@@ -473,6 +522,15 @@ class DataStore(object):
 
     def query_for_employee_by_engagement(self, engagement: str, fuzzy_search: bool):
         """Search query for an engagement
+
+        We are using `phrase_prefix` to match the engagement keyword.
+
+        The search value `deck` will match:
+        * deckhand
+        * deck officer
+
+        But will not match:
+        * Officer on deck
 
         Args:
             engagement (str): Name of the engagement, e.g. `Deck officer`
@@ -498,6 +556,15 @@ class DataStore(object):
 
     def query_for_org_unit_by_name(self, name: str, fuzzy_search: bool):
         """Search query for an org unit by name.
+
+        We are using `phrase_prefix` to match the organisation unit by name.
+
+        The search value `Me` will match:
+        * Medical Room
+        * Messhall
+
+        But will not match:
+        * Visitor Meetingpoint
 
         Args:
             name (str): Name of the org unit, e.g. `Command bridge`
