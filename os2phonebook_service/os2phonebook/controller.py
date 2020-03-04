@@ -302,7 +302,7 @@ def all_exception_handler(error):
     response = {
         "error": {
             "type": error_class,
-            "message": "Unknow error occured, please contact administrator"
+            "message": "Unknown error occured, please contact administrator"
         }
     }
 
