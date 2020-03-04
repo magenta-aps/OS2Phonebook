@@ -119,12 +119,22 @@ def configure_logging(log_root: str, log_file: str, logger: Logger) -> None:
     logger.addHandler(activity_log_handler)
 
 
-def dump_file(filename, data_as_dict):
+def dump_file(filename, data_as_dict) -> None:
     """
     Serialize dictionary to json file
     Helper function
 
-    This should be used for development only
+    This is used to persist the imported
+    organisation units and employees to disk in a json format. 
+
+    The reason for storing objects as json rather serialized python
+    is to allow other components to transfer the data to 
+    elasticsearch. 
+
+    Args:
+        filename (str): File destination (absolute)
+        data_as_dict (dict): Dictionary/Map of organisation units and employees
+
     """
 
     with open(filename, "w") as file:
@@ -132,14 +142,20 @@ def dump_file(filename, data_as_dict):
         file.write(content)
 
 
-def load_file(filename):
+def load_file(filename) -> dict:
     """
     Load json formatted file as dictionary
     Helper function
 
-    This should be used for development only
+    This is used to export the previously imported content
+    to the elasticsearch backend. 
 
-    :filename string: Absolute path to the file
+    Args:
+        filename (str): Absolute path to a source (json) file
+
+    Returns:
+        dict: A map of organisation units and employees as a dictionary.
+
     """
 
     with open(filename, "r") as file:
