@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Callable
 from elasticsearch import Elasticsearch
 from os2phonebook.exceptions import InvalidSearchType
 
@@ -37,7 +37,28 @@ class DataStore(object):
     """Client for generating queries in backend datastore
 
     Args:
-        db (:obj:`Elasticsearch`): Instance of the elasticsearch client
+        db (:obj:`Elasticsearch`): Instance of the elasticsearch client.
+
+        search_type_map (dict): A map of all the available search types.
+
+            Available search types:
+                * employee_by_name
+                * employee_by_phone
+                * employee_by_email
+                * employee_by_engagement
+                * org_unit_by_name
+
+            Example:
+
+            {
+                "employee_by_name": {
+                    "description": "Navn",
+                    "query_method": "query_for_employee_by_name"
+            }
+
+            This particular search type has the canonical description `Navn`
+            and a query method which refers to the name of an attribute
+            on this class, e.g. `Datastore.query_for_employee_by_name`.
 
     """
 
@@ -47,6 +68,29 @@ class DataStore(object):
             raise TypeError("Datastore requires an instance of the Elasticsearch object")
 
         self.db = db
+
+        self.search_type_map =  {
+            "employee_by_name": {
+                "description": "Navn",
+                "query_method": "query_for_employee_by_name"
+            },
+            "employee_by_phone": {
+                "description": "Telefon",
+                "query_method": "query_for_employee_by_phone"
+            },
+            "employee_by_email": {
+                "description": "Email",
+                "query_method": "query_for_employee_by_email"
+            },
+            "employee_by_engagement": {
+                "description": "Stilling",
+                "query_method": "query_for_employee_by_engagement"
+            },
+            "org_unit_by_name": {
+                "description": "Enhed",
+                "query_method": "query_for_org_unit_by_name"
+            }
+        }
 
     def get_employee(self, uuid: str) -> dict:
         """Retrieve employee document by identifer
@@ -150,18 +194,54 @@ class DataStore(object):
             for unit in hits if "_source" in unit
         ]
 
+    def get_query_method(self, search_type: str) -> Callable[[str, bool], Tuple[str, dict]]:
+        """Fetches query generator based on the `search_type`
+
+        Please see the `search_type_map` attribute
+        for more information on the available types.
+
+        Args:
+            search_type (str): This refers to the `search_type_map` key. 
+
+        Returns:
+            Callable[[str, bool], Tuple[str, dict]: The query generator
+
+        Raises:
+            TypeError: If the `search_type` is not a string value.
+            InvalidSearchType: If the `search_type` does not exist.
+                (Meaning that it does not exist in the `search_type_map`)
+            ValueError: If the query method is not defined for this type.
+            AttributeError: If the query method defined does not exist as an attribute.
+
+        """
+
+        if not isinstance(search_type, str):
+            raise TypeError("Search type must be a string value")
+
+        if search_type not in self.search_type_map:
+            raise InvalidSearchType(f"Search type: {search_type} is not available")
+
+        selected_type = self.search_type_map[search_type]
+
+        if "query_method" not in selected_type:
+            raise ValueError("No query method defined for this search type")
+
+        query_method = selected_type["query_method"]
+
+        if not hasattr(self, query_method):
+            AttributeError("Query method does not exist")
+
+        return getattr(self, query_method)
+
+
     def search(self, search_type, search_value, fuzzy_search=False) -> List[dict]:
         """High level search method
 
-        Generates search query based on the search type by
-        calling the underlying query method.
+        Fetches query generator based on the `search_type` by
+        calling `get_query_method`.
 
-        Available search types:
-            * employee_by_name
-            * employee_by_phone
-            * employee_by_email
-            * employee_by_engagement
-            * org_unit_by_name
+        Please see the `search_type_map` attribute
+        for more information on the available types.
 
         Args:
             search_type (str): Search type (see available types above)
@@ -181,23 +261,11 @@ class DataStore(object):
 
         """
 
-        if search_type == "employee_by_name":
-            index, query = self.query_for_employee_by_name(search_value, fuzzy_search)
+        # Get the query generator method
+        query_method = self.get_query_method(search_type)
 
-        elif search_type == "employee_by_phone":
-            index, query = self.query_for_employee_by_phone(search_value, fuzzy_search)
-
-        elif search_type == "employee_by_email":
-            index, query = self.query_for_employee_by_email(search_value, fuzzy_search)
-
-        elif search_type == "employee_by_engagement":
-            index, query = self.query_for_employee_by_engagement(search_value, fuzzy_search)
-
-        elif search_type == "org_unit_by_name":
-            index, query = self.query_for_org_unit_by_name(search_value, fuzzy_search)
-
-        else:
-            raise InvalidSearchType(f"Search type: {search_type} is not available")
+        # Generate query
+        index, query = query_method(search_value, fuzzy_search)
 
         response = self.db.search(index=index, body=query)
 
