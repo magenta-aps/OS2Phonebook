@@ -199,8 +199,6 @@ class DataStore(object):
         else:
             raise InvalidSearchType(f"Search type: {search_type} is not available")
 
-        print(query)
-
         response = self.db.search(index=index, body=query)
 
         return [
@@ -417,7 +415,6 @@ class DataStore(object):
 
         """
 
-        print("ENGAGEMENTS")
         index = "employees"
 
         search_field = "engagements.title"
