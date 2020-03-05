@@ -691,7 +691,7 @@ class OS2MOImportClient:
                     continue
 
                 employee["addresses"] = self.get_employee_address_references(uuid)
-                
+
                 self.employee_map[uuid] = employee
 
             log.info(f"OS2MO_IMPORT_ROUTINE - Batch {current_batch_end}-{current_batch_end} completed")
