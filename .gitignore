@@ -1,12 +1,30 @@
 # Development
-venv-*
-.idea
-.vscode
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# System Files
+.DS_Store
+Thumbs.db
 
 # Python
+venv-*
 __pycache__
 *.pyc
 
 # Tests
 .coverage
 coverage.xml
+# System Files
+.DS_Store
+Thumbs.db
