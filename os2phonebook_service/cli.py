@@ -73,7 +73,7 @@ def start_import(cache_only):
         store_cache(config, map_employees, map_org_units)
     except Exception as error:
         click.echo(f"ERROR - {error}")
-        click.echo("Exiting!")
+        click.echo("Import procedure incomplete - Exiting!")
         sys.exit(1)
 
     click.echo("Import procedure completed - Exiting!")
