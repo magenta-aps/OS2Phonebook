@@ -670,31 +670,28 @@ class OS2MOImportClient:
                 # Enrich employee         
                 employee["engagements"] = self.get_employee_engagement_references(uuid)
                 employee["associations"] = self.get_employee_association_references(uuid)
+                employee["management"] = self.get_employee_manager_references(uuid)
 
                 # Do NOT import employees without an engagement or association
                 # https://redmine.magenta-aps.dk/issues/34812
 
-                total_engagements = len(employee["engagements"])
-                total_associations = len(employee["associations"])
+                # We do however want to import employees with management roles.
+                # As an external employee may be a manager for an organisation unit.
 
-                if not employee["associations"] and not employee["engagements"]:
+                if not employee["associations"] and not employee["engagements"] and not employee["management"]:
                     log.info(
-                        f"OS2MO_IMPORT_ROUTINE - Employee has no engagements/associations, skipping"
+                        "OS2MO_IMPORT_ROUTINE Skip employee due to missing engagements, associations, management"
                     )
 
-                    # Debugging
+                    # Reference to the skipped employee to debug log
                     log.debug(
-                        f"OS2MO_IMPORT_ROUTINE - Employee={uuid},"
-                        f"engagements={total_engagements},"
-                        f"associations={total_associations}"
+                        f"OS2MO_IMPORT_ROUTINE - NO_RELATIONS_TO_ORG_UNIT employee={uuid}"
                     )
 
                     continue
 
                 employee["addresses"] = self.get_employee_address_references(uuid)
-                employee["management"] = self.get_employee_manager_references(uuid)
-
-                log.info(f"OS2MO_IMPORT_ROUTINE - Import employee {uuid}")
+                
                 self.employee_map[uuid] = employee
 
             log.info(f"OS2MO_IMPORT_ROUTINE - Batch {current_batch_end}-{current_batch_end} completed")
