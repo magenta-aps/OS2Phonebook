@@ -3,6 +3,7 @@ from elasticsearch.exceptions import NotFoundError
 from os2phonebook.datastore import DataStore
 from os2phonebook.helpers import log_factory
 from os2phonebook.exceptions import InvalidRequestBody, InvalidSearchType
+from werkzeug.exceptions import NotFound
 from flask import (
     Response,
     Blueprint,
@@ -11,6 +12,7 @@ from flask import (
     request,
     render_template
 )
+
 
 
 # Init logging
@@ -244,6 +246,7 @@ def call_search_method():
 #   ERROR HANDLING SECTION                                          #
 #####################################################################
 
+@api.app_errorhandler(NotFound)
 @api.app_errorhandler(NotFoundError)
 @api.app_errorhandler(InvalidSearchType)
 @api.app_errorhandler(InvalidRequestBody)
@@ -251,6 +254,7 @@ def invalid_validation_handler(error) -> Response:
     """Error handler for all common types
 
     The supported error types are as follows:
+        * NotFound
         * NotFoundError
         * InvalidSearchType
         * InvalidRequestBody
@@ -268,6 +272,14 @@ def invalid_validation_handler(error) -> Response:
 
     """
 
+    status_code = 400
+
+    if hasattr(error, "status_code"):
+        status_code = error.status_code
+
+    elif hasattr(error, "code"):
+        status_code = error.code
+
     response = {
         "error": {
             "type": error.__class__.__name__,
@@ -277,7 +289,7 @@ def invalid_validation_handler(error) -> Response:
 
     log.warning("REQUEST_FAILED - {error}")
 
-    return jsonify(response), error.status_code
+    return jsonify(response), status_code
 
 
 @api.app_errorhandler(Exception)
