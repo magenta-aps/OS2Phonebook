@@ -1,0 +1,19 @@
+<nav class="navigation-header">
+    <!-- The title is passed in by the parent component -->
+    <div>
+        <h3 class="title">{{ title }}</h3>
+    </div>
+
+    <!-- This contains the `back` button and description -->
+    <div class="corner-close" (click)="goToSearch()">
+
+        <div class="text">
+            Tilbage til søgning
+        </div>
+
+        <div >
+            <fa-icon [icon]="back" size="2x"></fa-icon>
+        </div>
+
+    </div>
+</nav>
