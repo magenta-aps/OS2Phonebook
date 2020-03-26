@@ -1,0 +1,1 @@
+# This directory is used for importing mox database snapshots

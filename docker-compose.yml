@@ -1,0 +1,120 @@
+version: '3.4'
+
+volumes:
+    os2mo_db_storage:
+        name: os2mo_db_storage
+        driver: local
+        
+    esdata01: 
+        name: esdata01
+        driver: local
+
+services:
+    # OS2MO
+    mo:
+        container_name: mora_service
+        image: magentaaps/os2mo:1.4.0
+        command: gunicorn -w4 -b0.0.0.0:5000 mora.app:create_app()
+        
+        ports:
+            - "5000:5000"
+
+        environment:
+            - FLASK_ENV=production
+        
+        volumes:
+            - ./dev-environment/config/mo-dev.toml:/user-settings.toml
+                    
+        depends_on:
+            - mox
+                        
+        restart: unless-stopped
+                            
+    mox:
+        container_name: mox_service
+        image: magentaaps/lora:1.6.0
+
+        ports:
+            - "8080:8080"
+        
+        volumes:
+            - ./dev-environment/config/mox-dev.toml:/user-settings.toml
+
+        depends_on:
+            - mox-db
+
+        restart: unless-stopped
+
+    mox-db:
+        container_name: mox_database
+        image: magentaaps/postgres-os2mo:9.6.15-3
+        environment:
+            DB_NAME: mox
+            DB_USER: mox
+            DB_PASSWORD: mox
+            
+            CONF_DB_NAME: mora
+            CONF_DB_USER: mora
+            CONF_DB_PASSWORD: mora
+            
+            SESSIONS_DB_NAME: sessions
+            SESSIONS_DB_USER: sessions
+            SESSIONS_DB_PASSWORD: sessions
+            
+        volumes:
+            - os2mo_db_storage:/var/lib/postgresql/data
+            - ./dev-environment/snapshot:/database_snapshot
+
+        restart: unless-stopped
+
+    elasticsearch:
+        image: elasticsearch:7.6.0
+        container_name: elasticsearch
+        # For development purposes a single node configuration should be sufficient
+        environment:
+          - discovery.type=single-node
+        
+        # Named volume "esdata01" for elasticsearch storage
+        volumes:
+          - esdata01:/usr/share/elasticsearch/data
+
+    # Tooling for development
+    # Kibana is a toolstack for elasticsearch administration
+    # Additionally it provides tools for analysis and index optimization
+    kibana:
+        image: kibana:7.3.1
+        container_name: kibana
+
+        # Web GUI should be exposed on port 5601
+        ports:
+        - 5601:5601
+
+        depends_on:
+        - elasticsearch
+
+    os2phonebook:
+        build:
+            context: .
+            dockerfile: docker/Dockerfile
+            target: dist
+
+        container_name: os2phonebook
+        ports:
+            - 9090:9090
+    
+        volumes:
+            - ./dev-environment/cache:/cache
+            - ./dev-environment/logs:/log
+            - ./os2phonebook_service:/app
+
+        environment:
+            OS2PHONEBOOK_COMPANY_NAME: Magenta Aps
+            OS2PHONEBOOK_CACHE_ROOT: /cache
+            OS2PHONEBOOK_LOG_ROOT: /log
+            OS2MO_SERVICE_URL: http://mo:5000
+            OS2MO_API_TOKEN: Supersecrettoken
+            ELASTICSEARCH_HOST: elasticsearch
+            ELASTICSEARCH_PORT: 9200
+        
+        depends_on:
+            - elasticsearch

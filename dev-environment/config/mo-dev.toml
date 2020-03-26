@@ -1,0 +1,13 @@
+dummy_mode = true
+
+[lora]
+url = "http://mox:8080/"
+
+[session.database]
+host = "mox-db"
+
+[configuration.database]
+host = "mox-db"
+
+[log]
+log_level = "INFO"

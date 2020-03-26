@@ -1,0 +1,71 @@
+<section class="views" *ngIf="employee">
+
+    <!-- Subject header - displayes the title and the `back` button -->
+    <app-searchnav [title]="employee.name"></app-searchnav>
+
+    <!-- Displays the roles of the employee -->
+    <div class="subtitle">
+
+        <!-- Displays any manager roles the employee might have fist -->
+        <div class="room" *ngFor="let manager of employee.management">
+            <div class="header linkable" (click)="navigateToOrgunit(manager.uuid)">
+                {{ manager.title }} <span class="meta-title">{{ manager.name }}</span>
+            </div>
+        </div>
+
+        <!-- Displays the engagements of the employee -->
+        <div class="room" *ngFor="let job of employee.engagements">
+            <div class="linkable" (click)="navigateToOrgunit(job.uuid)">
+                {{ job.title }} <span class="meta-title">{{ job.name }}</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Displays the contact informat of the employee -->
+    <div class="body">
+        <table class="contactinfo">
+            <tbody>
+
+                <!-- This row is displayed if the employee has a phone number -->
+                <tr *ngFor="let address of employee.addresses.PHONE">
+                    <td class="icon"><fa-icon [icon]="faMobileAltIcon"></fa-icon></td>
+                    <td class="head">{{ address.description }}: </td>
+                    <td>{{ address.value }}</td>
+                </tr>
+
+                <!-- This row is displayed if the employee has an email address -->
+                <tr *ngFor="let address of employee.addresses.EMAIL">
+                    <td class="icon"><fa-icon [icon]="faAtIcon"></fa-icon></td>
+                    <td class="head">{{ address.description }}: </td>
+                    <td>{{ address.value }}</td>
+                </tr>
+
+                <!-- This row is displayed if the employee has a residency address (DAR) -->
+                <tr *ngFor="let address of employee.addresses.DAR">
+                    <td class="icon"><fa-icon [icon]="faMapMarkedIcon"></fa-icon></td>
+                    <td class="head">{{ address.description }}: </td>
+                    <td>{{ address.value }}</td>
+                </tr>
+
+                <!-- This row is displayed if the employee has a website -->
+                <tr *ngFor="let address of employee.addresses.WWW">
+                    <td class="icon"><fa-icon [icon]="faAtIcon"></fa-icon></td>
+                    <td class="head">{{ address.description }}: </td>
+                    <td>{{ address.value }}</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <!-- Contact information ends here -->
+
+    <!-- Display any associations the employee might have -->
+    <h5 *ngIf="employee.associations.length">Tilknyttet til:</h5>
+    <ul class="card nolink">
+    <li *ngFor="let association of employee.associations" (click)="navigateToOrgunit(association.uuid)">
+        {{ association.title }} ({{ association.name }})
+    </li>
+</ul>
+
+</section>
