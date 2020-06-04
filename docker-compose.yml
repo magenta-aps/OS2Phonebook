@@ -60,6 +60,9 @@ services:
             SESSIONS_DB_NAME: sessions
             SESSIONS_DB_USER: sessions
             SESSIONS_DB_PASSWORD: sessions
+
+        ports:
+            - 5432:5432
             
         volumes:
             - os2mo_db_storage:/var/lib/postgresql/data

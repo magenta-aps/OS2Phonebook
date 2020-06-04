@@ -3,6 +3,32 @@ Om OS2PhoneBook
 
 Dette er en simpel telefonbog, der henter sine data fra OS2MOs API.
 
+Usage
+-----
+Start applicationen op med:
+
+.. code-block:: console
+
+    $ docker-compose up --build
+
+Tilføj data til mox databasen:
+
+.. code-block:: console
+
+    $ cat dummy-data.sql | PGPASSWORD=mox psql -h localhost -U mox
+
+Start data-import:
+
+.. code-block:: console
+
+    $ docker exec -it os2phonebook_os2phonebook-service_1 python3 cli.py start-import
+
+Dette skridt kan tage flere minutter, og outputtet / fremdriften kan ses med:
+
+.. code-block:: console
+
+    $ docker exec -it os2phonebook_os2phonebook-service_1 tail -f /log/import.log
+
 Licens og Copyright
 -------------------
 
