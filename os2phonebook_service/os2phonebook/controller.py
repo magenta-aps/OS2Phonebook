@@ -245,6 +245,7 @@ def call_search_method():
 #############
 # DATA LOAD #
 #############
+# TODO: Add basic auth
 @api.route("/api/load-employees", methods=["POST"])
 def load_employees():
     if not request.data:
