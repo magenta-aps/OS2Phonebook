@@ -242,6 +242,48 @@ def call_search_method():
     return jsonify(results)
 
 
+#############
+# DATA LOAD #
+#############
+@api.route("/api/load-employees", methods=["POST"])
+def load_employees():
+    if not request.data:
+        raise InvalidRequestBody("Request body (json) is missing")
+
+    employees = request.get_json()
+
+    # Connect to datastore
+    db = DataStore(current_app.connection)
+    db.delete_index("employees")
+
+    for uuid, employee in employees.items():
+        response = db.insert_index(
+            index="employees", identifier=uuid, data=employee
+        )
+        log.debug(response)
+
+    return jsonify({"data": len(employees)})
+
+@api.route("/api/load-org-units", methods=["POST"])
+def load_org_units():
+    if not request.data:
+        raise InvalidRequestBody("Request body (json) is missing")
+
+    org_units = request.get_json()
+
+    # Connect to datastore
+    db = DataStore(current_app.connection)
+    db.delete_index("org_units")
+
+    for uuid, unit in org_units.items():
+        response = db.insert_index(
+            index="org_units", identifier=uuid, data=unit
+        )
+        log.debug(response)
+
+    return jsonify({"data": len(org_units)})
+
+
 #####################################################################
 #   ERROR HANDLING SECTION                                          #
 #####################################################################
