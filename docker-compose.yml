@@ -92,25 +92,41 @@ services:
         depends_on:
         - elasticsearch
 
-    os2phonebook:
+    proxy:
+        image: nginx:1.19
+        volumes:
+            - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+        ports:
+            - 8000:80
+        depends_on:
+        - os2phonebook-gui
+        - os2phonebook-service
+
+    os2phonebook-gui:
         build:
             context: .
-            dockerfile: docker/Dockerfile
+            dockerfile: docker/Dockerfile.gui
+        ports:
+            - 4200:4200
+
+    os2phonebook-service:
+        build:
+            context: .
+            dockerfile: docker/Dockerfile.service
             target: dist
 
-        container_name: os2phonebook
         ports:
             - 9090:9090
     
         volumes:
             - ./dev-environment/cache:/cache
             - ./dev-environment/logs:/log
-            - ./os2phonebook_service:/app
 
         environment:
             OS2PHONEBOOK_COMPANY_NAME: Magenta Aps
             OS2PHONEBOOK_CACHE_ROOT: /cache
             OS2PHONEBOOK_LOG_ROOT: /log
+            OS2PHONEBOOK_STATIC_ROOT: /
             OS2MO_SERVICE_URL: http://mo:5000
             OS2MO_API_TOKEN: Supersecrettoken
             ELASTICSEARCH_HOST: elasticsearch

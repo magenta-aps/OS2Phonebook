@@ -39,7 +39,7 @@ RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /cache
 RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /log
 RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /entrypoint
 
-USER sys_magenta_os2phonebook:sys_magenta_os2phonebook
+# USER sys_magenta_os2phonebook:sys_magenta_os2phonebook
 
 WORKDIR /app
 

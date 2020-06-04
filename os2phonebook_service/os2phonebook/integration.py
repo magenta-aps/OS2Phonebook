@@ -66,7 +66,7 @@ class OS2MOImportClient:
 
         if not response.ok:
             log.debug(response)
-            raise RequestException("HTTP_OS2MO_RESPONSE_ERROR: {response.status_code}")
+            raise RequestException(f"HTTP_OS2MO_RESPONSE_ERROR: {response.status_code}")
 
         return response.json()
 

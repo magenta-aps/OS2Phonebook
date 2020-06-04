@@ -31,8 +31,6 @@ def initiate_application(config: dict) -> Flask:
     # Init flask instance
     app = Flask(
         import_name=__name__,
-        template_folder=static_root,
-        static_folder=static_root,
         static_url_path=""
     )
 

@@ -30,7 +30,7 @@ def index() -> Response:
         :obj:`Response`: Response with text/html body.
 
     """
-    return render_template("index.html")
+    return "Welcome to os2phonebook service"
 
 
 @api.route("/api/status", methods=["GET"])
