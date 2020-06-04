@@ -15,7 +15,7 @@ Tilføj data til mox databasen:
 
 .. code-block:: console
 
-    $ cat dummy-data.sql | PGPASSWORD=mox psql -h localhost -U mox
+    $ cat dummy.sql | PGPASSWORD=mox psql -h localhost -U mox
 
 *Note: This data-dump can be acquired from the mo team.*
 

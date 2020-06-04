@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED=1
 
 COPY os2phonebook_service/cli.py /app/cli.py
 COPY os2phonebook_service/wsgi.py /app/wsgi.py
-COPY os2phonebook_service/requirements.txt /app/requirements.txt
+COPY os2phonebook_service/requirements/common.txt /app/requirements.txt
 COPY os2phonebook_service/os2phonebook /app/os2phonebook
 
 # Install requirements
