@@ -505,7 +505,6 @@ def load_org_units():
 @api.app_errorhandler(NotFoundError)
 @api.app_errorhandler(InvalidSearchType)
 @api.app_errorhandler(InvalidRequestBody)
-@api.app_errorhandler(InvalidRequestBody)
 @api.app_errorhandler(InvalidCredentials)
 @api.app_errorhandler(InsufficientCredentials)
 def invalid_validation_handler(error) -> Response:
