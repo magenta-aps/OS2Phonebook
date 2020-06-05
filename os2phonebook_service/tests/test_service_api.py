@@ -48,6 +48,7 @@ def test_get_status_metadata(http_client):
     json_response = response.get_json()
 
     expected = {
+        "app": "OS2Phonebook",
         "organisation": ORGANISATION_NAME,
         "version": __version__
     }
