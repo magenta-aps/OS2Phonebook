@@ -226,7 +226,6 @@ def call_search_method():
 #############
 auth = HTTPBasicAuth()
 
-
 @auth.error_handler
 def auth_error(status):
     """Flask-HTTPAuth error handler.
