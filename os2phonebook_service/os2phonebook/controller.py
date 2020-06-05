@@ -153,6 +153,7 @@ def show_search_schema():
         search_value: <string>
 
     Example:
+
         {
             "search_type": "employee_by_email",
             "search_value": "someuser@example.org"
@@ -247,16 +248,40 @@ def call_search_method():
 #############
 auth = HTTPBasicAuth()
 
+
 @auth.error_handler
 def auth_error(status):
+    """Flask-HTTPAuth error handler.
+
+    Wraps domain-specific exceptions, as to invoke :code:`invalid_validation_handler`.
+
+    Args:
+        status (int): HTTP Status Code
+
+    Returns:
+        :obj:`Exception`: Raises appropriate domain-specific exception.
+    """
     if status == 401:
         raise InvalidCredentials()
-    elif status == 403:
+    if status == 403:
         raise InsufficientCredentials()
+    raise ValueError("Unknown status in auth_error")
 
 
 @cache
 def gen_user_map():
+    """Generate a usermap for the dataload endpoints HTTP Basic Auth.
+
+    Cached via @lru_cache / @cache, as the output is configured by
+    environmental variables at start-up.
+
+    If no environmental variables are defined, an empty usermap is returned,
+    thus making the dataload endpoints effectively inaccessible.
+
+    Returns:
+        :obj:`map` from :obj:`string` to :obj:`string`:
+            Username: pbkdf2 password
+    """
     username = os.environ.get("OS2PHONEBOOK_DATALOADER_USERNAME", "dataloader")
     password = os.environ.get("OS2PHONEBOOK_DATALOADER_PASSWORD")
     # No password, no access
@@ -267,8 +292,20 @@ def gen_user_map():
         username: generate_password_hash(password)
     }
 
+
 @auth.verify_password
 def verify_password(username, password):
+    """Verify username / password against usermap from :code:`gen_user_map`.
+
+    Derived from: https://flask-httpauth.readthedocs.io/en/latest/#basic-authentication-examples
+
+    Args:
+        username (string): Username given by HTTP Basic Auth
+        password (string): Password given by HTTP Basic Auth
+
+    Returns:
+        :obj:`string`: Username of validated user or :code:`None`
+    """
     user_map = gen_user_map()
     # Only valid users can get their password checked
     if username in user_map:
@@ -277,20 +314,89 @@ def verify_password(username, password):
             return username
     return None
 
+
 @api.route("/api/load-employees", methods=["POST"])
 @auth.login_required
 def load_employees():
+    """Clean out DataStore and load employees from provided JSON.
+
+    Args:
+        request.data (json/dict): Employees to load into the data store.
+
+    Example:
+
+        The request.data is formatted as follows:
+
+        {
+            "f06ee470-9f17-566f-acbe-e938112d46d9": {
+                "givenname": "Emil Madsen",
+                "name": "Emil",
+                "surname": "Madsen",
+                "uuid": "f06ee470-9f17-566f-acbe-e938112d46d9",
+                "engagements": [
+                  {
+                    "title": "Software Udvikler",
+                    "name": "Teknisk Support",
+                    "uuid": "6fc9ba6b-ca5b-5e09-a594-40363c45aae0"
+                  }
+                ],
+                "associations": [
+                  {
+                    "title": "Ansat",
+                    "name": "Magenta ApS",
+                    "uuid": "582d0b5e-3c3b-52e8-8d93-42573a6a3d88"
+                  }
+                ],
+                "management": [],
+                "addresses": {
+                  "DAR": [
+                    {
+                      "description": "Arbejdsadresse",
+                      "value": "Skt. Johannes Allé 2, 2., 8000 Aarhus C"
+                    },
+                    ...
+                  ],
+                  "PHONE": [
+                  ],
+                  "EMAIL": [
+                    {
+                      "description": "Email",
+                      "value": "emil@magenta.dk"
+                    }
+                  ],
+                  "EAN": [],
+                  "PNUMBER": [],
+                  "WWW": []
+                }
+            },
+            ...
+        }
+
+        The response body is formatted as follows:
+
+        {
+            "data": 421
+        }
+
+        If 421 employees were loaded.
+
+    Returns:
+        :obj:`Response`: Response with json body.
+
+    """
     if not request.data:
         raise InvalidRequestBody("Request body (json) is missing")
 
     log.info("load_employees called")
 
+    # Fetch the entire bulk to be loaded
     employees = request.get_json()
 
-    # Connect to datastore
+    # Connect to datastore and clear it out
     db = DataStore(current_app.connection)
     db.delete_index("employees")
 
+    # Start loading entries
     for uuid, employee in employees.items():
         response = db.insert_index(
             index="employees", identifier=uuid, data=employee
@@ -299,20 +405,89 @@ def load_employees():
 
     return jsonify({"data": len(employees)})
 
+
 @api.route("/api/load-org-units", methods=["POST"])
 @auth.login_required
 def load_org_units():
+    """Clean out DataStore and load org units from provided JSON.
+
+    Args:
+        request.data (json/dict): Org units to load into the data store.
+
+    Example:
+
+        The request.data is formatted as follows:
+
+        {
+            "582d0b5e-3c3b-52e8-8d93-42573a6a3d88": {
+                "uuid": "582d0b5e-3c3b-52e8-8d93-42573a6a3d88",
+                "name": "Magenta ApS",
+                "engagements": [
+                ],
+                "associations": [
+                  {
+                    "title": "Medarbejder",
+                    "name": "Emil Madsen",
+                    "uuid": "f06ee470-9f17-566f-acbe-e938112d46d9"
+                  },
+                  ...
+                ],
+                "management": [
+                  {
+                    "title": "Direktør",
+                    "name": "Morten Kjærsgaard",
+                    "uuid": "f06ee470-9f17-566f-acbe-e938112d46d9"
+                  }
+                ],
+                "addresses": {
+                  "DAR": [
+                    {
+                      "description": "Postadresse",
+                      "value": "Skt. Johannes Allé 2, 2., 8000 Aarhus C"
+                    },
+                    ...
+                  ],
+                  "PHONE": [
+                  ],
+                  "EMAIL": [
+                    {
+                      "description": "Email",
+                      "value": "info@magenta.dk"
+                    }
+                  ],
+                  "EAN": [],
+                  "PNUMBER": [],
+                  "WWW": []
+                }
+            },
+            ...
+        }
+
+        The response body is formatted as follows:
+
+        {
+            "data": 421
+        }
+
+        If 421 org units were loaded.
+
+    Returns:
+        :obj:`Response`: Response with json body.
+
+    """
     if not request.data:
         raise InvalidRequestBody("Request body (json) is missing")
 
     log.info("load_org_units called")
 
+    # Fetch the entire bulk to be loaded
     org_units = request.get_json()
 
-    # Connect to datastore
+    # Connect to datastore and clear it out
     db = DataStore(current_app.connection)
     db.delete_index("org_units")
 
+    # Start loading entries
     for uuid, unit in org_units.items():
         response = db.insert_index(
             index="org_units", identifier=uuid, data=unit
