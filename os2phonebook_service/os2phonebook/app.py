@@ -22,7 +22,6 @@ def initiate_application(config: dict) -> Flask:
 
     # Config parameters
     organisation_name = config["OS2PHONEBOOK_COMPANY_NAME"]
-    static_root = config["OS2PHONEBOOK_STATIC_ROOT"]
     db_host = config["ELASTICSEARCH_HOST"]
     db_port = config["ELASTICSEARCH_PORT"]
 

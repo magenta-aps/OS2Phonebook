@@ -1,8 +1,19 @@
-from uuid import uuid4
+import os
+import sys
+# Fetch the best cache implementation we can
+if sys.version_info[0] == 3:
+    if sys.version_info[1] >= 9:
+        from functools import cache
+    else:
+        from functools import lru_cache
+        cache = lru_cache(None)
+
 from elasticsearch.exceptions import NotFoundError
 from os2phonebook.datastore import DataStore
 from os2phonebook.helpers import log_factory
-from os2phonebook.exceptions import InvalidRequestBody, InvalidSearchType
+from os2phonebook.exceptions import InvalidRequestBody, InvalidSearchType, InvalidCredentials, InsufficientCredentials
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.exceptions import NotFound
 from flask import (
     Response,
@@ -10,10 +21,8 @@ from flask import (
     jsonify,
     current_app,
     request,
-    render_template
+    render_template,
 )
-
-
 
 # Init logging
 log = log_factory()
@@ -22,17 +31,7 @@ log = log_factory()
 api = Blueprint("routes", __name__)
 
 
-@api.route("/")
-def index() -> Response:
-    """Serve frontend application.
-
-    Returns:
-        :obj:`Response`: Response with text/html body.
-
-    """
-    return "Welcome to os2phonebook service"
-
-
+@api.route("/", methods=["GET"])
 @api.route("/api/status", methods=["GET"])
 def show_status() -> Response:
     """Status endpoint shows application status and metadata.
@@ -46,6 +45,7 @@ def show_status() -> Response:
     organisation_name = current_app.organisation_name
 
     status_response = {
+        "app": "OS2Phonebook",
         "version": version,
         "organisation": organisation_name,
     }
@@ -245,11 +245,45 @@ def call_search_method():
 #############
 # DATA LOAD #
 #############
-# TODO: Add basic auth
+auth = HTTPBasicAuth()
+
+@auth.error_handler
+def auth_error(status):
+    if status == 401:
+        raise InvalidCredentials()
+    elif status == 403:
+        raise InsufficientCredentials()
+
+
+@cache
+def gen_user_map():
+    username = os.environ.get("OS2PHONEBOOK_DATALOADER_USERNAME", "dataloader")
+    password = os.environ.get("OS2PHONEBOOK_DATALOADER_PASSWORD")
+    # No password, no access
+    if password is None:
+        log.warning("No HTTP Basic Auth credentials configured thus dataload is disabled")
+        return []
+    return {
+        username: generate_password_hash(password)
+    }
+
+@auth.verify_password
+def verify_password(username, password):
+    user_map = gen_user_map()
+    # Only valid users can get their password checked
+    if username in user_map:
+        # Only if password matches, a login is successful
+        if check_password_hash(user_map.get(username), password):
+            return username
+    return None
+
 @api.route("/api/load-employees", methods=["POST"])
+@auth.login_required
 def load_employees():
     if not request.data:
         raise InvalidRequestBody("Request body (json) is missing")
+
+    log.info("load_employees called")
 
     employees = request.get_json()
 
@@ -266,9 +300,12 @@ def load_employees():
     return jsonify({"data": len(employees)})
 
 @api.route("/api/load-org-units", methods=["POST"])
+@auth.login_required
 def load_org_units():
     if not request.data:
         raise InvalidRequestBody("Request body (json) is missing")
+
+    log.info("load_org_units called")
 
     org_units = request.get_json()
 
@@ -293,6 +330,9 @@ def load_org_units():
 @api.app_errorhandler(NotFoundError)
 @api.app_errorhandler(InvalidSearchType)
 @api.app_errorhandler(InvalidRequestBody)
+@api.app_errorhandler(InvalidRequestBody)
+@api.app_errorhandler(InvalidCredentials)
+@api.app_errorhandler(InsufficientCredentials)
 def invalid_validation_handler(error) -> Response:
     """Error handler for all common types
 
