@@ -486,6 +486,7 @@ def load_org_units():
     def generator():
         for uuid, org_unit in org_units.items():
             org_unit['_id'] = uuid
+            # TODO: parent breaks bulk indexing?
             del org_unit['parent']
             yield org_unit
 
