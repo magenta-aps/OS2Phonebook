@@ -1,5 +1,6 @@
 from typing import List, Tuple, Callable
 from elasticsearch import Elasticsearch
+from elasticsearch.helpers import streaming_bulk
 from os2phonebook.exceptions import InvalidSearchType
 
 
@@ -620,3 +621,22 @@ class DataStore(object):
         )
 
         return response
+
+    def bulk_insert_index(self, index: str, generator) -> dict:
+        """Insert documents into a datastore index
+
+        Args:
+            index (str): Name of the index
+            generator (func): Generator function, generating dicts.
+
+        Returns:
+            int, int: Number of documents indexed, documents processed.
+
+        """
+        indexed = 0
+        total = 0
+        for ok, action in streaming_bulk(client=self.db, index=index, actions=generator()):
+            indexed += ok
+            total += 1
+
+        return indexed, total

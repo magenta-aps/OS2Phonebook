@@ -375,10 +375,10 @@ def load_employees():
         The response body is formatted as follows:
 
         {
-            "data": 421
+            "indexed": 421, "total": 421
         }
 
-        If 421 employees were loaded.
+        If 421 org units were indexed, 421 were processed.
 
     Returns:
         :obj:`Response`: Response with json body.
@@ -392,18 +392,18 @@ def load_employees():
     # Fetch the entire bulk to be loaded
     employees = request.get_json()
 
+    def generator():
+        for uuid, employee in employees.items():
+            employee['_id'] = uuid
+            yield employee
+
     # Connect to datastore and clear it out
     db = DataStore(current_app.connection)
     db.delete_index("employees")
+    # Loading entries
+    indexed, total = db.bulk_insert_index(index="employees", generator=generator)
 
-    # Start loading entries
-    for uuid, employee in employees.items():
-        response = db.insert_index(
-            index="employees", identifier=uuid, data=employee
-        )
-        log.debug(response)
-
-    return jsonify({"data": len(employees)})
+    return jsonify({"indexed": indexed, "total": total})
 
 
 @api.route("/api/load-org-units", methods=["POST"])
@@ -466,10 +466,10 @@ def load_org_units():
         The response body is formatted as follows:
 
         {
-            "data": 421
+            "indexed": 421, "total": 421
         }
 
-        If 421 org units were loaded.
+        If 421 org units were indexed, 421 were processed.
 
     Returns:
         :obj:`Response`: Response with json body.
@@ -483,18 +483,19 @@ def load_org_units():
     # Fetch the entire bulk to be loaded
     org_units = request.get_json()
 
+    def generator():
+        for uuid, org_unit in org_units.items():
+            org_unit['_id'] = uuid
+            del org_unit['parent']
+            yield org_unit
+
     # Connect to datastore and clear it out
     db = DataStore(current_app.connection)
     db.delete_index("org_units")
+    # Loading entries
+    indexed, total = db.bulk_insert_index(index="org_units", generator=generator)
 
-    # Start loading entries
-    for uuid, unit in org_units.items():
-        response = db.insert_index(
-            index="org_units", identifier=uuid, data=unit
-        )
-        log.debug(response)
-
-    return jsonify({"data": len(org_units)})
+    return jsonify({"indexed": indexed, "total": total})
 
 
 #####################################################################
@@ -575,7 +576,7 @@ def all_exception_handler(error):
         }
     }
 
-    log.error("UNKNOWN_EXCEPTION - {error_class}={error}")
+    log.error(f"UNKNOWN_EXCEPTION - {error_class}={error}")
     log.debug(error)
 
     return jsonify(response), status_code
