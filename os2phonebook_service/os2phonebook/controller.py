@@ -394,8 +394,11 @@ def load_employees():
 
     def generator():
         for uuid, employee in employees.items():
-            employee['_id'] = uuid
-            yield employee
+            entry = {
+                '_id': uuid,
+                '_source': employee
+            }
+            yield entry
 
     # Connect to datastore and clear it out
     db = DataStore(current_app.connection)
@@ -485,10 +488,11 @@ def load_org_units():
 
     def generator():
         for uuid, org_unit in org_units.items():
-            org_unit['_id'] = uuid
-            # TODO: parent breaks bulk indexing?
-            del org_unit['parent']
-            yield org_unit
+            entry = {
+                '_id': uuid,
+                '_source': org_unit
+            }
+            yield entry
 
     # Connect to datastore and clear it out
     db = DataStore(current_app.connection)
@@ -546,7 +550,7 @@ def invalid_validation_handler(error) -> Response:
         }
     }
 
-    log.warning("REQUEST_FAILED - {error}")
+    log.warning(f"REQUEST_FAILED - {error}")
 
     return jsonify(response), status_code
 
