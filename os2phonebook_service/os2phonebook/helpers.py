@@ -21,6 +21,11 @@ def config_factory():
         * ELASTICSEARCH_HOST
         * ELASTICSEARCH_PORT
 
+    The following parameters are optional:
+
+        * OS2PHONEBOOK_DATALOADER_USERNAME
+        * OS2PHONEBOOK_DATALOADER_PASSWORD
+
     Raises:
         EnvironmentError:
 
@@ -38,18 +43,22 @@ def config_factory():
         "ELASTICSEARCH_PORT"
     ]
 
+    optional_parameters = {
+        "OS2PHONEBOOK_DATALOADER_USERNAME": "dataloader",
+        "OS2PHONEBOOK_DATALOADER_PASSWORD": None,
+    }
     for parameter_name in required_parameters:
         parameter_value = os.getenv(parameter_name)
 
         if not parameter_value:
             raise EnvironmentError(f"MISSING_ENVIRONMENT_VARIABLE={parameter_name}")
 
-        # Hack for port number
-        # This must be passed as an int
-        # TODO: Perhaps add proper type validation sometime(TM)
-        if parameter_name == "ELASTICSEARCH_PORT":
-            parameter_value = int(parameter_value)
+        configuration_dict[parameter_name] = parameter_value
 
+    for parameter_name, default_value in optional_parameters.items():
+        parameter_value = os.environ.get(parameter_name, default_value)
+        if not parameter_value:
+            continue
         configuration_dict[parameter_name] = parameter_value
 
     return configuration_dict
