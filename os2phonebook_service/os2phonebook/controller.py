@@ -10,14 +10,7 @@ from os2phonebook.exceptions import (
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import check_password_hash
 from werkzeug.exceptions import NotFound
-from flask import (
-    Response,
-    Blueprint,
-    jsonify,
-    current_app,
-    request,
-    render_template,
-)
+from flask import Response, Blueprint, jsonify, current_app, request
 
 # Init logging
 log = log_factory()
