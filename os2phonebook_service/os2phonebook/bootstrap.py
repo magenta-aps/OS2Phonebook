@@ -37,7 +37,7 @@ def ping_datastore(config: dict, interval=5, max_attempts=15) -> Iterator[str]:
 
     # Configuration parameters
     host = config["ELASTICSEARCH_HOST"]
-    port = config["ELASTICSEARCH_PORT"]
+    port = int(config["ELASTICSEARCH_PORT"])
 
     connection_status = False
 

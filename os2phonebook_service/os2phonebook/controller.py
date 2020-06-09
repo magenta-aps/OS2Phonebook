@@ -1,19 +1,9 @@
-import os
-import sys
-# Fetch the best cache implementation we can
-if sys.version_info[0] == 3:
-    if sys.version_info[1] >= 9:
-        from functools import cache
-    else:
-        from functools import lru_cache
-        cache = lru_cache(None)
-
 from elasticsearch.exceptions import NotFoundError
 from os2phonebook.datastore import DataStore
 from os2phonebook.helpers import log_factory
 from os2phonebook.exceptions import InvalidRequestBody, InvalidSearchType, InvalidCredentials, InsufficientCredentials
 from flask_httpauth import HTTPBasicAuth
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 from werkzeug.exceptions import NotFound
 from flask import (
     Response,
@@ -268,31 +258,6 @@ def auth_error(status):
     raise ValueError("Unknown status in auth_error")
 
 
-@cache
-def gen_user_map():
-    """Generate a usermap for the dataload endpoints HTTP Basic Auth.
-
-    Cached via @lru_cache / @cache, as the output is configured by
-    environmental variables at start-up.
-
-    If no environmental variables are defined, an empty usermap is returned,
-    thus making the dataload endpoints effectively inaccessible.
-
-    Returns:
-        :obj:`map` from :obj:`string` to :obj:`string`:
-            Username: pbkdf2 password
-    """
-    username = os.environ.get("OS2PHONEBOOK_DATALOADER_USERNAME", "dataloader")
-    password = os.environ.get("OS2PHONEBOOK_DATALOADER_PASSWORD")
-    # No password, no access
-    if password is None:
-        log.warning("No HTTP Basic Auth credentials configured thus dataload is disabled")
-        return []
-    return {
-        username: generate_password_hash(password)
-    }
-
-
 @auth.verify_password
 def verify_password(username, password):
     """Verify username / password against usermap from :code:`gen_user_map`.
@@ -306,7 +271,7 @@ def verify_password(username, password):
     Returns:
         :obj:`string`: Username of validated user or :code:`None`
     """
-    user_map = gen_user_map()
+    user_map = current_app.dataload_basic_auth
     # Only valid users can get their password checked
     if username in user_map:
         # Only if password matches, a login is successful
