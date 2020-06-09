@@ -516,16 +516,9 @@ def load_org_units():
 def invalid_validation_handler(error) -> Response:
     """Error handler for all common types
 
-    The supported error types are as follows:
-        * NotFound
-        * NotFoundError
-        * InvalidSearchType
-        * InvalidRequestBody
-
-    All error types above carry a `status_code`.
-    
-    NotFoundError is thrown when no record can be found
-    by identifier, as such this will return status 404. 
+    All error types carry a `status_code`, for instance: :code:`NotFoundError`
+    is thrown when no record can be found by identifier, as such this will
+    return status code 404. 
 
     Args:
         error (Exception): An exception type error object
