@@ -18,6 +18,7 @@ export interface Metadata {
 export interface SearchType {
     name: string;
     type: string;
+    url: string;
 }
 
 export interface SearchRequest {

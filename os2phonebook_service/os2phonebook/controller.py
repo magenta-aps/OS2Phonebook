@@ -182,6 +182,7 @@ def call_search_method():
         * employee_by_email
         * employee_by_engagement
         * org_unit_by_name
+        * org_unit_by_kle
 
     Returns:
         :obj:`Response`: Response with json body.
@@ -462,6 +463,17 @@ def load_org_units():
     # Connect to datastore and clear it out
     db = DataStore(current_app.connection)
     db.delete_index("org_units")
+    # Create nested KLEs
+    db.create_index("org_units", {
+        "mappings": {
+            "properties": {
+                "kles": {
+                    "type": "nested"
+                }
+            }
+        }
+    })
+
     # Loading entries
     indexed, total = db.bulk_insert_index(index="org_units", generator=generator)
 
