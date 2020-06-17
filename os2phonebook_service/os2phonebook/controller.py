@@ -10,9 +10,8 @@ from flask import (
     jsonify,
     current_app,
     request,
-    render_template
+    render_template,
 )
-
 
 
 # Init logging
@@ -45,10 +44,7 @@ def show_status() -> Response:
     version = current_app.os2phonebook_version
     organisation_name = current_app.organisation_name
 
-    status_response = {
-        "version": version,
-        "organisation": organisation_name,
-    }
+    status_response = {"version": version, "organisation": organisation_name}
 
     return jsonify(status_response)
 
@@ -113,9 +109,7 @@ def show_org_unit(uuid) -> Response:
 
     db = DataStore(current_app.connection)
 
-    results = db.get_org_unit(
-        uuid=uuid
-    )
+    results = db.get_org_unit(uuid=uuid)
 
     return jsonify(results)
 
@@ -135,9 +129,7 @@ def show_employee(uuid) -> Response:
     db = DataStore(current_app.connection)
 
     # Retrieve employee by uuid
-    results = db.get_employee(
-        uuid=uuid
-    )
+    results = db.get_employee(uuid=uuid)
 
     return jsonify(results)
 
@@ -167,15 +159,9 @@ def show_search_schema():
         "method": "POST",
         "format": "json",
         "schema": {
-            "search_type": {
-                "type": "string",
-                "required": True
-            },
-            "search_value": {
-                "type": "string",
-                "required": True
-            }
-        }
+            "search_type": {"type": "string", "required": True},
+            "search_value": {"type": "string", "required": True},
+        },
     }
 
     return jsonify(search_schema)
@@ -218,9 +204,7 @@ def call_search_method():
     db = DataStore(current_app.connection)
 
     results = db.search(
-        search_type=search_type,
-        search_value=search_value,
-        fuzzy_search=False
+        search_type=search_type, search_value=search_value, fuzzy_search=False
     )
 
     if not results:
@@ -231,7 +215,7 @@ def call_search_method():
         results = db.search(
             search_type=search_type,
             search_value=search_value,
-            fuzzy_search=True
+            fuzzy_search=True,
         )
 
     if not results:
@@ -245,6 +229,7 @@ def call_search_method():
 #####################################################################
 #   ERROR HANDLING SECTION                                          #
 #####################################################################
+
 
 @api.app_errorhandler(NotFound)
 @api.app_errorhandler(NotFoundError)
@@ -281,10 +266,7 @@ def invalid_validation_handler(error) -> Response:
         status_code = error.code
 
     response = {
-        "error": {
-            "type": error.__class__.__name__,
-            "message": str(error)
-        }
+        "error": {"type": error.__class__.__name__, "message": str(error)}
     }
 
     log.warning("REQUEST_FAILED - {error}")
@@ -314,7 +296,7 @@ def all_exception_handler(error):
     response = {
         "error": {
             "type": error_class,
-            "message": "Unknown error occured, please contact administrator"
+            "message": "Unknown error occured, please contact administrator",
         }
     }
 

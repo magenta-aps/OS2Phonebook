@@ -1,3 +1,4 @@
+"""Command-line util for OS2Phonebook."""
 import os
 import sys
 import click
@@ -8,13 +9,17 @@ from os2phonebook.bootstrap import ping_datastore
 
 @click.group()
 def cli():
-    """OS2Phonebook CLI"""
+    """OS2Phonebook CLI."""
     pass
 
 
 @cli.command()
-@click.option("--max-attempts", default=120, help="Maximum connection attempts")
-@click.option("--interval", default=5, help="Interval between connects (in seconds)")
+@click.option(
+    "--max-attempts", default=120, help="Maximum connection attempts"
+)
+@click.option(
+    "--interval", default=5, help="Interval between connects (in seconds)"
+)
 def pingdb(max_attempts, interval):
     """Test the datastore connection
 
@@ -33,7 +38,9 @@ def pingdb(max_attempts, interval):
 
 
 @cli.command()
-@click.option("--cache-only/--not-cache-only", default=False, help="Store cached content")
+@click.option(
+    "--cache-only/--not-cache-only", default=False, help="Store cached content"
+)
 def start_import(cache_only):
     """Import data from the OS2MO service api
 
@@ -57,7 +64,7 @@ def start_import(cache_only):
 
     # Hello
     click.echo("Import procedure invoked")
-    click.echo(f"Please refer to the import log regarding the progress")
+    click.echo("Please refer to the import log regarding the progress")
     click.echo(f"View the log file: {log_root}/import.log")
 
     # Output file names

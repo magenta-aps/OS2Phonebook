@@ -10,7 +10,7 @@ try:
     config = config_factory()
 
     # Configure logging
-    log_root  = config["OS2PHONEBOOK_LOG_ROOT"]
+    log_root = config["OS2PHONEBOOK_LOG_ROOT"]
     configure_logging(log_root, "service.log", log)
 
 except Exception as error:

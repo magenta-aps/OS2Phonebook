@@ -37,14 +37,16 @@ def config_factory():
         "OS2MO_SERVICE_URL",
         "OS2MO_API_TOKEN",
         "ELASTICSEARCH_HOST",
-        "ELASTICSEARCH_PORT"
+        "ELASTICSEARCH_PORT",
     ]
 
     for parameter_name in required_parameters:
         parameter_value = os.getenv(parameter_name)
 
         if not parameter_value:
-            raise EnvironmentError(f"MISSING_ENVIRONMENT_VARIABLE={parameter_name}")
+            raise EnvironmentError(
+                f"MISSING_ENVIRONMENT_VARIABLE={parameter_name}"
+            )
 
         # Hack for port number
         # This must be passed as an int
@@ -89,7 +91,9 @@ def configure_logging(log_root: str, log_file: str, logger: Logger) -> None:
 
     """
     if not isinstance(logger, Logger):
-        raise TypeError("Function will only accept an instance of the python Logger class")
+        raise TypeError(
+            "Function will only accept an instance of the python Logger class"
+        )
 
     if not os.path.exists(log_root):
         raise FileNotFoundError("Specified log directory does not exist")
@@ -102,9 +106,7 @@ def configure_logging(log_root: str, log_file: str, logger: Logger) -> None:
     logger.setLevel(log_level)
 
     # Log format
-    log_format = Formatter(
-        "[%(asctime)s] %(levelname)s %(message)s"
-    )
+    log_format = Formatter("[%(asctime)s] %(levelname)s %(message)s")
 
     activity_log_file = os.path.join(log_root, log_file)
 

@@ -32,9 +32,7 @@ class OS2MOImportClient:
     def configure_access_token(self, token: str):
         """Optionally configure the http client with an auth session header."""
 
-        os2mo_session = {
-            "SESSION": token
-        }
+        os2mo_session = {"SESSION": token}
 
         self.session.headers.update(os2mo_session)
 
@@ -66,7 +64,9 @@ class OS2MOImportClient:
 
         if not response.ok:
             log.debug(response)
-            raise RequestException(f"HTTP_OS2MO_RESPONSE_ERROR: {response.status_code}")
+            raise RequestException(
+                f"HTTP_OS2MO_RESPONSE_ERROR: {response.status_code}"
+            )
 
         return response.json()
 
@@ -185,7 +185,7 @@ class OS2MOImportClient:
             "EMAIL": [],
             "EAN": [],
             "PNUMBER": [],
-            "WWW": []
+            "WWW": [],
         }
 
         for address in address_data:
@@ -196,12 +196,15 @@ class OS2MOImportClient:
                 log.debug(f"Scope: {scope} does not exist")
                 continue
 
-            if "visibility" in address and address["visibility"]["scope"] == "SECRET":
+            if (
+                "visibility" in address
+                and address["visibility"]["scope"] == "SECRET"
+            ):
                 continue
 
             formatted_address = {
                 "description": address["address_type"]["name"],
-                "value": address["name"]
+                "value": address["name"],
             }
 
             address_types[scope].append(formatted_address)
@@ -271,10 +274,7 @@ class OS2MOImportClient:
 
         return_data = self.get(resource)
 
-        unit = {
-            "uuid": return_data["uuid"],
-            "name": return_data["name"]
-        }
+        unit = {"uuid": return_data["uuid"], "name": return_data["name"]}
 
         # Enrich unit (It's just a nicer way to say mutate)
         unit["addresses"] = self.get_org_unit_address_references(uuid)
@@ -482,10 +482,7 @@ class OS2MOImportClient:
 
         return_data = self.get(resource, start=offset, limit=batch_size)
 
-        return [
-            employee
-            for employee in return_data["items"]
-        ]
+        return [employee for employee in return_data["items"]]
 
     def get_employee_address_references(self, uuid):
         """Retrieve and convert employee addresses.
@@ -656,21 +653,28 @@ class OS2MOImportClient:
             if current_batch_end > total:
                 current_batch_end = total
 
-            log.info(f"OS2MO_IMPORT_ROUTINE - Import batch {offset}-{current_batch_end}")
+            log.info(
+                f"OS2MO_IMPORT_ROUTINE - Import batch {offset}-{current_batch_end}"
+            )
 
             employees = self.get_batch_of_employees(
-                offset=offset,
-                batch_size=batch_size
+                offset=offset, batch_size=batch_size
             )
 
             for employee in employees:
                 # We'll need this in a bit
                 uuid = employee["uuid"]
 
-                # Enrich employee         
-                employee["engagements"] = self.get_employee_engagement_references(uuid)
-                employee["associations"] = self.get_employee_association_references(uuid)
-                employee["management"] = self.get_employee_manager_references(uuid)
+                # Enrich employee
+                employee[
+                    "engagements"
+                ] = self.get_employee_engagement_references(uuid)
+                employee[
+                    "associations"
+                ] = self.get_employee_association_references(uuid)
+                employee["management"] = self.get_employee_manager_references(
+                    uuid
+                )
 
                 # Do NOT import employees without an engagement or association
                 # https://redmine.magenta-aps.dk/issues/34812
@@ -678,7 +682,11 @@ class OS2MOImportClient:
                 # We do however want to import employees with management roles.
                 # As an external employee may be a manager for an organisation unit.
 
-                if not employee["associations"] and not employee["engagements"] and not employee["management"]:
+                if (
+                    not employee["associations"]
+                    and not employee["engagements"]
+                    and not employee["management"]
+                ):
                     log.info(
                         "OS2MO_IMPORT_ROUTINE Skip employee due to missing engagements, associations, management"
                     )
@@ -690,12 +698,16 @@ class OS2MOImportClient:
 
                     continue
 
-                employee["addresses"] = self.get_employee_address_references(uuid)
+                employee["addresses"] = self.get_employee_address_references(
+                    uuid
+                )
 
                 self.employee_map[uuid] = employee
 
-            log.info(f"OS2MO_IMPORT_ROUTINE - Batch {current_batch_end}-{current_batch_end} completed")
-            
+            log.info(
+                f"OS2MO_IMPORT_ROUTINE - Batch {current_batch_end}-{current_batch_end} completed"
+            )
+
             # Hacky offset update
             offset = offset + batch_size
 

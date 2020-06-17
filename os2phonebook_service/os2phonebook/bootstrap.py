@@ -65,7 +65,9 @@ def ping_datastore(config: dict, interval=5, max_attempts=15) -> Iterator[str]:
     yield f"Maxium attempts ({max_attempts})reached"
 
 
-def import_from_os2mo(config: dict, employees_map_file: str, org_units_map_file: str) -> None:
+def import_from_os2mo(
+    config: dict, employees_map_file: str, org_units_map_file: str
+) -> None:
     """Import employees and organisation units from the OS2MO service api.
 
     Bootstrap the OS2MOImportClient `import_routine` method
@@ -99,7 +101,9 @@ def import_from_os2mo(config: dict, employees_map_file: str, org_units_map_file:
     log.info(f"IMPORT_FROM_OS2MO - Cache procedure completed")
 
 
-def store_cache(config: dict, employees_map_file: str, org_units_map_file: str):
+def store_cache(
+    config: dict, employees_map_file: str, org_units_map_file: str
+):
     """Store employees and organisation units in the datastore.
 
     Load hashmaps of employees and organsation units
