@@ -86,19 +86,19 @@ def import_from_os2mo(
 
     # Perform the actual import from OS2MO
     # This may take a while...
-    log.info(f"IMPORT_FROM_OS2MO - Begin caching content")
+    log.info("IMPORT_FROM_OS2MO - Begin caching content")
 
     client = OS2MOImportClient(base_url)
     client.configure_access_token(token)
     employees, org_units = client.import_routine()
 
     # Write files to the cache directory
-    log.info(f"IMPORT_FROM_OS2MO - Write content to disk")
+    log.info("IMPORT_FROM_OS2MO - Write content to disk")
     helpers.dump_file(employees_map_file, employees)
     helpers.dump_file(org_units_map_file, org_units)
 
     # Complete
-    log.info(f"IMPORT_FROM_OS2MO - Cache procedure completed")
+    log.info("IMPORT_FROM_OS2MO - Cache procedure completed")
 
 
 def store_cache(
@@ -119,7 +119,7 @@ def store_cache(
     port = config["ELASTICSEARCH_PORT"]
 
     # Reload files from cache
-    log.info(f"STORE_CACHE - Reloading content from cache")
+    log.info("STORE_CACHE - Reloading content from cache")
     employees = helpers.load_file(employees_map_file)
     org_units = helpers.load_file(org_units_map_file)
 
@@ -128,12 +128,12 @@ def store_cache(
     db = datastore.DataStore(connection)
 
     # Destroy previously inserted data
-    log.info(f"STORE_CACHE - Delete previous datastore indices")
+    log.info("STORE_CACHE - Delete previous datastore indices")
     db.delete_index("org_units")
     db.delete_index("employees")
 
     # Insert into elastic search
-    log.info(f"STORE_CACHE - Storing content in the datastore")
+    log.info("STORE_CACHE - Storing content in the datastore")
 
     for uuid, unit in org_units.items():
         response = db.insert_index(
@@ -147,4 +147,4 @@ def store_cache(
         )
         log.debug(response)
 
-    log.info(f"STORE_CACHE - Store procedure completed")
+    log.info("STORE_CACHE - Store procedure completed")

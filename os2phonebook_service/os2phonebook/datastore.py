@@ -184,18 +184,21 @@ class DataStore(object):
         for more information on the available types.
 
         Args:
-            search_type (str): This refers to the `search_type_map` key. 
+            search_type (str): This refers to the `search_type_map` key.
 
         Returns:
             Callable[[str, bool], Tuple[str, dict]: The query generator
 
         Raises:
-            TypeError: If the `search_type` is not a string value.
-            InvalidSearchType: If the `search_type` does not exist.
+            TypeError:
+                If the `search_type` is not a string value.
+            InvalidSearchType:
+                If the `search_type` does not exist.
                 (Meaning that it does not exist in the `search_type_map`)
-            ValueError: If the query method is not defined for this type.
-            AttributeError: If the query method defined does not exist as an attribute.
-
+            ValueError:
+                If the query method is not defined for this type.
+            AttributeError:
+                If the query method defined does not exist as an attribute.
         """
 
         if not isinstance(search_type, str):
@@ -275,8 +278,9 @@ class DataStore(object):
             * Ali baba
             * The little bakery
 
-        This type of query will only return results will a full match on keywords
-        and is typically used as the initial search before attempting to broader searches.
+        This type of query will only return results will a full match on
+        keywords and is typically used as the initial search before attempting
+        to broader searches.
 
         For example:
             search_type = "cake" will return only "cake" and not "beefcake"
@@ -312,7 +316,8 @@ class DataStore(object):
         Unlike `match query` this is a broader search query,
         matching on everything that `starts with`.
 
-        This is typically used as a second search attempt if there was no initial match.
+        This is typically used as a second search attempt if there was no
+        initial match.
 
         For example:
             search_type = "ho" will return only "holiday" but not "shoo"
@@ -358,7 +363,7 @@ class DataStore(object):
         on the the (full) `name` string we are additionally matching
         on the last name prefix.
 
-        Example: 
+        Example:
             Searching for `Jean Picard` will yield the following matches:
             * Jean Luc Picard
 
@@ -418,8 +423,8 @@ class DataStore(object):
             Search value `22722222` will match the following only:
             * 22722222
 
-        A fuzzy query will use `phrase_prefix` matching in order to match on the given
-        prefix, the search for `2272` will yield following results:
+        A fuzzy query will use `phrase_prefix` matching in order to match on
+        the given prefix, the search for `2272` will yield following results:
             * 22722222
             * 22723333
             * 22724444
@@ -459,7 +464,8 @@ class DataStore(object):
         """Search query for an employee by email address.
 
         We are only using `phrase_prefix` matching for email addresses.
-        As a consequence, it is not possible to search by domain, e.g. `@example.com`.
+        As a consequence, it is not possible to search by domain, e.g.
+        `@example.com`.
 
         Search value `picard` will yield the following results:
         * picard@example.com
