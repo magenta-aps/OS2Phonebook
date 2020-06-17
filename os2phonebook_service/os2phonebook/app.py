@@ -29,10 +29,7 @@ def initiate_application(config: dict) -> Flask:
     log.info("INITIATE_SERVICE - Config parameters loaded")
 
     # Init flask instance
-    app = Flask(
-        import_name=__name__,
-        static_url_path=""
-    )
+    app = Flask(import_name=__name__, static_url_path="")
 
     # Set metadata values
     app.os2phonebook_version = __version__

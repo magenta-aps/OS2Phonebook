@@ -45,7 +45,7 @@ Lint Python:
     - flake8 --version
     - flake8
     - black --version
-    - black --check .
+    - black --check --line-length 79 .
 
 Lint Dockerfiles:
   <<: *lint-default

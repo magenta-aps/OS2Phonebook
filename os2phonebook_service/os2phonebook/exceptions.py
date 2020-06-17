@@ -10,9 +10,11 @@
 
 class InvalidRequestBody(Exception):
     """Request body is not valid according to the given schema"""
+
     status_code = 400
 
 
 class InvalidSearchType(Exception):
     """Search type is not supported"""
+
     status_code = 400
