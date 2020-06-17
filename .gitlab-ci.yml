@@ -13,7 +13,7 @@
 
 variables:
   # Project variables
-  RELEASE_REGISTRY: index.docker.io/magentaaps/
+  RELEASE_REGISTRY: index.docker.io/magentaaps
   # CI images
   FRONTEND_IMAGE: ${CI_REGISTRY_IMAGE}/frontend:${CI_COMMIT_SHA}
   BACKEND_IMAGE: ${CI_REGISTRY_IMAGE}/backend:${CI_COMMIT_SHA}
@@ -24,6 +24,10 @@ variables:
 
 stages:
   - lint
+  - build
+  # - test
+  - prerelease
+  - release
 
 # Lint stage
 #############
@@ -56,7 +60,8 @@ Lint Dockerfiles:
   script:
     - git ls-files --exclude='Dockerfile*' --ignored | xargs --max-lines=1 hadolint
 
-REUSE compliance:
+# Disabled for now
+.REUSE compliance:
   <<: *lint-default
   image:
     name: fsfe/reuse:latest
@@ -72,3 +77,106 @@ Lint shell scripts:
     - apk add git
   script:
     - git ls-files --exclude='*.sh' --ignored | xargs shellcheck
+
+# Build stage
+#############
+
+.build_docker_base:
+  stage: build
+  needs: []
+  image:
+    # We use the `:debug` image as it contains `sh` needed by gitlab-ci.
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  services: []
+  tags:
+    - docker
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - cat /kaniko/.docker/config.json
+    - /kaniko/executor
+      --context=${CI_PROJECT_DIR}
+      --dockerfile=${DOCKERFILE}
+      --destination=${CI_IMAGE}
+      --cache=true
+
+build_frontend_docker:
+  extends: .build_docker_base
+  before_script:
+    - export DOCKERFILE="docker/Dockerfile.gui"
+    - export CI_IMAGE="${FRONTEND_IMAGE}"
+
+
+build_backend_docker:
+  extends: .build_docker_base
+  before_script:
+    - export DOCKERFILE="docker/Dockerfile.service"
+    - export CI_IMAGE="${BACKEND_IMAGE}"
+
+
+# Test stage
+############
+# TODO: Implement testing
+
+
+# Prerelease stage
+##################
+
+generate_tags:
+  stage: prerelease
+  needs: []
+  image: reg.magenta.dk/internal/semantic-versioning-image-builder:latest-rc
+  tags:
+    - docker
+  script:
+    - python3 -m semvertool "${CI_COMMIT_TAG}" > tags.txt
+    - cat tags.txt
+  artifacts:
+    paths:
+    - tags.txt
+  rules:
+    # Only ever create release containers on git tags
+    - if: $CI_COMMIT_TAG
+      when: on_success
+    - when: never
+
+# Release stage
+###############
+
+.release_base:
+  stage: release
+  image: alpine
+  script:
+    - apk add skopeo
+    - cat tags.txt | xargs -I TAG skopeo copy
+      --src-creds=${CI_REGISTRY_USER}:${CI_BUILD_TOKEN}
+      --dest-creds=${RELEASE_REGISTRY_USER}:${RELEASE_REGISTRY_PASSWORD}
+      "docker://${CI_IMAGE}"
+      "docker://${RELEASE_IMAGE_NAME}:TAG"
+  rules:
+    # Only ever create release containers on git tags
+    - if: $CI_COMMIT_TAG
+      when: on_success
+    - when: never
+  tags:
+    - docker
+
+
+release_frontend:
+  extends: .release_base
+  before_script:
+    - export CI_IMAGE="${FRONTEND_IMAGE}"
+    - export RELEASE_IMAGE_NAME="${FRONTEND_RELEASE_IMAGE_NAME}"
+  dependencies:
+    - build_frontend_docker
+    - generate_tags
+
+
+release_backend:
+  extends: .release_base
+  before_script:
+    - export CI_IMAGE="${BACKEND_IMAGE}"
+    - export RELEASE_IMAGE_NAME="${BACKEND_RELEASE_IMAGE_NAME}"
+  dependencies:
+    - build_backend_docker
+    - generate_tags
