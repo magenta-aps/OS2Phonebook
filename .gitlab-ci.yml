@@ -1,0 +1,74 @@
+# SPDX-FileCopyrightText: 2019-2020 Magenta ApS
+# SPDX-License-Identifier: MPL-2.0
+
+################################################################################
+# Changes to this file requires approval from Labs. Please add a person from   #
+# Labs as required approval to your MR if you have any changes.                #
+################################################################################
+
+# For pushing of release images to work, the following envionment variables have
+# to set in the Gitlab UI.
+# RELEASE_REGISTRY_USER
+# RELEASE_REGISTRY_PASSWORD
+
+variables:
+  # Project variables
+  RELEASE_REGISTRY: index.docker.io/magentaaps/
+  # CI images
+  FRONTEND_IMAGE: ${CI_REGISTRY_IMAGE}/frontend:${CI_COMMIT_SHA}
+  BACKEND_IMAGE: ${CI_REGISTRY_IMAGE}/backend:${CI_COMMIT_SHA}
+  # Release image names
+  FRONTEND_RELEASE_IMAGE_NAME: ${RELEASE_REGISTRY}/os2phonebook-frontend
+  BACKEND_RELEASE_IMAGE_NAME: ${RELEASE_REGISTRY}/os2phonebook-backend
+
+
+stages:
+  - lint
+
+# Lint stage
+#############
+
+.lint-default: &lint-default
+  stage: lint
+  needs: []
+  image: python:3.7
+  services: []
+  tags:
+    - docker
+
+Lint Python:
+  <<: *lint-default
+  before_script:
+    - pip3 install -r os2phonebook_service/requirements/lint.txt
+  script:
+    - cd os2phonebook_service
+    - flake8 --version
+    - flake8
+    - black --version
+    - black --check .
+
+Lint Dockerfiles:
+  <<: *lint-default
+  image: hadolint/hadolint:latest-debian
+  before_script:
+    - apt-get -y update
+    - apt-get -y install --no-install-recommends git
+  script:
+    - git ls-files --exclude='Dockerfile*' --ignored | xargs --max-lines=1 hadolint
+
+REUSE compliance:
+  <<: *lint-default
+  image:
+    name: fsfe/reuse:latest
+    entrypoint: [""]
+  script:
+    - reuse lint
+
+Lint shell scripts:
+  <<: *lint-default
+  image: koalaman/shellcheck-alpine:latest
+  before_script:
+    - apk update
+    - apk add git
+  script:
+    - git ls-files --exclude='*.sh' --ignored | xargs shellcheck
