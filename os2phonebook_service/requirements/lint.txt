@@ -1,3 +1,2 @@
--r development.txt
 flake8
 black

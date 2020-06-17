@@ -25,14 +25,14 @@ variables:
 stages:
   - lint
   - build
-  # - test
+  - test
   - prerelease
   - release
 
 # Lint stage
 #############
 
-.lint-default: &lint-default
+.lint-default:
   stage: lint
   needs: []
   image: python:3.7
@@ -41,7 +41,7 @@ stages:
     - docker
 
 Lint Python:
-  <<: *lint-default
+  extends: .lint-default
   before_script:
     - pip3 install -r os2phonebook_service/requirements/lint.txt
   script:
@@ -52,7 +52,7 @@ Lint Python:
     - black --check --line-length 79 .
 
 Lint Dockerfiles:
-  <<: *lint-default
+  extends: .lint-default
   image: hadolint/hadolint:latest-debian
   before_script:
     - apt-get -y update
@@ -62,7 +62,7 @@ Lint Dockerfiles:
 
 # Disabled for now
 .REUSE compliance:
-  <<: *lint-default
+  extends: .lint-default
   image:
     name: fsfe/reuse:latest
     entrypoint: [""]
@@ -70,7 +70,7 @@ Lint Dockerfiles:
     - reuse lint
 
 Lint shell scripts:
-  <<: *lint-default
+  extends: .lint-default
   image: koalaman/shellcheck-alpine:latest
   before_script:
     - apk update
@@ -116,8 +116,20 @@ build_backend_docker:
 
 # Test stage
 ############
-# TODO: Implement testing
 
+test_backend:
+  stage: test
+  needs:
+    - build_backend_docker
+  image:
+    name: ${BACKEND_IMAGE}
+    entrypoint: [""]
+  tags:
+    - docker
+  before_script:
+    - pip3 install -r os2phonebook_service/requirements/test.txt
+  script:
+    - pytest
 
 # Prerelease stage
 ##################
@@ -125,7 +137,7 @@ build_backend_docker:
 generate_tags:
   stage: prerelease
   needs: []
-  image: reg.magenta.dk/internal/semantic-versioning-image-builder:latest-rc
+  image: magentaaps/semantic-versioning-image-builder:latest
   tags:
     - docker
   script:
