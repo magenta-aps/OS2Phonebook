@@ -51,7 +51,8 @@ class OS2MOImportClient:
                 which are passed on as query params to the underlying method
 
         Raises:
-            RequestException: If the service api returns a negative status code.
+            RequestException:
+                If the service api returns a negative status code.
 
         Returns:
             dict: JSON response body as a dictionary
@@ -77,7 +78,8 @@ class OS2MOImportClient:
         a list of organisations.
 
         Currently there should be only be support for 1 organisation,
-        hence we're assuming that the first result will be the main organisation.
+        hence we're assuming that the first result will be the main
+        organisation.
 
         Raises:
             AttributeError: If the response does not contain at least one
@@ -120,7 +122,8 @@ class OS2MOImportClient:
             "value": "Kildeparken 64A, Seest, 6000 Kolding"
         }
 
-        And aggregates all address objects into lists of the following categories:
+        And aggregates all address objects into lists of the following
+        categories:
             * DAR (Residence addresses)
             * PHONE (Phone numbers)
             * EMAIL (Email addresses)
@@ -131,7 +134,8 @@ class OS2MOImportClient:
             address_data (list): A list of OS2MO response data objects <dict>
 
         Returns:
-            dict: Address types map containing a list for each type of addresses
+            dict:
+                Address types map containing a list for each type of addresses
 
         Example:
 
@@ -618,7 +622,7 @@ class OS2MOImportClient:
 
     def import_routine(self) -> Tuple[dict, dict]:
         """Import all employees and associated org units from OS2MO.
-        
+
         Higher level import routine which imports all employees
         in batches and recusively imports the associated org units.
 
@@ -628,7 +632,7 @@ class OS2MOImportClient:
         Note:
             This method has more verbose logging for debugging purposes.
             The import log should be a seperate log file
-            as to not polute the service log. 
+            as to not polute the service log.
 
             (This is handled automatically by the bootstrapper)
 
@@ -654,7 +658,8 @@ class OS2MOImportClient:
                 current_batch_end = total
 
             log.info(
-                f"OS2MO_IMPORT_ROUTINE - Import batch {offset}-{current_batch_end}"
+                "OS2MO_IMPORT_ROUTINE - "
+                f"Import batch {offset}-{current_batch_end}"
             )
 
             employees = self.get_batch_of_employees(
@@ -680,7 +685,8 @@ class OS2MOImportClient:
                 # https://redmine.magenta-aps.dk/issues/34812
 
                 # We do however want to import employees with management roles.
-                # As an external employee may be a manager for an organisation unit.
+                # As an external employee may be a manager for an organisation
+                # unit.
 
                 if (
                     not employee["associations"]
@@ -688,12 +694,14 @@ class OS2MOImportClient:
                     and not employee["management"]
                 ):
                     log.info(
-                        "OS2MO_IMPORT_ROUTINE Skip employee due to missing engagements, associations, management"
+                        "OS2MO_IMPORT_ROUTINE Skip employee due to missing "
+                        "engagements, associations, management"
                     )
 
                     # Reference to the skipped employee to debug log
                     log.debug(
-                        f"OS2MO_IMPORT_ROUTINE - NO_RELATIONS_TO_ORG_UNIT employee={uuid}"
+                        "OS2MO_IMPORT_ROUTINE - "
+                        f"NO_RELATIONS_TO_ORG_UNIT employee={uuid}"
                     )
 
                     continue
@@ -705,7 +713,8 @@ class OS2MOImportClient:
                 self.employee_map[uuid] = employee
 
             log.info(
-                f"OS2MO_IMPORT_ROUTINE - Batch {current_batch_end}-{current_batch_end} completed"
+                "OS2MO_IMPORT_ROUTINE -"
+                f"Batch {current_batch_end}-{current_batch_end} completed"
             )
 
             # Hacky offset update

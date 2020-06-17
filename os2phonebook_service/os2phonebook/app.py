@@ -1,5 +1,4 @@
-from flask import Flask, Response
-import os
+from flask import Flask
 from os2phonebook import __version__
 from os2phonebook.controller import api
 from os2phonebook import helpers
@@ -14,15 +13,13 @@ def initiate_application(config: dict) -> Flask:
 
     Args:
         config (dict): A dictionary containing configuration
-    
-    Returns:
-        :obj:`Flask`: An instance of flask 
 
+    Returns:
+        :obj:`Flask`: An instance of flask
     """
 
     # Config parameters
     organisation_name = config["OS2PHONEBOOK_COMPANY_NAME"]
-    static_root = config["OS2PHONEBOOK_STATIC_ROOT"]
     db_host = config["ELASTICSEARCH_HOST"]
     db_port = config["ELASTICSEARCH_PORT"]
 

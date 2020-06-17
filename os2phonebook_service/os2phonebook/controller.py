@@ -1,17 +1,9 @@
-from uuid import uuid4
 from elasticsearch.exceptions import NotFoundError
 from os2phonebook.datastore import DataStore
 from os2phonebook.helpers import log_factory
 from os2phonebook.exceptions import InvalidRequestBody, InvalidSearchType
 from werkzeug.exceptions import NotFound
-from flask import (
-    Response,
-    Blueprint,
-    jsonify,
-    current_app,
-    request,
-    render_template,
-)
+from flask import Response, Blueprint, jsonify, current_app, request
 
 
 # Init logging
@@ -90,7 +82,7 @@ def all_org_units() -> Response:
     # For now just create a warning in the logs
     # Perhaps this should raise a `bad` type of exception instead
     if not results:
-        log.warning(f"NO_RESULTS_ALL_ORG_UNITS")
+        log.warning("NO_RESULTS_ALL_ORG_UNITS")
 
     return jsonify(results)
 
@@ -209,7 +201,8 @@ def call_search_method():
 
     if not results:
         log.debug(
-            f"NO_SEARCH_RESULTS search_type={search_type} search_value={search_value} # 1"
+            "NO_SEARCH_RESULTS "
+            f"search_type={search_type} search_value={search_value} # 1"
         )
 
         results = db.search(
@@ -220,7 +213,8 @@ def call_search_method():
 
     if not results:
         log.debug(
-            f"NO_SEARCH_RESULTS search_type={search_type} search_value={search_value} # 2"
+            "NO_SEARCH_RESULTS "
+            f"search_type={search_type} search_value={search_value} # 2"
         )
 
     return jsonify(results)
@@ -245,9 +239,9 @@ def invalid_validation_handler(error) -> Response:
         * InvalidRequestBody
 
     All error types above carry a `status_code`.
-    
+
     NotFoundError is thrown when no record can be found
-    by identifier, as such this will return status 404. 
+    by identifier, as such this will return status 404.
 
     Args:
         error (Exception): An exception type error object

@@ -1,3 +1,4 @@
+"""WSGI entrypoint."""
 import sys
 from os2phonebook.app import initiate_application
 from os2phonebook.helpers import log_factory, configure_logging, config_factory
