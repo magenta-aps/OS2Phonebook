@@ -9,10 +9,7 @@ COPY os2phonebook_service/requirements/common.txt /app/requirements.txt
 COPY os2phonebook_service/os2phonebook /app/os2phonebook
 
 # Install requirements
-RUN pip install --upgrade pip
-RUN pip install -r /app/requirements.txt
-RUN pip install gunicorn
-RUN pip install gevent
+RUN pip install -r /app/requirements/release.txt
 
 # Create service account / uid and gid
 RUN groupadd -g 72085 -r sys_magenta_os2phonebook

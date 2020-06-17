@@ -1,3 +1,3 @@
 -r development.txt
-flake
+flake8
 black
