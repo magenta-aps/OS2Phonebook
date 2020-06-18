@@ -6,7 +6,6 @@ ENV PYTHONUNBUFFERED=1
 COPY os2phonebook_service/cli.py /app/cli.py
 COPY os2phonebook_service/wsgi.py /app/wsgi.py
 COPY os2phonebook_service/requirements /app/requirements
-COPY os2phonebook_service/os2phonebook /app/os2phonebook
 
 # Install requirements
 RUN pip install -r /app/requirements/release.txt
@@ -17,10 +16,14 @@ RUN useradd -u 72085 --no-log-init -r -g sys_magenta_os2phonebook sys_magenta_os
 
 # Cache for data import files
 RUN mkdir /data-cache
+
 RUN mkdir /log
 
 # Entrypoint
 COPY docker/entrypoint.sh /entrypoint/os2phonebook-entrypoint.sh
+
+# Copy in source
+COPY os2phonebook_service/os2phonebook /app/os2phonebook
 
 # Default configuration (should be overridden)
 ENV OS2PHONEBOOK_COMPANY_NAME=Magenta
@@ -36,6 +39,9 @@ RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /log
 RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /entrypoint
 
 # USER sys_magenta_os2phonebook:sys_magenta_os2phonebook
+RUN apt-get update && apt-get install --no-install-recommends -y sudo=1.8.27-1+deb10u2 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 WORKDIR /app
 
