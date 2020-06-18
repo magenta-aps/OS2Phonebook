@@ -79,4 +79,12 @@
         </li>
     </ul>
 
+    <!-- List of kle numbers related to the current organisation unit or fallback message -->
+    <h5 *ngIf="org_unit.associations.length">Opgaver:</h5>
+    <h5 *ngIf="!org_unit.associations.length">Der findes ingen opgaver til denne afdeling</h5>
+    <ul class="card">
+        <li *ngFor="let kle of org_unit.kles">
+            {{ kle.title }}
+        </li>
+    </ul>
 </section>

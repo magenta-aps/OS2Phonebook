@@ -48,6 +48,7 @@ class DataStore(object):
                 * employee_by_email
                 * employee_by_engagement
                 * org_unit_by_name
+                * org_unit_by_kle
 
             Example:
 
@@ -90,7 +91,11 @@ class DataStore(object):
             "org_unit_by_name": {
                 "description": "Enhed",
                 "query_method": "query_for_org_unit_by_name"
-            }
+            },
+            "org_unit_by_kle": {
+                "description": "Enhed",
+                "query_method": "query_for_org_unit_by_kle"
+            },
         }
 
     def get_employee(self, uuid: str) -> dict:
@@ -261,18 +266,27 @@ class DataStore(object):
             )
 
         """
+        # Pad 'itr' to length 'n' by appending 0 or more 'pad's.
+        tuple_pad = lambda itr, n, pad: itr + (pad,) * (n - len(itr))
+
+        # Default processor simply returns the _source directly
+        default_processor = lambda document: document["_source"]
 
         # Get the query generator method
         query_method = self.get_query_method(search_type)
 
-        # Generate query
-        index, query = query_method(search_value, fuzzy_search)
+        # Prepare query and processor
+        index, query, processor = tuple_pad(
+            # Generate query
+            query_method(search_value, fuzzy_search),
+            # Pad with default_processor if no processor was returned
+            3, default_processor
+        )
 
         response = self.db.search(index=index, body=query)
 
         return [
-            document["_source"]
-            for document in response["hits"]["hits"]
+            processor(document) for document in response["hits"]["hits"]
         ]
 
     def _query_match(self, search_field: str, search_value: str, size: int, source_filter: list) -> dict:
@@ -588,6 +602,68 @@ class DataStore(object):
         query = self._query_match_phrase_prefix(search_field, name, 15, source_filter)
         return (index, query)
 
+    def query_for_org_unit_by_kle(self, kle: str, fuzzy_search: bool):
+        """Search query for an org unit by kle.
+
+        Args:
+            kle (str): KLE number or name.
+            fuzzy_search (bool): Search wider if True.
+
+        Returns:
+            Tuple[str, dict]: Index name (str) and Elastic search query (dict)
+
+        """
+
+        index = "org_units"
+        search_field = "kles.title"
+
+        source_filter = [
+            "uuid",
+            "name",
+        ]
+#
+#        if fuzzy_search:
+#            query = self._query_match_phrase_prefix(search_field, kle, 15, source_filter)
+#        else:
+#            query = self._query_match(
+#                search_field, kle, 15, source_filter
+#            )
+
+        query = {
+            "size": 15,
+            "_source": {
+                "includes": list(source_filter),
+            },
+            "query": {
+                "nested": {
+                    "path": "kles",
+                    "inner_hits": {
+                        "_source": [
+                            "kles.title"
+                        ]
+                    },
+                    "query": {
+                        "match_phrase_prefix": {
+                            search_field: kle
+                        }
+                    }
+                }
+            }
+        }
+
+        def processor(document):
+            # Fetch nested query result
+            kles = [
+                subdocument["_source"] for subdocument in
+                document["inner_hits"]["kles"]["hits"]["hits"]
+            ]
+            # Embed nested query result within root query result
+            org_unit = document["_source"]
+            org_unit["kles"] = kles
+            return org_unit
+
+        return (index, query, processor)
+
     def delete_index(self, index: str) -> dict:
         """Delete an entire index by name
 
@@ -601,6 +677,11 @@ class DataStore(object):
 
         response = self.db.indices.delete(index=index, ignore=[400, 404])
 
+        return response
+
+    def create_index(self, index: str, mapping: dict) -> dict:
+
+        response = self.db.indices.create(index=index, body=mapping)
         return response
 
     def insert_index(self, index: str, identifier: str, data: dict) -> dict:
