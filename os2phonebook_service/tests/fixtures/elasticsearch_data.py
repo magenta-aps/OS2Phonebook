@@ -195,8 +195,12 @@ def one_unit_from_elasticsearch() -> dict:
                         "value": "Budget_og_Planlægning@kolding.dk",
                     }
                 ],
-                "EAN": [{"description": "EAN-nummer", "value": "2617445301464"}],
-                "PNUMBER": [{"description": "P-nummer", "value": "5424825851"}],
+                "EAN": [
+                    {"description": "EAN-nummer", "value": "2617445301464"}
+                ],
+                "PNUMBER": [
+                    {"description": "P-nummer", "value": "5424825851"}
+                ],
                 "WWW": [],
             },
             "engagements": [
@@ -326,7 +330,9 @@ def one_employee_from_elasticsearch() -> dict:
                     }
                 ],
                 "PHONE": [{"description": "Telefon", "value": "64535362"}],
-                "EMAIL": [{"description": "Email", "value": "jann@kolding.dk"}],
+                "EMAIL": [
+                    {"description": "Email", "value": "jann@kolding.dk"}
+                ],
                 "EAN": [],
                 "PNUMBER": [],
                 "WWW": [],
@@ -400,7 +406,9 @@ def one_employee_by_name_from_elasticsearch() -> dict:
                     "_score": 12.183924,
                     "_source": {
                         "addresses": {
-                            "PHONE": [{"description": "Telefon", "value": "61325558"}]
+                            "PHONE": [
+                                {"description": "Telefon", "value": "61325558"}
+                            ]
                         },
                         "name": "Anne Yassen",
                         "uuid": "048c045c-02c4-45ab-a43f-bda6ac99448e",

@@ -9,7 +9,7 @@ from os2phonebook.datastore import create_connection, DataStore
 from tests.fixtures.elasticsearch_data import (
     all_org_units_from_elasticsearch,
     one_employee_from_elasticsearch,
-    no_matches_from_elasticsearch
+    no_matches_from_elasticsearch,
 )
 
 
@@ -64,13 +64,13 @@ def test_map_contains_query_methods(db):
 
     for search_type in db.search_type_map.values():
         if "query_method" not in search_type:
-            missing_query_methods = + 1
+            missing_query_methods = +1
             continue
 
         query_method = search_type["query_method"]
 
         if not hasattr(db, query_method):
-            missing_query_methods = + 1
+            missing_query_methods = +1
 
     expected_missing_methods = 0
 
@@ -152,23 +152,13 @@ def test_query_match(db):
         search_field="name",
         search_value="Jean Luc Picard",
         size=10,
-        source_filter=["uuid", "name", "addresses.PHONE"]
+        source_filter=["uuid", "name", "addresses.PHONE"],
     )
 
     expected = {
         "size": 10,
-        "_source": {
-            "includes": [
-                "uuid",
-                "name",
-                "addresses.PHONE"
-            ]
-        },
-        "query": {
-            "match": {
-                "name": "Jean Luc Picard"
-            }
-        }
+        "_source": {"includes": ["uuid", "name", "addresses.PHONE"]},
+        "query": {"match": {"name": "Jean Luc Picard"}},
     }
 
     assert query == expected
@@ -181,22 +171,13 @@ def test_query_match_phrase_prefix(db):
         search_field="name",
         search_value="Jean Luc Picard",
         size=15,
-        source_filter=["uuid", "name"]
+        source_filter=["uuid", "name"],
     )
 
     expected_query = {
         "size": 15,
-        "_source": {
-            "includes": [
-                "uuid",
-                "name"
-            ]
-        },
-        "query": {
-            "match_phrase_prefix": {
-                "name": "Jean Luc Picard"
-            }
-        }
+        "_source": {"includes": ["uuid", "name"]},
+        "query": {"match_phrase_prefix": {"name": "Jean Luc Picard"}},
     }
 
     assert query == expected_query
@@ -206,26 +187,19 @@ def test_query_for_employee_by_name(db):
     """Should return a `multi_match` query with the given arguments"""
 
     query = db.query_for_employee_by_name(
-        name="Diana Troy",
-        fuzzy_search=False
+        name="Diana Troy", fuzzy_search=False
     )
 
     expected_index = "employees"
     expected_query = {
-        "_source": {
-            "includes": [
-                "uuid",
-                "name",
-                "addresses.PHONE"
-            ]
-        },
+        "_source": {"includes": ["uuid", "name", "addresses.PHONE"]},
         "query": {
             "multi_match": {
                 "query": "Diana Troy",
                 "type": "phrase_prefix",
                 "fields": ["surname", "name"],
             }
-        }
+        },
     }
 
     expected = (expected_index, expected_query)
@@ -236,38 +210,17 @@ def test_query_for_employee_by_name(db):
 def test_fuzzy_query_for_employee_by_name(db):
     """Should return a `bool` query with the given arguments"""
 
-    query = db.query_for_employee_by_name(
-        name="Diana Troy",
-        fuzzy_search=True
-    )
+    query = db.query_for_employee_by_name(name="Diana Troy", fuzzy_search=True)
 
     expected_index = "employees"
     expected_query = {
-        "_source": {
-            "includes": [
-                "uuid",
-                "name",
-                "addresses.PHONE"
-            ],
-        },
+        "_source": {"includes": ["uuid", "name", "addresses.PHONE"]},
         "query": {
             "bool": {
-                "must": [
-                    {
-                        "match": {
-                            "name": "Diana Troy"
-                        }
-                    }
-                ],
-                "should": [
-                    {
-                        "match_phrase_prefix": {
-                            "surname": "Troy"
-                        }
-                    }
-                ]
+                "must": [{"match": {"name": "Diana Troy"}}],
+                "should": [{"match_phrase_prefix": {"surname": "Troy"}}],
             }
-        }
+        },
     }
 
     expected = (expected_index, expected_query)
@@ -279,25 +232,14 @@ def test_query_for_employee_by_phone(db):
     """Should return a `match` query with the given arguments"""
 
     query = db.query_for_employee_by_phone(
-        phone_number="2233",
-        fuzzy_search=False
+        phone_number="2233", fuzzy_search=False
     )
 
     expected_index = "employees"
     expected_query = {
         "size": 15,
-        "_source": {
-            "includes": [
-                "uuid",
-                "name",
-                "addresses.PHONE"
-            ]
-        },
-        "query": {
-            "match": {
-                "addresses.PHONE.value": "2233"
-            }
-        }
+        "_source": {"includes": ["uuid", "name", "addresses.PHONE"]},
+        "query": {"match": {"addresses.PHONE.value": "2233"}},
     }
 
     expected = (expected_index, expected_query)
@@ -309,25 +251,14 @@ def test_fuzzy_query_for_employee_by_phone(db):
     """Should return a `match_phrase_prefix` query with the given arguments"""
 
     query = db.query_for_employee_by_phone(
-        phone_number="3344",
-        fuzzy_search=True
+        phone_number="3344", fuzzy_search=True
     )
 
     expected_index = "employees"
     expected_query = {
         "size": 15,
-        "_source": {
-            "includes": [
-                "uuid",
-                "name",
-                "addresses.PHONE"
-            ]
-        },
-        "query": {
-            "match_phrase_prefix": {
-                "addresses.PHONE.value": "3344"
-            }
-        }
+        "_source": {"includes": ["uuid", "name", "addresses.PHONE"]},
+        "query": {"match_phrase_prefix": {"addresses.PHONE.value": "3344"}},
     }
 
     expected = (expected_index, expected_query)
@@ -339,25 +270,18 @@ def test_query_for_employee_by_email(db):
     """Should return a `match_phrase_prefix` query with the given arguments"""
 
     query = db.query_for_employee_by_email(
-        email_address="regular@example.com",
-        fuzzy_search=False
+        email_address="regular@example.com", fuzzy_search=False
     )
 
     expected_index = "employees"
     expected_query = {
         "size": 15,
-        "_source": {
-            "includes": [
-                "uuid",
-                "name",
-                "addresses.EMAIL"
-            ]
-        },
+        "_source": {"includes": ["uuid", "name", "addresses.EMAIL"]},
         "query": {
             "match_phrase_prefix": {
                 "addresses.EMAIL.value": "regular@example.com"
             }
-        }
+        },
     }
 
     expected = (expected_index, expected_query)
@@ -369,25 +293,18 @@ def test_fuzzy_query_for_employee_by_email(db):
     """Should return a `match_phrase_prefix` query with the given arguments"""
 
     query = db.query_for_employee_by_email(
-        email_address="fuzzy@example.com",
-        fuzzy_search=True
+        email_address="fuzzy@example.com", fuzzy_search=True
     )
 
     expected_index = "employees"
     expected_query = {
         "size": 15,
-        "_source": {
-            "includes": [
-                "uuid",
-                "name",
-                "addresses.EMAIL"
-            ]
-        },
+        "_source": {"includes": ["uuid", "name", "addresses.EMAIL"]},
         "query": {
             "match_phrase_prefix": {
                 "addresses.EMAIL.value": "fuzzy@example.com"
             }
-        }
+        },
     }
 
     expected = (expected_index, expected_query)
@@ -399,25 +316,16 @@ def test_query_for_employee_by_engagement(db):
     """Should return a `match_phrase_prefix` query with the given arguments"""
 
     query = db.query_for_employee_by_engagement(
-        engagement="Bridge officer",
-        fuzzy_search=False
+        engagement="Bridge officer", fuzzy_search=False
     )
 
     expected_index = "employees"
     expected_query = {
         "size": 15,
-        "_source": {
-            "includes": [
-                "uuid",
-                "name",
-                "engagements"
-            ]
-        },
+        "_source": {"includes": ["uuid", "name", "engagements"]},
         "query": {
-            "match_phrase_prefix": {
-                "engagements.title": "Bridge officer"
-            }
-        }
+            "match_phrase_prefix": {"engagements.title": "Bridge officer"}
+        },
     }
 
     expected = (expected_index, expected_query)
@@ -429,25 +337,16 @@ def test_fuzzy_query_for_employee_by_engagement(db):
     """Should return a `match_phrase_prefix` query with the given arguments"""
 
     query = db.query_for_employee_by_engagement(
-        engagement="Bridge officer",
-        fuzzy_search=True
+        engagement="Bridge officer", fuzzy_search=True
     )
 
     expected_index = "employees"
     expected_query = {
         "size": 15,
-        "_source": {
-            "includes": [
-                "uuid",
-                "name",
-                "engagements"
-            ]
-        },
+        "_source": {"includes": ["uuid", "name", "engagements"]},
         "query": {
-            "match_phrase_prefix": {
-                "engagements.title": "Bridge officer"
-            }
-        }
+            "match_phrase_prefix": {"engagements.title": "Bridge officer"}
+        },
     }
 
     expected = (expected_index, expected_query)
@@ -459,25 +358,14 @@ def test_query_for_org_unit_by_name(db):
     """Should return a `match_phrase_prefix` query with the given arguments"""
 
     query = db.query_for_org_unit_by_name(
-        name="Engineering",
-        fuzzy_search=False
+        name="Engineering", fuzzy_search=False
     )
 
     expected_index = "org_units"
     expected_query = {
         "size": 15,
-        "_source": {
-            "includes": [
-                "uuid",
-                "name",
-                "addresses"
-            ]
-        },
-        "query": {
-            "match_phrase_prefix": {
-                "name": "Engineering"
-            }
-        }
+        "_source": {"includes": ["uuid", "name", "addresses"]},
+        "query": {"match_phrase_prefix": {"name": "Engineering"}},
     }
 
     expected = (expected_index, expected_query)
@@ -489,25 +377,14 @@ def test_fuzzy_query_for_org_unit_by_name(db):
     """Should return a `match_phrase_prefix` query with the given arguments"""
 
     query = db.query_for_org_unit_by_name(
-        name="Engineering",
-        fuzzy_search=True
+        name="Engineering", fuzzy_search=True
     )
 
     expected_index = "org_units"
     expected_query = {
         "size": 15,
-        "_source": {
-            "includes": [
-                "uuid",
-                "name",
-                "addresses"
-            ]
-        },
-        "query": {
-            "match_phrase_prefix": {
-                "name": "Engineering"
-            }
-        }
+        "_source": {"includes": ["uuid", "name", "addresses"]},
+        "query": {"match_phrase_prefix": {"name": "Engineering"}},
     }
 
     expected = (expected_index, expected_query)

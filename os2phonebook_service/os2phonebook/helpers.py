@@ -37,14 +37,16 @@ def config_factory():
         "OS2MO_SERVICE_URL",
         "OS2MO_API_TOKEN",
         "ELASTICSEARCH_HOST",
-        "ELASTICSEARCH_PORT"
+        "ELASTICSEARCH_PORT",
     ]
 
     for parameter_name in required_parameters:
         parameter_value = os.getenv(parameter_name)
 
         if not parameter_value:
-            raise EnvironmentError(f"MISSING_ENVIRONMENT_VARIABLE={parameter_name}")
+            raise EnvironmentError(
+                f"MISSING_ENVIRONMENT_VARIABLE={parameter_name}"
+            )
 
         # Hack for port number
         # This must be passed as an int
@@ -58,7 +60,7 @@ def config_factory():
 
 
 def log_factory(namespace: str = "os2phonebook") -> Logger:
-    """Create an instance of the Logger class for the lazy, let's sasy it dries things.
+    """Create an instance of the Logger class.
 
     Args:
         namespace (int): The logging namespace.
@@ -89,7 +91,9 @@ def configure_logging(log_root: str, log_file: str, logger: Logger) -> None:
 
     """
     if not isinstance(logger, Logger):
-        raise TypeError("Function will only accept an instance of the python Logger class")
+        raise TypeError(
+            "Function will only accept an instance of the python Logger class"
+        )
 
     if not os.path.exists(log_root):
         raise FileNotFoundError("Specified log directory does not exist")
@@ -102,9 +106,7 @@ def configure_logging(log_root: str, log_file: str, logger: Logger) -> None:
     logger.setLevel(log_level)
 
     # Log format
-    log_format = Formatter(
-        "[%(asctime)s] %(levelname)s %(message)s"
-    )
+    log_format = Formatter("[%(asctime)s] %(levelname)s %(message)s")
 
     activity_log_file = os.path.join(log_root, log_file)
 
@@ -125,11 +127,11 @@ def dump_file(filename, data_as_dict) -> None:
     Helper function
 
     This is used to persist the imported
-    organisation units and employees to disk in a json format. 
+    organisation units and employees to disk in a json format.
 
     The reason for storing objects as json rather serialized python
-    is to allow other components to transfer the data to 
-    elasticsearch. 
+    is to allow other components to transfer the data to
+    elasticsearch.
 
     Args:
         filename (str): File destination (absolute)
@@ -148,7 +150,7 @@ def load_file(filename) -> dict:
     Helper function
 
     This is used to export the previously imported content
-    to the elasticsearch backend. 
+    to the elasticsearch backend.
 
     Args:
         filename (str): Absolute path to a source (json) file
