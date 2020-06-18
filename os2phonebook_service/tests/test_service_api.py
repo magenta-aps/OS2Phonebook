@@ -1,6 +1,7 @@
 import pytest
 from unittest import mock
 from elasticsearch.exceptions import NotFoundError
+from base64 import b64encode
 
 from os2phonebook import __version__
 from os2phonebook.app import initiate_application
@@ -27,6 +28,8 @@ def http_client():
         "OS2PHONEBOOK_STATIC_ROOT": "/static",
         "ELASTICSEARCH_HOST": "elasticsearch",
         "ELASTICSEARCH_PORT": 9600,
+        "OS2PHONEBOOK_DATALOADER_USERNAME": "dataloader",
+        "OS2PHONEBOOK_DATALOADER_PASSWORD": "Password1",
     }
 
     app = initiate_application(config)
@@ -244,3 +247,76 @@ def test_post_search_with_one_result(mock_search, http_client):
     ]
 
     assert results == expected_results
+
+
+@pytest.mark.parametrize(
+    "set_credentials,expected",
+    [
+        (True, {"indexed": 1, "total": 1}),
+        (False, {"error": {"message": "", "type": "InvalidCredentials"}}),
+    ],
+)
+@mock.patch("os2phonebook.datastore.streaming_bulk", autospec=True)
+@mock.patch("os2phonebook.datastore.DataStore.delete_index", autospec=True)
+def test_post_load_employees(
+    mock_delete_index,
+    mock_streaming_bulk,
+    http_client,
+    set_credentials,
+    expected,
+):
+    """Should return an employee object (mock) with the given arguments"""
+
+    mock_delete_index.return_value = None
+    mock_streaming_bulk.return_value = [(1, None)]
+
+    post_payload = {
+        "f06ee470-9f17-566f-acbe-e938112d46d9": {
+            "givenname": "Emil Madsen",
+            "name": "Emil",
+            "surname": "Madsen",
+            "uuid": "f06ee470-9f17-566f-acbe-e938112d46d9",
+            "engagements": [
+                {
+                    "title": "Software Udvikler",
+                    "name": "Teknisk Support",
+                    "uuid": "6fc9ba6b-ca5b-5e09-a594-40363c45aae0",
+                }
+            ],
+            "associations": [
+                {
+                    "title": "Ansat",
+                    "name": "Magenta ApS",
+                    "uuid": "582d0b5e-3c3b-52e8-8d93-42573a6a3d88",
+                }
+            ],
+            "management": [],
+            "addresses": {
+                "DAR": [
+                    {
+                        "description": "Arbejdsadresse",
+                        "value": "Skt. Johannes Allé 2, 2., 8000 Aarhus C",
+                    }
+                ],
+                "PHONE": [],
+                "EMAIL": [
+                    {"description": "Email", "value": "emil@magenta.dk"}
+                ],
+                "EAN": [],
+                "PNUMBER": [],
+                "WWW": [],
+            },
+        }
+    }
+    headers = {}
+    if set_credentials:
+        credentials = b64encode(b"dataloader:Password1").decode("utf-8")
+        headers = {"Authorization": f"Basic {credentials}"}
+
+    response = http_client.post(
+        "/api/load-employees", json=post_payload, headers=headers
+    )
+
+    results = response.get_json()
+
+    assert results == expected

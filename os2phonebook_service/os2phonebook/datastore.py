@@ -676,7 +676,7 @@ class DataStore(object):
         """
         indexed = 0
         total = 0
-        for ok, action in streaming_bulk(
+        for ok, _ in streaming_bulk(
             client=self.db, index=index, actions=generator()
         ):
             indexed += ok

@@ -390,3 +390,29 @@ def test_fuzzy_query_for_org_unit_by_name(db):
     expected = (expected_index, expected_query)
 
     assert query == expected
+
+
+def test_query_for_org_unit_by_kle(db):
+    """Should return a nested query with the given arguments"""
+
+    index, query, processor = db.query_for_org_unit_by_kle(
+        kle="Fest Udvalg", fuzzy_search=False
+    )
+
+    expected_index = "org_units"
+    expected_query = {
+        "size": 15,
+        "_source": {"includes": ["uuid", "name"]},
+        "query": {
+            "nested": {
+                "path": "kles",
+                "inner_hits": {"_source": ["kles.title"]},
+                "query": {
+                    "match_phrase_prefix": {"kles.title": "Fest Udvalg"}
+                },
+            }
+        },
+    }
+
+    assert index == expected_index
+    assert query == expected_query
