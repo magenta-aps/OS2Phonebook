@@ -227,6 +227,7 @@ def call_search_method():
 #############
 auth = HTTPBasicAuth()
 
+
 @auth.error_handler
 def auth_error(status):
     """Flask-HTTPAuth error handler.
@@ -448,15 +449,9 @@ def load_org_units():
     db = DataStore(current_app.connection)
     db.delete_index("org_units")
     # Create nested KLEs
-    db.create_index("org_units", {
-        "mappings": {
-            "properties": {
-                "kles": {
-                    "type": "nested"
-                }
-            }
-        }
-    })
+    db.create_index(
+        "org_units", {"mappings": {"properties": {"kles": {"type": "nested"}}}}
+    )
 
     # Loading entries
     indexed, total = db.bulk_insert_index(

@@ -87,11 +87,11 @@ class DataStore(object):
             },
             "org_unit_by_name": {
                 "description": "Enhed",
-                "query_method": "query_for_org_unit_by_name"
+                "query_method": "query_for_org_unit_by_name",
             },
             "org_unit_by_kle": {
                 "description": "Enhed",
-                "query_method": "query_for_org_unit_by_kle"
+                "query_method": "query_for_org_unit_by_kle",
             },
         }
 
@@ -256,10 +256,12 @@ class DataStore(object):
 
         """
         # Pad 'itr' to length 'n' by appending 0 or more 'pad's.
-        tuple_pad = lambda itr, n, pad: itr + (pad,) * (n - len(itr))
+        def tuple_pad(itr, n, pad):
+            return itr + (pad,) * (n - len(itr))
 
         # Default processor simply returns the _source directly
-        default_processor = lambda document: document["_source"]
+        def default_processor(document):
+            return document["_source"]
 
         # Get the query generator method
         query_method = self.get_query_method(search_type)
@@ -269,14 +271,13 @@ class DataStore(object):
             # Generate query
             query_method(search_value, fuzzy_search),
             # Pad with default_processor if no processor was returned
-            3, default_processor
+            3,
+            default_processor,
         )
 
         response = self.db.search(index=index, body=query)
 
-        return [
-            processor(document) for document in response["hits"]["hits"]
-        ]
+        return [processor(document) for document in response["hits"]["hits"]]
 
     def _query_match(
         self,
@@ -591,45 +592,36 @@ class DataStore(object):
         index = "org_units"
         search_field = "kles.title"
 
-        source_filter = [
-            "uuid",
-            "name",
-        ]
-#
-#        if fuzzy_search:
-#            query = self._query_match_phrase_prefix(search_field, kle, 15, source_filter)
-#        else:
-#            query = self._query_match(
-#                search_field, kle, 15, source_filter
-#            )
+        source_filter = ["uuid", "name"]
+        #
+        #        if fuzzy_search:
+        #            query = self._query_match_phrase_prefix(
+        #                search_field, kle, 15, source_filter
+        #            )
+        #        else:
+        #            query = self._query_match(
+        #                search_field, kle, 15, source_filter
+        #            )
 
         query = {
             "size": 15,
-            "_source": {
-                "includes": list(source_filter),
-            },
+            "_source": {"includes": list(source_filter)},
             "query": {
                 "nested": {
                     "path": "kles",
-                    "inner_hits": {
-                        "_source": [
-                            "kles.title"
-                        ]
-                    },
-                    "query": {
-                        "match_phrase_prefix": {
-                            search_field: kle
-                        }
-                    }
+                    "inner_hits": {"_source": ["kles.title"]},
+                    "query": {"match_phrase_prefix": {search_field: kle}},
                 }
-            }
+            },
         }
 
         def processor(document):
             # Fetch nested query result
             kles = [
-                subdocument["_source"] for subdocument in
-                document["inner_hits"]["kles"]["hits"]["hits"]
+                subdocument["_source"]
+                for subdocument in document["inner_hits"]["kles"]["hits"][
+                    "hits"
+                ]
             ]
             # Embed nested query result within root query result
             org_unit = document["_source"]

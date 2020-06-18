@@ -74,7 +74,6 @@ export class SearchComponent implements OnInit {
             type: "org_unit_by_kle",
             url: "/orgunit"
         }
-
     ]
 
     /**
