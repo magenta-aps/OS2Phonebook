@@ -7,21 +7,26 @@
 #   from os2phonebook.exceptions import InvalidRequestBody, InvalidSearchType
 #
 
+
 class InvalidCredentials(Exception):
     """Request body is not valid according to the given schema"""
+
     status_code = 401
 
 
 class InsufficientCredentials(Exception):
     """Request body is not valid according to the given schema"""
+
     status_code = 403
 
 
 class InvalidRequestBody(Exception):
     """Request body is not valid according to the given schema"""
+
     status_code = 400
 
 
 class InvalidSearchType(Exception):
     """Search type is not supported"""
+
     status_code = 400

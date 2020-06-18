@@ -1,6 +1,5 @@
-from flask import Flask, Response
+from flask import Flask
 from werkzeug.security import generate_password_hash
-import os
 from os2phonebook import __version__
 from os2phonebook.controller import api
 from os2phonebook import helpers
@@ -27,11 +26,12 @@ def gen_user_map(config):
     password = config.get("OS2PHONEBOOK_DATALOADER_PASSWORD", None)
     # No password, no access
     if username is None or password is None:
-        log.warning("No HTTP Basic Auth credentials configured thus dataload is disabled")
+        log.warning(
+            "No HTTP Basic Auth credentials configured "
+            "thus dataload is disabled"
+        )
         return []
-    return {
-        username: generate_password_hash(password)
-    }
+    return {username: generate_password_hash(password)}
 
 
 def initiate_application(config: dict) -> Flask:
@@ -39,10 +39,9 @@ def initiate_application(config: dict) -> Flask:
 
     Args:
         config (dict): A dictionary containing configuration
-    
-    Returns:
-        :obj:`Flask`: An instance of flask 
 
+    Returns:
+        :obj:`Flask`: An instance of flask
     """
 
     # Config parameters
@@ -53,10 +52,7 @@ def initiate_application(config: dict) -> Flask:
     log.info("INITIATE_SERVICE - Config parameters loaded")
 
     # Init flask instance
-    app = Flask(
-        import_name=__name__,
-        static_url_path=""
-    )
+    app = Flask(import_name=__name__, static_url_path="")
 
     # Set metadata values
     app.os2phonebook_version = __version__

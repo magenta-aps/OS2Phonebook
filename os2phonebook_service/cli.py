@@ -1,5 +1,3 @@
-import os
-import sys
 import click
 from os2phonebook import helpers
 from os2phonebook.bootstrap import ping_datastore
@@ -12,8 +10,12 @@ def cli():
 
 
 @cli.command()
-@click.option("--max-attempts", default=120, help="Maximum connection attempts")
-@click.option("--interval", default=5, help="Interval between connects (in seconds)")
+@click.option(
+    "--max-attempts", default=120, help="Maximum connection attempts"
+)
+@click.option(
+    "--interval", default=5, help="Interval between connects (in seconds)"
+)
 def pingdb(max_attempts, interval):
     """Test the datastore connection
 

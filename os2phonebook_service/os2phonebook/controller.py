@@ -1,18 +1,16 @@
 from elasticsearch.exceptions import NotFoundError
 from os2phonebook.datastore import DataStore
 from os2phonebook.helpers import log_factory
-from os2phonebook.exceptions import InvalidRequestBody, InvalidSearchType, InvalidCredentials, InsufficientCredentials
+from os2phonebook.exceptions import (
+    InvalidRequestBody,
+    InvalidSearchType,
+    InvalidCredentials,
+    InsufficientCredentials,
+)
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import check_password_hash
 from werkzeug.exceptions import NotFound
-from flask import (
-    Response,
-    Blueprint,
-    jsonify,
-    current_app,
-    request,
-    render_template,
-)
+from flask import Response, Blueprint, jsonify, current_app, request
 
 # Init logging
 log = log_factory()
@@ -84,7 +82,7 @@ def all_org_units() -> Response:
     # For now just create a warning in the logs
     # Perhaps this should raise a `bad` type of exception instead
     if not results:
-        log.warning(f"NO_RESULTS_ALL_ORG_UNITS")
+        log.warning("NO_RESULTS_ALL_ORG_UNITS")
 
     return jsonify(results)
 
@@ -103,9 +101,7 @@ def show_org_unit(uuid) -> Response:
 
     db = DataStore(current_app.connection)
 
-    results = db.get_org_unit(
-        uuid=uuid
-    )
+    results = db.get_org_unit(uuid=uuid)
 
     return jsonify(results)
 
@@ -125,9 +121,7 @@ def show_employee(uuid) -> Response:
     db = DataStore(current_app.connection)
 
     # Retrieve employee by uuid
-    results = db.get_employee(
-        uuid=uuid
-    )
+    results = db.get_employee(uuid=uuid)
 
     return jsonify(results)
 
@@ -158,15 +152,9 @@ def show_search_schema():
         "method": "POST",
         "format": "json",
         "schema": {
-            "search_type": {
-                "type": "string",
-                "required": True
-            },
-            "search_value": {
-                "type": "string",
-                "required": True
-            }
-        }
+            "search_type": {"type": "string", "required": True},
+            "search_value": {"type": "string", "required": True},
+        },
     }
 
     return jsonify(search_schema)
@@ -210,25 +198,25 @@ def call_search_method():
     db = DataStore(current_app.connection)
 
     results = db.search(
-        search_type=search_type,
-        search_value=search_value,
-        fuzzy_search=False
+        search_type=search_type, search_value=search_value, fuzzy_search=False
     )
 
     if not results:
         log.debug(
-            f"NO_SEARCH_RESULTS search_type={search_type} search_value={search_value} # 1"
+            "NO_SEARCH_RESULTS "
+            f"search_type={search_type} search_value={search_value} # 1"
         )
 
         results = db.search(
             search_type=search_type,
             search_value=search_value,
-            fuzzy_search=True
+            fuzzy_search=True,
         )
 
     if not results:
         log.debug(
-            f"NO_SEARCH_RESULTS search_type={search_type} search_value={search_value} # 2"
+            "NO_SEARCH_RESULTS "
+            f"search_type={search_type} search_value={search_value} # 2"
         )
 
     return jsonify(results)
@@ -244,7 +232,8 @@ auth = HTTPBasicAuth()
 def auth_error(status):
     """Flask-HTTPAuth error handler.
 
-    Wraps domain-specific exceptions, as to invoke :code:`invalid_validation_handler`.
+    Wraps domain-specific exceptions, as to invoke
+    :code:`invalid_validation_handler`.
 
     Args:
         status (int): HTTP Status Code
@@ -263,7 +252,7 @@ def auth_error(status):
 def verify_password(username, password):
     """Verify username / password against usermap from :code:`gen_user_map`.
 
-    Derived from: https://flask-httpauth.readthedocs.io/en/latest/#basic-authentication-examples
+    Derived from: https://flask-httpauth.readthedocs.io/en/latest/
 
     Args:
         username (string): Username given by HTTP Basic Auth
@@ -360,17 +349,16 @@ def load_employees():
 
     def generator():
         for uuid, employee in employees.items():
-            entry = {
-                '_id': uuid,
-                '_source': employee
-            }
+            entry = {"_id": uuid, "_source": employee}
             yield entry
 
     # Connect to datastore and clear it out
     db = DataStore(current_app.connection)
     db.delete_index("employees")
     # Loading entries
-    indexed, total = db.bulk_insert_index(index="employees", generator=generator)
+    indexed, total = db.bulk_insert_index(
+        index="employees", generator=generator
+    )
 
     return jsonify({"indexed": indexed, "total": total})
 
@@ -454,28 +442,21 @@ def load_org_units():
 
     def generator():
         for uuid, org_unit in org_units.items():
-            entry = {
-                '_id': uuid,
-                '_source': org_unit
-            }
+            entry = {"_id": uuid, "_source": org_unit}
             yield entry
 
     # Connect to datastore and clear it out
     db = DataStore(current_app.connection)
     db.delete_index("org_units")
     # Create nested KLEs
-    db.create_index("org_units", {
-        "mappings": {
-            "properties": {
-                "kles": {
-                    "type": "nested"
-                }
-            }
-        }
-    })
+    db.create_index(
+        "org_units", {"mappings": {"properties": {"kles": {"type": "nested"}}}}
+    )
 
     # Loading entries
-    indexed, total = db.bulk_insert_index(index="org_units", generator=generator)
+    indexed, total = db.bulk_insert_index(
+        index="org_units", generator=generator
+    )
 
     return jsonify({"indexed": indexed, "total": total})
 
@@ -483,6 +464,7 @@ def load_org_units():
 #####################################################################
 #   ERROR HANDLING SECTION                                          #
 #####################################################################
+
 
 @api.app_errorhandler(NotFound)
 @api.app_errorhandler(NotFoundError)
@@ -495,14 +477,13 @@ def invalid_validation_handler(error) -> Response:
 
     All error types carry a `status_code`, for instance: :code:`NotFoundError`
     is thrown when no record can be found by identifier, as such this will
-    return status code 404. 
+    return status code 404.
 
     Args:
         error (Exception): An exception type error object
 
     Returns:
         :obj:`Response`: Response with error description.
-
     """
 
     status_code = 400
@@ -514,10 +495,7 @@ def invalid_validation_handler(error) -> Response:
         status_code = error.code
 
     response = {
-        "error": {
-            "type": error.__class__.__name__,
-            "message": str(error)
-        }
+        "error": {"type": error.__class__.__name__, "message": str(error)}
     }
 
     log.warning(f"REQUEST_FAILED - {error}")
@@ -547,7 +525,7 @@ def all_exception_handler(error):
     response = {
         "error": {
             "type": error_class,
-            "message": "Unknown error occured, please contact administrator"
+            "message": "Unknown error occured, please contact administrator",
         }
     }
 

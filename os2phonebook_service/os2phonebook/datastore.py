@@ -24,12 +24,7 @@ def create_connection(host: str, port: int) -> Elasticsearch:
     if not isinstance(port, int):
         raise TypeError("Port identifier must be passed as an integer")
 
-    db = Elasticsearch([
-        {
-            'host': host,
-            'port': port
-        },
-    ])
+    db = Elasticsearch([{"host": host, "port": port}])
 
     return db
 
@@ -67,34 +62,36 @@ class DataStore(object):
     def __init__(self, db):
 
         if not isinstance(db, Elasticsearch):
-            raise TypeError("Datastore requires an instance of the Elasticsearch object")
+            raise TypeError(
+                "Datastore requires an instance of the Elasticsearch object"
+            )
 
         self.db = db
 
-        self.search_type_map =  {
+        self.search_type_map = {
             "employee_by_name": {
                 "description": "Navn",
-                "query_method": "query_for_employee_by_name"
+                "query_method": "query_for_employee_by_name",
             },
             "employee_by_phone": {
                 "description": "Telefon",
-                "query_method": "query_for_employee_by_phone"
+                "query_method": "query_for_employee_by_phone",
             },
             "employee_by_email": {
                 "description": "Email",
-                "query_method": "query_for_employee_by_email"
+                "query_method": "query_for_employee_by_email",
             },
             "employee_by_engagement": {
                 "description": "Stilling",
-                "query_method": "query_for_employee_by_engagement"
+                "query_method": "query_for_employee_by_engagement",
             },
             "org_unit_by_name": {
                 "description": "Enhed",
-                "query_method": "query_for_org_unit_by_name"
+                "query_method": "query_for_org_unit_by_name",
             },
             "org_unit_by_kle": {
                 "description": "Enhed",
-                "query_method": "query_for_org_unit_by_kle"
+                "query_method": "query_for_org_unit_by_kle",
             },
         }
 
@@ -147,12 +144,7 @@ class DataStore(object):
 
         """
 
-        query = {
-            "size": 0,
-            "query": {
-                "match_all": {}
-            }
-        }
+        query = {"size": 0, "query": {"match_all": {}}}
 
         response_data = self.db.search(index=index, body=query)
         total_size = response_data["hits"]["total"]["value"]
@@ -179,53 +171,49 @@ class DataStore(object):
         # * parent unit uuid
         query = {
             "size": total_size,
-            "query": {
-                "match_all": {}
-            },
-            "_source": {
-                "includes": [
-                    "uuid",
-                    "name",
-                    "parent",
-                ]
-            }
+            "query": {"match_all": {}},
+            "_source": {"includes": ["uuid", "name", "parent"]},
         }
 
         return_data = self.db.search(index=index, body=query)
 
         hits = return_data["hits"]["hits"]
 
-        return [
-            unit["_source"]
-            for unit in hits if "_source" in unit
-        ]
+        return [unit["_source"] for unit in hits if "_source" in unit]
 
-    def get_query_method(self, search_type: str) -> Callable[[str, bool], Tuple[str, dict]]:
+    def get_query_method(
+        self, search_type: str
+    ) -> Callable[[str, bool], Tuple[str, dict]]:
         """Fetches query generator based on the `search_type`
 
         Please see the `search_type_map` attribute
         for more information on the available types.
 
         Args:
-            search_type (str): This refers to the `search_type_map` key. 
+            search_type (str): This refers to the `search_type_map` key.
 
         Returns:
             Callable[[str, bool], Tuple[str, dict]: The query generator
 
         Raises:
-            TypeError: If the `search_type` is not a string value.
-            InvalidSearchType: If the `search_type` does not exist.
+            TypeError:
+                If the `search_type` is not a string value.
+            InvalidSearchType:
+                If the `search_type` does not exist.
                 (Meaning that it does not exist in the `search_type_map`)
-            ValueError: If the query method is not defined for this type.
-            AttributeError: If the query method defined does not exist as an attribute.
-
+            ValueError:
+                If the query method is not defined for this type.
+            AttributeError:
+                If the query method defined does not exist as an attribute.
         """
 
         if not isinstance(search_type, str):
             raise TypeError("Search type must be a string value")
 
         if search_type not in self.search_type_map:
-            raise InvalidSearchType(f"Search type: {search_type} is not available")
+            raise InvalidSearchType(
+                f"Search type: {search_type} is not available"
+            )
 
         selected_type = self.search_type_map[search_type]
 
@@ -239,8 +227,9 @@ class DataStore(object):
 
         return getattr(self, query_method)
 
-
-    def search(self, search_type, search_value, fuzzy_search=False) -> List[dict]:
+    def search(
+        self, search_type, search_value, fuzzy_search=False
+    ) -> List[dict]:
         """High level search method
 
         Fetches query generator based on the `search_type` by
@@ -267,10 +256,12 @@ class DataStore(object):
 
         """
         # Pad 'itr' to length 'n' by appending 0 or more 'pad's.
-        tuple_pad = lambda itr, n, pad: itr + (pad,) * (n - len(itr))
+        def tuple_pad(itr, n, pad):
+            return itr + (pad,) * (n - len(itr))
 
         # Default processor simply returns the _source directly
-        default_processor = lambda document: document["_source"]
+        def default_processor(document):
+            return document["_source"]
 
         # Get the query generator method
         query_method = self.get_query_method(search_type)
@@ -280,16 +271,21 @@ class DataStore(object):
             # Generate query
             query_method(search_value, fuzzy_search),
             # Pad with default_processor if no processor was returned
-            3, default_processor
+            3,
+            default_processor,
         )
 
         response = self.db.search(index=index, body=query)
 
-        return [
-            processor(document) for document in response["hits"]["hits"]
-        ]
+        return [processor(document) for document in response["hits"]["hits"]]
 
-    def _query_match(self, search_field: str, search_value: str, size: int, source_filter: list) -> dict:
+    def _query_match(
+        self,
+        search_field: str,
+        search_value: str,
+        size: int,
+        source_filter: list,
+    ) -> dict:
         """Generate a query to match full names/keywords.
 
         Consider the following search:
@@ -301,8 +297,9 @@ class DataStore(object):
             * Ali baba
             * The little bakery
 
-        This type of query will only return results will a full match on keywords
-        and is typically used as the initial search before attempting to broader searches.
+        This type of query will only return results will a full match on
+        keywords and is typically used as the initial search before attempting
+        to broader searches.
 
         For example:
             search_type = "cake" will return only "cake" and not "beefcake"
@@ -320,25 +317,26 @@ class DataStore(object):
 
         query = {
             "size": size,
-            "_source": {
-                "includes": list(source_filter)
-            },
-            "query": {
-                "match": {
-                    search_field: search_value
-                }
-            }
+            "_source": {"includes": list(source_filter)},
+            "query": {"match": {search_field: search_value}},
         }
 
         return query
 
-    def _query_match_phrase_prefix(self, search_field: str, search_value: str, size: int, source_filter: list) -> dict:
+    def _query_match_phrase_prefix(
+        self,
+        search_field: str,
+        search_value: str,
+        size: int,
+        source_filter: list,
+    ) -> dict:
         """Generate a query to match on the search prefix.
 
         Unlike `match query` this is a broader search query,
         matching on everything that `starts with`.
 
-        This is typically used as a second search attempt if there was no initial match.
+        This is typically used as a second search attempt if there was no
+        initial match.
 
         For example:
             search_type = "ho" will return only "holiday" but not "shoo"
@@ -357,19 +355,15 @@ class DataStore(object):
 
         query = {
             "size": int(size),
-            "_source": {
-                "includes": list(source_filter)
-            },
-            "query": {
-                "match_phrase_prefix": {
-                    search_field: search_value
-                }
-            }
+            "_source": {"includes": list(source_filter)},
+            "query": {"match_phrase_prefix": {search_field: search_value}},
         }
 
         return query
 
-    def query_for_employee_by_name(self, name: str, fuzzy_search: bool) -> Tuple[str, dict]:
+    def query_for_employee_by_name(
+        self, name: str, fuzzy_search: bool
+    ) -> Tuple[str, dict]:
         """Search query for an employee by the full name (passed as a string).
 
         For a regular search we are using a `multi_match` query in order to
@@ -388,7 +382,7 @@ class DataStore(object):
         on the the (full) `name` string we are additionally matching
         on the last name prefix.
 
-        Example: 
+        Example:
             Searching for `Jean Picard` will yield the following matches:
             * Jean Luc Picard
 
@@ -405,56 +399,40 @@ class DataStore(object):
 
         index = "employees"
 
-        source_filter = [
-            "uuid",
-            "name",
-            "addresses.PHONE",
-        ]
+        source_filter = ["uuid", "name", "addresses.PHONE"]
 
         if fuzzy_search:
             # Split name in order to retrieve lastname(ish)
             names = name.split(" ")
             lastname = names[-1]
             query = {
-                "_source": {
-                    "includes": list(source_filter),
-                },
+                "_source": {"includes": list(source_filter)},
                 "query": {
                     "bool": {
-                        "must": [
-                            {
-                                "match": {
-                                    "name": name
-                                }
-                            }
-                        ], 
+                        "must": [{"match": {"name": name}}],
                         "should": [
-                            {
-                                "match_phrase_prefix": {
-                                    "surname": lastname
-                                }
-                            }
-                        ]
+                            {"match_phrase_prefix": {"surname": lastname}}
+                        ],
                     }
-                }
+                },
             }
         else:
             query = {
-                "_source": {
-                    "includes": list(source_filter),
-                },
+                "_source": {"includes": list(source_filter)},
                 "query": {
-                    "multi_match" : {
+                    "multi_match": {
                         "query": str(name),
                         "type": "phrase_prefix",
                         "fields": ["surname", "name"],
                     }
-                }
+                },
             }
 
         return (index, query)
 
-    def query_for_employee_by_phone(self, phone_number: str, fuzzy_search: bool) -> Tuple[str, dict]:
+    def query_for_employee_by_phone(
+        self, phone_number: str, fuzzy_search: bool
+    ) -> Tuple[str, dict]:
         """Search query for an employee by phone number.
 
         We are using a regular token match or a phrase prefix match.
@@ -464,8 +442,8 @@ class DataStore(object):
             Search value `22722222` will match the following only:
             * 22722222
 
-        A fuzzy query will use `phrase_prefix` matching in order to match on the given
-        prefix, the search for `2272` will yield following results:
+        A fuzzy query will use `phrase_prefix` matching in order to match on
+        the given prefix, the search for `2272` will yield following results:
             * 22722222
             * 22723333
             * 22724444
@@ -486,14 +464,12 @@ class DataStore(object):
         index = "employees"
         search_field = "addresses.PHONE.value"
 
-        source_filter = [
-            "uuid",
-            "name",
-            "addresses.PHONE"
-        ]
+        source_filter = ["uuid", "name", "addresses.PHONE"]
 
         if fuzzy_search:
-            query = self._query_match_phrase_prefix(search_field, phone_number, 15, source_filter)
+            query = self._query_match_phrase_prefix(
+                search_field, phone_number, 15, source_filter
+            )
         else:
             query = self._query_match(
                 search_field, phone_number, 15, source_filter
@@ -501,11 +477,14 @@ class DataStore(object):
 
         return (index, query)
 
-    def query_for_employee_by_email(self, email_address: str, fuzzy_search: bool) -> Tuple[str, dict]:
+    def query_for_employee_by_email(
+        self, email_address: str, fuzzy_search: bool
+    ) -> Tuple[str, dict]:
         """Search query for an employee by email address.
 
         We are only using `phrase_prefix` matching for email addresses.
-        As a consequence, it is not possible to search by domain, e.g. `@example.com`.
+        As a consequence, it is not possible to search by domain, e.g.
+        `@example.com`.
 
         Search value `picard` will yield the following results:
         * picard@example.com
@@ -526,16 +505,16 @@ class DataStore(object):
         index = "employees"
         search_field = "addresses.EMAIL.value"
 
-        source_filter = [
-            "uuid",
-            "name",
-            "addresses.EMAIL"
-        ]
+        source_filter = ["uuid", "name", "addresses.EMAIL"]
 
-        query = self._query_match_phrase_prefix(search_field, email_address, 15, source_filter)
+        query = self._query_match_phrase_prefix(
+            search_field, email_address, 15, source_filter
+        )
         return (index, query)
 
-    def query_for_employee_by_engagement(self, engagement: str, fuzzy_search: bool):
+    def query_for_employee_by_engagement(
+        self, engagement: str, fuzzy_search: bool
+    ):
         """Search query for an engagement
 
         We are using `phrase_prefix` to match the engagement keyword.
@@ -560,13 +539,11 @@ class DataStore(object):
 
         search_field = "engagements.title"
 
-        source_filter = [
-            "uuid",
-            "name",
-            "engagements"
-        ]
+        source_filter = ["uuid", "name", "engagements"]
 
-        query = self._query_match_phrase_prefix(search_field, engagement, 15, source_filter)
+        query = self._query_match_phrase_prefix(
+            search_field, engagement, 15, source_filter
+        )
         return (index, query)
 
     def query_for_org_unit_by_name(self, name: str, fuzzy_search: bool):
@@ -593,13 +570,11 @@ class DataStore(object):
         index = "org_units"
         search_field = "name"
 
-        source_filter = [
-            "uuid",
-            "name",
-            "addresses"
-        ]
+        source_filter = ["uuid", "name", "addresses"]
 
-        query = self._query_match_phrase_prefix(search_field, name, 15, source_filter)
+        query = self._query_match_phrase_prefix(
+            search_field, name, 15, source_filter
+        )
         return (index, query)
 
     def query_for_org_unit_by_kle(self, kle: str, fuzzy_search: bool):
@@ -617,45 +592,36 @@ class DataStore(object):
         index = "org_units"
         search_field = "kles.title"
 
-        source_filter = [
-            "uuid",
-            "name",
-        ]
-#
-#        if fuzzy_search:
-#            query = self._query_match_phrase_prefix(search_field, kle, 15, source_filter)
-#        else:
-#            query = self._query_match(
-#                search_field, kle, 15, source_filter
-#            )
+        source_filter = ["uuid", "name"]
+        #
+        #        if fuzzy_search:
+        #            query = self._query_match_phrase_prefix(
+        #               search_field, kle, 15, source_filter
+        #            )
+        #        else:
+        #            query = self._query_match(
+        #                search_field, kle, 15, source_filter
+        #            )
 
         query = {
             "size": 15,
-            "_source": {
-                "includes": list(source_filter),
-            },
+            "_source": {"includes": list(source_filter)},
             "query": {
                 "nested": {
                     "path": "kles",
-                    "inner_hits": {
-                        "_source": [
-                            "kles.title"
-                        ]
-                    },
-                    "query": {
-                        "match_phrase_prefix": {
-                            search_field: kle
-                        }
-                    }
+                    "inner_hits": {"_source": ["kles.title"]},
+                    "query": {"match_phrase_prefix": {search_field: kle}},
                 }
-            }
+            },
         }
 
         def processor(document):
             # Fetch nested query result
             kles = [
-                subdocument["_source"] for subdocument in
-                document["inner_hits"]["kles"]["hits"]["hits"]
+                subdocument["_source"]
+                for subdocument in document["inner_hits"]["kles"]["hits"][
+                    "hits"
+                ]
             ]
             # Embed nested query result within root query result
             org_unit = document["_source"]
@@ -716,7 +682,9 @@ class DataStore(object):
         """
         indexed = 0
         total = 0
-        for ok, action in streaming_bulk(client=self.db, index=index, actions=generator()):
+        for ok, action in streaming_bulk(
+            client=self.db, index=index, actions=generator()
+        ):
             indexed += ok
             total += 1
 

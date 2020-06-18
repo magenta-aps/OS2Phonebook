@@ -10,7 +10,7 @@ from tests.fixtures.elasticsearch_data import (
     one_unit_from_elasticsearch,
     one_employee_from_elasticsearch,
     no_matches_from_elasticsearch,
-    one_employee_by_name_from_elasticsearch
+    one_employee_by_name_from_elasticsearch,
 )
 
 
@@ -26,7 +26,7 @@ def http_client():
         "OS2PHONEBOOK_COMPANY_NAME": ORGANISATION_NAME,
         "OS2PHONEBOOK_STATIC_ROOT": "/static",
         "ELASTICSEARCH_HOST": "elasticsearch",
-        "ELASTICSEARCH_PORT": 9600
+        "ELASTICSEARCH_PORT": 9600,
     }
 
     app = initiate_application(config)
@@ -50,7 +50,7 @@ def test_get_status_metadata(http_client):
     expected = {
         "app": "OS2Phonebook",
         "organisation": ORGANISATION_NAME,
-        "version": __version__
+        "version": __version__,
     }
 
     assert json_response == expected
@@ -157,15 +157,9 @@ def test_get_search_schema(http_client):
         "format": "json",
         "method": "POST",
         "schema": {
-            "search_type": {
-                "required": True,
-                "type": "string"
-            },
-            "search_value": {
-                "required": True,
-                "type": "string"
-            }
-        }
+            "search_type": {"required": True, "type": "string"},
+            "search_value": {"required": True, "type": "string"},
+        },
     }
 
     assert json_response == expected_schema
@@ -193,9 +187,7 @@ def test_post_search_error_type_with_no_body(http_client):
 def test_post_search_error_type_with_incorrect_body(http_client):
     """Error message should display the InvalidRequestBody type"""
 
-    post_payload = {
-        "search_type": "employee_by_name"
-    }
+    post_payload = {"search_type": "employee_by_name"}
 
     response = http_client.post("/api/search", json=post_payload)
     json_response = response.get_json()
@@ -214,7 +206,7 @@ def test_post_search_with_no_results(mock_search, http_client):
 
     post_payload = {
         "search_type": "employee_by_name",
-        "search_value": "Picard"
+        "search_value": "Picard",
     }
 
     response = http_client.post("/api/search", json=post_payload)
@@ -234,7 +226,7 @@ def test_post_search_with_one_result(mock_search, http_client):
 
     post_payload = {
         "search_type": "employee_by_name",
-        "search_value": "Anne Yassen"
+        "search_value": "Anne Yassen",
     }
 
     response = http_client.post("/api/search", json=post_payload)
@@ -244,15 +236,10 @@ def test_post_search_with_one_result(mock_search, http_client):
     expected_results = [
         {
             "addresses": {
-                "PHONE": [
-                    {
-                        "description": "Telefon",
-                        "value": "61325558"
-                    }
-                ]
+                "PHONE": [{"description": "Telefon", "value": "61325558"}]
             },
             "name": "Anne Yassen",
-            "uuid": "048c045c-02c4-45ab-a43f-bda6ac99448e"
+            "uuid": "048c045c-02c4-45ab-a43f-bda6ac99448e",
         }
     ]
 
