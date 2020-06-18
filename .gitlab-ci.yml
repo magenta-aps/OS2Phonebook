@@ -15,9 +15,11 @@ variables:
   # Project variables
   RELEASE_REGISTRY: index.docker.io/magentaaps
   # CI images
+  PROXY_IMAGE: ${CI_REGISTRY_IMAGE}/proxy:${CI_COMMIT_SHA}
   FRONTEND_IMAGE: ${CI_REGISTRY_IMAGE}/frontend:${CI_COMMIT_SHA}
   BACKEND_IMAGE: ${CI_REGISTRY_IMAGE}/backend:${CI_COMMIT_SHA}
   # Release image names
+  PROXY_RELEASE_IMAGE_NAME: ${RELEASE_REGISTRY}/os2phonebook-proxy
   FRONTEND_RELEASE_IMAGE_NAME: ${RELEASE_REGISTRY}/os2phonebook-frontend
   BACKEND_RELEASE_IMAGE_NAME: ${RELEASE_REGISTRY}/os2phonebook-backend
 
@@ -100,6 +102,19 @@ Lint shell scripts:
       --destination=${CI_IMAGE}
       --cache=true
 
+
+build_proxy_docker:
+  extends: .build_docker_base
+  before_script:
+    - export DOCKERFILE="docker/Dockerfile.proxy"
+    - export CI_IMAGE="${PROXY_IMAGE}"
+  rules:
+    # Only ever create release containers on git tags
+    - if: $CI_COMMIT_TAG
+      when: on_success
+    - when: never
+
+
 build_frontend_docker:
   extends: .build_docker_base
   before_script:
@@ -172,6 +187,16 @@ generate_tags:
     - when: never
   tags:
     - docker
+
+
+release_proxy:
+  extends: .release_base
+  before_script:
+    - export CI_IMAGE="${PROXY_IMAGE}"
+    - export RELEASE_IMAGE_NAME="${PROXY_RELEASE_IMAGE_NAME}"
+  dependencies:
+    - build_proxy_docker
+    - generate_tags
 
 
 release_frontend:
