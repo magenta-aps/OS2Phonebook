@@ -32,9 +32,7 @@ class OS2MOImportClient:
     def configure_access_token(self, token: str):
         """Optionally configure the http client with an auth session header."""
 
-        os2mo_session = {
-            "SESSION": token
-        }
+        os2mo_session = {"SESSION": token}
 
         self.session.headers.update(os2mo_session)
 
@@ -53,7 +51,8 @@ class OS2MOImportClient:
                 which are passed on as query params to the underlying method
 
         Raises:
-            RequestException: If the service api returns a negative status code.
+            RequestException:
+                If the service api returns a negative status code.
 
         Returns:
             dict: JSON response body as a dictionary
@@ -66,7 +65,9 @@ class OS2MOImportClient:
 
         if not response.ok:
             log.debug(response)
-            raise RequestException(f"HTTP_OS2MO_RESPONSE_ERROR: {response.status_code}")
+            raise RequestException(
+                f"HTTP_OS2MO_RESPONSE_ERROR: {response.status_code}"
+            )
 
         return response.json()
 
@@ -77,7 +78,8 @@ class OS2MOImportClient:
         a list of organisations.
 
         Currently there should be only be support for 1 organisation,
-        hence we're assuming that the first result will be the main organisation.
+        hence we're assuming that the first result will be the main
+        organisation.
 
         Raises:
             AttributeError: If the response does not contain at least one
@@ -120,7 +122,8 @@ class OS2MOImportClient:
             "value": "Kildeparken 64A, Seest, 6000 Kolding"
         }
 
-        And aggregates all address objects into lists of the following categories:
+        And aggregates all address objects into lists of the following
+        categories:
             * DAR (Residence addresses)
             * PHONE (Phone numbers)
             * EMAIL (Email addresses)
@@ -131,7 +134,8 @@ class OS2MOImportClient:
             address_data (list): A list of OS2MO response data objects <dict>
 
         Returns:
-            dict: Address types map containing a list for each type of addresses
+            dict:
+                Address types map containing a list for each type of addresses
 
         Example:
 
@@ -185,7 +189,7 @@ class OS2MOImportClient:
             "EMAIL": [],
             "EAN": [],
             "PNUMBER": [],
-            "WWW": []
+            "WWW": [],
         }
 
         for address in address_data:
@@ -196,12 +200,15 @@ class OS2MOImportClient:
                 log.debug(f"Scope: {scope} does not exist")
                 continue
 
-            if "visibility" in address and address["visibility"]["scope"] == "SECRET":
+            if (
+                "visibility" in address
+                and address["visibility"]["scope"] == "SECRET"
+            ):
                 continue
 
             formatted_address = {
                 "description": address["address_type"]["name"],
-                "value": address["name"]
+                "value": address["name"],
             }
 
             address_types[scope].append(formatted_address)
@@ -271,10 +278,7 @@ class OS2MOImportClient:
 
         return_data = self.get(resource)
 
-        unit = {
-            "uuid": return_data["uuid"],
-            "name": return_data["name"]
-        }
+        unit = {"uuid": return_data["uuid"], "name": return_data["name"]}
 
         # Enrich unit (It's just a nicer way to say mutate)
         unit["addresses"] = self.get_org_unit_address_references(uuid)
@@ -482,10 +486,7 @@ class OS2MOImportClient:
 
         return_data = self.get(resource, start=offset, limit=batch_size)
 
-        return [
-            employee
-            for employee in return_data["items"]
-        ]
+        return [employee for employee in return_data["items"]]
 
     def get_employee_address_references(self, uuid):
         """Retrieve and convert employee addresses.
@@ -621,7 +622,7 @@ class OS2MOImportClient:
 
     def import_routine(self) -> Tuple[dict, dict]:
         """Import all employees and associated org units from OS2MO.
-        
+
         Higher level import routine which imports all employees
         in batches and recusively imports the associated org units.
 
@@ -631,7 +632,7 @@ class OS2MOImportClient:
         Note:
             This method has more verbose logging for debugging purposes.
             The import log should be a seperate log file
-            as to not polute the service log. 
+            as to not polute the service log.
 
             (This is handled automatically by the bootstrapper)
 
@@ -656,46 +657,66 @@ class OS2MOImportClient:
             if current_batch_end > total:
                 current_batch_end = total
 
-            log.info(f"OS2MO_IMPORT_ROUTINE - Import batch {offset}-{current_batch_end}")
+            log.info(
+                "OS2MO_IMPORT_ROUTINE - "
+                f"Import batch {offset}-{current_batch_end}"
+            )
 
             employees = self.get_batch_of_employees(
-                offset=offset,
-                batch_size=batch_size
+                offset=offset, batch_size=batch_size
             )
 
             for employee in employees:
                 # We'll need this in a bit
                 uuid = employee["uuid"]
 
-                # Enrich employee         
-                employee["engagements"] = self.get_employee_engagement_references(uuid)
-                employee["associations"] = self.get_employee_association_references(uuid)
-                employee["management"] = self.get_employee_manager_references(uuid)
+                # Enrich employee
+                employee[
+                    "engagements"
+                ] = self.get_employee_engagement_references(uuid)
+                employee[
+                    "associations"
+                ] = self.get_employee_association_references(uuid)
+                employee["management"] = self.get_employee_manager_references(
+                    uuid
+                )
 
                 # Do NOT import employees without an engagement or association
                 # https://redmine.magenta-aps.dk/issues/34812
 
                 # We do however want to import employees with management roles.
-                # As an external employee may be a manager for an organisation unit.
+                # As an external employee may be a manager for an organisation
+                # unit.
 
-                if not employee["associations"] and not employee["engagements"] and not employee["management"]:
+                if (
+                    not employee["associations"]
+                    and not employee["engagements"]
+                    and not employee["management"]
+                ):
                     log.info(
-                        "OS2MO_IMPORT_ROUTINE Skip employee due to missing engagements, associations, management"
+                        "OS2MO_IMPORT_ROUTINE Skip employee due to missing "
+                        "engagements, associations, management"
                     )
 
                     # Reference to the skipped employee to debug log
                     log.debug(
-                        f"OS2MO_IMPORT_ROUTINE - NO_RELATIONS_TO_ORG_UNIT employee={uuid}"
+                        "OS2MO_IMPORT_ROUTINE - "
+                        f"NO_RELATIONS_TO_ORG_UNIT employee={uuid}"
                     )
 
                     continue
 
-                employee["addresses"] = self.get_employee_address_references(uuid)
+                employee["addresses"] = self.get_employee_address_references(
+                    uuid
+                )
 
                 self.employee_map[uuid] = employee
 
-            log.info(f"OS2MO_IMPORT_ROUTINE - Batch {current_batch_end}-{current_batch_end} completed")
-            
+            log.info(
+                "OS2MO_IMPORT_ROUTINE -"
+                f"Batch {current_batch_end}-{current_batch_end} completed"
+            )
+
             # Hacky offset update
             offset = offset + batch_size
 

@@ -15,7 +15,7 @@ from tests.fixtures.os2mo_data import (
     employee_addresses,
     employee_engagements,
     employee_managers,
-    employee_associations
+    employee_associations,
 )
 
 
@@ -77,42 +77,22 @@ def test_get_org_unit_address_references(mock_request, os2mo_client):
         "DAR": [
             {
                 "description": "Returadresse",
-                "value": "Castenskjoldsvej 2, 2., 6000 Kolding"
+                "value": "Castenskjoldsvej 2, 2., 6000 Kolding",
             },
             {
                 "description": "Henvendelsessted",
-                "value": "Castenskjoldsvej 2, 2., 6000 Kolding"
+                "value": "Castenskjoldsvej 2, 2., 6000 Kolding",
             },
             {
                 "description": "Postadresse",
-                "value": "Castenskjoldsvej 2, 2., 6000 Kolding"
-            }
+                "value": "Castenskjoldsvej 2, 2., 6000 Kolding",
+            },
         ],
         "PHONE": [],
-        "EMAIL": [
-            {
-                "description": "Email",
-                "value": "info@kolding.dk"
-            }
-        ],
-        "EAN": [
-            {
-                "description": "EAN-nummer",
-                "value": "1224321145484"
-            }
-        ],
-        "PNUMBER": [
-            {
-                "description": "P-nummer",
-                "value": "1866728518"
-            }
-        ],
-        "WWW": [
-            {
-                "description": "Webadresse",
-                "value": "www.kolding.dk"
-            }
-        ]
+        "EMAIL": [{"description": "Email", "value": "info@kolding.dk"}],
+        "EAN": [{"description": "EAN-nummer", "value": "1224321145484"}],
+        "PNUMBER": [{"description": "P-nummer", "value": "1866728518"}],
+        "WWW": [{"description": "Webadresse", "value": "www.kolding.dk"}],
     }
 
     method_result = os2mo_client.get_org_unit_address_references(
@@ -133,17 +113,17 @@ def test_get_org_unit_engagement_references(mock_request, os2mo_client):
         {
             "name": "Lykke Skytte Hansen",
             "title": "Specialkonsulent",
-            "uuid": "eff3fca2-645c-4613-90ad-5fb47db47bc7"
+            "uuid": "eff3fca2-645c-4613-90ad-5fb47db47bc7",
         },
         {
             "name": "Johannes Engmann Korsgård Maaløe",
             "title": "Ressourcepædagog",
-            "uuid": "be39de52-060a-4ae3-b705-ba46dd9b27a6"
+            "uuid": "be39de52-060a-4ae3-b705-ba46dd9b27a6",
         },
         {
             "name": "Christian Fregerslev Ulriksen",
             "title": "Teknisk Servicemedarb.",
-            "uuid": "6037238b-a013-4520-86c8-b2ea15ee88d5"
+            "uuid": "6037238b-a013-4520-86c8-b2ea15ee88d5",
         },
     ]
 
@@ -165,7 +145,7 @@ def test_get_org_unit_manager_references(mock_request, os2mo_client):
         {
             "name": "Peter Behrens Høgfeldt",
             "title": "Direktør",
-            "uuid": "84f4536f-52d4-4229-a675-9a92d71be79c"
+            "uuid": "84f4536f-52d4-4229-a675-9a92d71be79c",
         }
     ]
 
@@ -203,7 +183,7 @@ def test_get_org_unit_association_references(mock_request, os2mo_client):
         {
             "name": "Hans Pie Rasmussen",
             "title": "Næstformand",
-            "uuid": "1acb3999-423a-48c4-9ef8-ba4452929d7a"
+            "uuid": "1acb3999-423a-48c4-9ef8-ba4452929d7a",
         }
     ]
 
@@ -238,26 +218,26 @@ def test_get_batch_of_employees(mock_request, os2mo_client):
             "givenname": "Aage Bruun Lund",
             "name": "Aage Bruun Lund Happe",
             "surname": "Happe",
-            "uuid": "26d43382-ce39-4772-aee5-c711732ca345"
+            "uuid": "26d43382-ce39-4772-aee5-c711732ca345",
         },
         {
             "givenname": "Aage",
             "name": "Aage Foghsgaard",
             "surname": "Foghsgaard",
-            "uuid": "60fdff44-658f-45f0-842f-fe2c5b1b074f"
+            "uuid": "60fdff44-658f-45f0-842f-fe2c5b1b074f",
         },
         {
             "givenname": "Aage Christensen Moesgård",
             "name": "Aage Christensen Moesgård Egeberg",
             "surname": "Egeberg",
-            "uuid": "64c85f9f-ba89-407f-bbb2-7f524ce6a66e"
+            "uuid": "64c85f9f-ba89-407f-bbb2-7f524ce6a66e",
         },
         {
             "givenname": "Aage Bach",
             "name": "Aage Bach Klarskov",
             "surname": "Klarskov",
-            "uuid": "c6f61ee9-b902-492c-b4c8-76df54088cc9"
-        }
+            "uuid": "c6f61ee9-b902-492c-b4c8-76df54088cc9",
+        },
     ]
 
     method_result = os2mo_client.get_batch_of_employees(offset=0, batch_size=4)
@@ -275,16 +255,11 @@ def test_get_employee_address_references(mock_request, os2mo_client):
         "DAR": [
             {
                 "description": "Postadresse",
-                "value": "Frederiksgade 11E, 5700 Svendborg"
+                "value": "Frederiksgade 11E, 5700 Svendborg",
             }
         ],
         "EAN": [],
-        "EMAIL": [
-            {
-                "description": "Email",
-                "value": "annb@svendborg.dk"
-            }
-        ],
+        "EMAIL": [{"description": "Email", "value": "annb@svendborg.dk"}],
         "PHONE": [],
         "PNUMBER": [],
         "WWW": [],
@@ -297,9 +272,13 @@ def test_get_employee_address_references(mock_request, os2mo_client):
     assert method_result == expected
 
 
-@mock.patch("os2phonebook.integration.OS2MOImportClient.get_org_unit", autospec=True)
+@mock.patch(
+    "os2phonebook.integration.OS2MOImportClient.get_org_unit", autospec=True
+)
 @mock.patch("os2phonebook.integration.OS2MOImportClient.get", autospec=True)
-def test_get_employee_engagement_references(mock_request, mock_org_unit, os2mo_client):
+def test_get_employee_engagement_references(
+    mock_request, mock_org_unit, os2mo_client
+):
     """Should return converted engagement references"""
 
     mock_request.return_value = employee_engagements()
@@ -308,7 +287,7 @@ def test_get_employee_engagement_references(mock_request, mock_org_unit, os2mo_c
         {
             "name": "Svendborg Kommune",
             "title": "Timelønnet lærer",
-            "uuid": "f06ee470-9f17-566f-acbe-e938112d46d9"
+            "uuid": "f06ee470-9f17-566f-acbe-e938112d46d9",
         }
     ]
 
@@ -319,9 +298,13 @@ def test_get_employee_engagement_references(mock_request, mock_org_unit, os2mo_c
     assert method_result == expected
 
 
-@mock.patch("os2phonebook.integration.OS2MOImportClient.get_org_unit", autospec=True)
+@mock.patch(
+    "os2phonebook.integration.OS2MOImportClient.get_org_unit", autospec=True
+)
 @mock.patch("os2phonebook.integration.OS2MOImportClient.get", autospec=True)
-def test_get_employee_manager_references(mock_request, mock_org_unit, os2mo_client):
+def test_get_employee_manager_references(
+    mock_request, mock_org_unit, os2mo_client
+):
     """Should return converted manager references"""
 
     mock_request.return_value = employee_managers()
@@ -330,8 +313,8 @@ def test_get_employee_manager_references(mock_request, mock_org_unit, os2mo_clie
         {
             "name": "Direktør område Anne Vang",
             "title": "Direktør",
-            "uuid": "d9ccd8f8-7c7c-4788-80c0-cfc3dd7ff6ce"
-        },
+            "uuid": "d9ccd8f8-7c7c-4788-80c0-cfc3dd7ff6ce",
+        }
     ]
 
     method_result = os2mo_client.get_employee_manager_references(
@@ -341,9 +324,13 @@ def test_get_employee_manager_references(mock_request, mock_org_unit, os2mo_clie
     assert method_result == expected
 
 
-@mock.patch("os2phonebook.integration.OS2MOImportClient.get_org_unit", autospec=True)
+@mock.patch(
+    "os2phonebook.integration.OS2MOImportClient.get_org_unit", autospec=True
+)
 @mock.patch("os2phonebook.integration.OS2MOImportClient.get", autospec=True)
-def test_get_employee_association_references(mock_request, mock_org_unit, os2mo_client):
+def test_get_employee_association_references(
+    mock_request, mock_org_unit, os2mo_client
+):
     """Should return converted association references"""
 
     mock_request.return_value = employee_associations()
@@ -352,13 +339,13 @@ def test_get_employee_association_references(mock_request, mock_org_unit, os2mo_
         {
             "name": "Byg",
             "title": "Ansat",
-            "uuid": "6e95168a-82a5-40a7-b533-8a771c2f1fbb"
+            "uuid": "6e95168a-82a5-40a7-b533-8a771c2f1fbb",
         },
         {
             "name": "L-MED Center for By Erhverv og Miljø",
             "title": "Medlem",
-            "uuid": "25448337-42e4-459f-8bdf-0e3da90a58f0"
-        }
+            "uuid": "25448337-42e4-459f-8bdf-0e3da90a58f0",
+        },
     ]
 
     method_result = os2mo_client.get_employee_association_references(

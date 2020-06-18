@@ -1,18 +1,9 @@
-from uuid import uuid4
 from elasticsearch.exceptions import NotFoundError
 from os2phonebook.datastore import DataStore
 from os2phonebook.helpers import log_factory
 from os2phonebook.exceptions import InvalidRequestBody, InvalidSearchType
 from werkzeug.exceptions import NotFound
-from flask import (
-    Response,
-    Blueprint,
-    jsonify,
-    current_app,
-    request,
-    render_template
-)
-
+from flask import Response, Blueprint, jsonify, current_app, request
 
 
 # Init logging
@@ -45,10 +36,7 @@ def show_status() -> Response:
     version = current_app.os2phonebook_version
     organisation_name = current_app.organisation_name
 
-    status_response = {
-        "version": version,
-        "organisation": organisation_name,
-    }
+    status_response = {"version": version, "organisation": organisation_name}
 
     return jsonify(status_response)
 
@@ -94,7 +82,7 @@ def all_org_units() -> Response:
     # For now just create a warning in the logs
     # Perhaps this should raise a `bad` type of exception instead
     if not results:
-        log.warning(f"NO_RESULTS_ALL_ORG_UNITS")
+        log.warning("NO_RESULTS_ALL_ORG_UNITS")
 
     return jsonify(results)
 
@@ -113,9 +101,7 @@ def show_org_unit(uuid) -> Response:
 
     db = DataStore(current_app.connection)
 
-    results = db.get_org_unit(
-        uuid=uuid
-    )
+    results = db.get_org_unit(uuid=uuid)
 
     return jsonify(results)
 
@@ -135,9 +121,7 @@ def show_employee(uuid) -> Response:
     db = DataStore(current_app.connection)
 
     # Retrieve employee by uuid
-    results = db.get_employee(
-        uuid=uuid
-    )
+    results = db.get_employee(uuid=uuid)
 
     return jsonify(results)
 
@@ -167,15 +151,9 @@ def show_search_schema():
         "method": "POST",
         "format": "json",
         "schema": {
-            "search_type": {
-                "type": "string",
-                "required": True
-            },
-            "search_value": {
-                "type": "string",
-                "required": True
-            }
-        }
+            "search_type": {"type": "string", "required": True},
+            "search_value": {"type": "string", "required": True},
+        },
     }
 
     return jsonify(search_schema)
@@ -218,25 +196,25 @@ def call_search_method():
     db = DataStore(current_app.connection)
 
     results = db.search(
-        search_type=search_type,
-        search_value=search_value,
-        fuzzy_search=False
+        search_type=search_type, search_value=search_value, fuzzy_search=False
     )
 
     if not results:
         log.debug(
-            f"NO_SEARCH_RESULTS search_type={search_type} search_value={search_value} # 1"
+            "NO_SEARCH_RESULTS "
+            f"search_type={search_type} search_value={search_value} # 1"
         )
 
         results = db.search(
             search_type=search_type,
             search_value=search_value,
-            fuzzy_search=True
+            fuzzy_search=True,
         )
 
     if not results:
         log.debug(
-            f"NO_SEARCH_RESULTS search_type={search_type} search_value={search_value} # 2"
+            "NO_SEARCH_RESULTS "
+            f"search_type={search_type} search_value={search_value} # 2"
         )
 
     return jsonify(results)
@@ -245,6 +223,7 @@ def call_search_method():
 #####################################################################
 #   ERROR HANDLING SECTION                                          #
 #####################################################################
+
 
 @api.app_errorhandler(NotFound)
 @api.app_errorhandler(NotFoundError)
@@ -260,9 +239,9 @@ def invalid_validation_handler(error) -> Response:
         * InvalidRequestBody
 
     All error types above carry a `status_code`.
-    
+
     NotFoundError is thrown when no record can be found
-    by identifier, as such this will return status 404. 
+    by identifier, as such this will return status 404.
 
     Args:
         error (Exception): An exception type error object
@@ -281,10 +260,7 @@ def invalid_validation_handler(error) -> Response:
         status_code = error.code
 
     response = {
-        "error": {
-            "type": error.__class__.__name__,
-            "message": str(error)
-        }
+        "error": {"type": error.__class__.__name__, "message": str(error)}
     }
 
     log.warning("REQUEST_FAILED - {error}")
@@ -314,7 +290,7 @@ def all_exception_handler(error):
     response = {
         "error": {
             "type": error_class,
-            "message": "Unknown error occured, please contact administrator"
+            "message": "Unknown error occured, please contact administrator",
         }
     }
 

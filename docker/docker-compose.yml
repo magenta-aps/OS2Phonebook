@@ -1,0 +1,44 @@
+version: '3.4'
+services:
+    elasticsearch:
+        image: elasticsearch:7.6.0
+        container_name: elasticsearch
+        # For development purposes a single node configuration should be sufficient
+        environment:
+          - discovery.type=single-node
+        # Named volume "esdata01" for elasticsearch storage
+        volumes:
+          - esdata01:/usr/share/elasticsearch/data
+
+    proxy:
+        image: magentaaps/os2phonebook-proxy:0.0.1-rc
+        ports:
+            - 8000:80
+        depends_on:
+        - os2phonebook-gui
+        - os2phonebook-service
+
+    os2phonebook-gui:
+        image: magentaaps/os2phonebook-frontend:0.0.1-rc
+        ports:
+            - 4200:4200
+
+    os2phonebook-service:
+        image: magentaaps/os2phonebook-backend:0.0.1-rc
+        ports:
+            - 9090:9090
+        environment:
+            OS2PHONEBOOK_COMPANY_NAME: Magenta ApS
+            OS2PHONEBOOK_CACHE_ROOT: /data-cache
+            OS2PHONEBOOK_LOG_ROOT: /log
+            OS2PHONEBOOK_DATALOADER_PASSWORD: password1
+            OS2MO_SERVICE_URL: http://mo:5000
+            OS2MO_API_TOKEN: Supersecrettoken
+            ELASTICSEARCH_HOST: elasticsearch
+            ELASTICSEARCH_PORT: 9200
+        depends_on:
+            - elasticsearch
+volumes:
+    esdata01:
+        name: esdata01
+        driver: local
