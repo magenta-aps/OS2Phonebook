@@ -582,26 +582,15 @@ class DataStore(object):
 
         Args:
             kle (str): KLE number or name.
-            fuzzy_search (bool): Search wider if True.
+            fuzzy_search (bool): Search wider if True (noop).
 
         Returns:
             Tuple[str, dict]: Index name (str) and Elastic search query (dict)
-
         """
-
         index = "org_units"
         search_field = "kles.title"
 
         source_filter = ["uuid", "name"]
-        #
-        #        if fuzzy_search:
-        #            query = self._query_match_phrase_prefix(
-        #                search_field, kle, 15, source_filter
-        #            )
-        #        else:
-        #            query = self._query_match(
-        #                search_field, kle, 15, source_filter
-        #            )
 
         query = {
             "size": 15,
@@ -640,13 +629,20 @@ class DataStore(object):
             dict: Elasticsearch json response as dictionary
 
         """
-
         response = self.db.indices.delete(index=index, ignore=[400, 404])
-
         return response
 
     def create_index(self, index: str, mapping: dict) -> dict:
+        """Explicitly create an index
 
+        Args:
+            index (str): Name of the index to create
+            mapping (dict): Elasticsearch index definition
+
+        Returns:
+            dict: Elasticsearch json response as dictionary
+
+        """
         response = self.db.indices.create(index=index, body=mapping)
         return response
 
@@ -662,11 +658,9 @@ class DataStore(object):
             dict: Elasticsearch json response as dictionary
 
         """
-
         response = self.db.index(
             index=index, doc_type="_doc", id=identifier, body=data
         )
-
         return response
 
     def bulk_insert_index(self, index: str, generator) -> dict:
