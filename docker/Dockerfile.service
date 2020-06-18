@@ -39,6 +39,7 @@ RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /log
 RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /entrypoint
 
 # USER sys_magenta_os2phonebook:sys_magenta_os2phonebook
+RUN apt-get update && apt-get install sudo
 
 WORKDIR /app
 
