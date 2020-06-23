@@ -8,6 +8,18 @@
 #
 
 
+class InvalidCredentials(Exception):
+    """Request body is not valid according to the given schema"""
+
+    status_code = 401
+
+
+class InsufficientCredentials(Exception):
+    """Request body is not valid according to the given schema"""
+
+    status_code = 403
+
+
 class InvalidRequestBody(Exception):
     """Request body is not valid according to the given schema"""
 
