@@ -14,9 +14,6 @@ RUN pip install -r /app/requirements/release.txt
 RUN groupadd -g 72085 -r sys_magenta_os2phonebook
 RUN useradd -u 72085 --no-log-init -r -g sys_magenta_os2phonebook sys_magenta_os2phonebook
 
-# Cache for data import files
-RUN mkdir /data-cache
-
 RUN mkdir /log
 
 # Entrypoint
@@ -27,14 +24,12 @@ COPY os2phonebook_service/os2phonebook /app/os2phonebook
 
 # Default configuration (should be overridden)
 ENV OS2PHONEBOOK_COMPANY_NAME=Magenta
-ENV OS2PHONEBOOK_CACHE_ROOT=/data-cache
 ENV OS2PHONEBOOK_LOG_ROOT=/log
 ENV ELASTICSEARCH_HOST=elasticsearch
 ENV ELASTICSEARCH_PORT=9200
 
 # Set Permissions
 RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /app
-RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /data-cache
 RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /log
 RUN chown -R sys_magenta_os2phonebook:sys_magenta_os2phonebook /entrypoint
 

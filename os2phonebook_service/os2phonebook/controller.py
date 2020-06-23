@@ -1,10 +1,16 @@
 from elasticsearch.exceptions import NotFoundError
 from os2phonebook.datastore import DataStore
 from os2phonebook.helpers import log_factory
-from os2phonebook.exceptions import InvalidRequestBody, InvalidSearchType
+from os2phonebook.exceptions import (
+    InvalidRequestBody,
+    InvalidSearchType,
+    InvalidCredentials,
+    InsufficientCredentials,
+)
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import check_password_hash
 from werkzeug.exceptions import NotFound
 from flask import Response, Blueprint, jsonify, current_app, request
-
 
 # Init logging
 log = log_factory()
@@ -13,17 +19,7 @@ log = log_factory()
 api = Blueprint("routes", __name__)
 
 
-@api.route("/")
-def index() -> Response:
-    """Serve frontend application.
-
-    Returns:
-        :obj:`Response`: Response with text/html body.
-
-    """
-    return "Welcome to os2phonebook service"
-
-
+@api.route("/", methods=["GET"])
 @api.route("/api/status", methods=["GET"])
 def show_status() -> Response:
     """Status endpoint shows application status and metadata.
@@ -36,7 +32,11 @@ def show_status() -> Response:
     version = current_app.os2phonebook_version
     organisation_name = current_app.organisation_name
 
-    status_response = {"version": version, "organisation": organisation_name}
+    status_response = {
+        "app": "OS2Phonebook",
+        "version": version,
+        "organisation": organisation_name,
+    }
 
     return jsonify(status_response)
 
@@ -137,6 +137,7 @@ def show_search_schema():
         search_value: <string>
 
     Example:
+
         {
             "search_type": "employee_by_email",
             "search_value": "someuser@example.org"
@@ -220,6 +221,240 @@ def call_search_method():
     return jsonify(results)
 
 
+#############
+# DATA LOAD #
+#############
+auth = HTTPBasicAuth()
+
+
+@auth.error_handler
+def auth_error(status):
+    """Flask-HTTPAuth error handler.
+
+    Wraps domain-specific exceptions, as to invoke
+    :code:`invalid_validation_handler`.
+
+    Args:
+        status (int): HTTP Status Code
+
+    Returns:
+        :obj:`Exception`: Raises appropriate domain-specific exception.
+    """
+    if status == 401:
+        raise InvalidCredentials()
+    if status == 403:
+        raise InsufficientCredentials()
+    raise ValueError("Unknown status in auth_error")
+
+
+@auth.verify_password
+def verify_password(username, password):
+    """Verify username / password against usermap from :code:`gen_user_map`.
+
+    Derived from: https://flask-httpauth.readthedocs.io/en/latest/
+
+    Args:
+        username (string): Username given by HTTP Basic Auth
+        password (string): Password given by HTTP Basic Auth
+
+    Returns:
+        :obj:`string`: Username of validated user or :code:`None`
+    """
+    user_map = current_app.dataload_basic_auth
+    # Only valid users can get their password checked
+    if username in user_map:
+        # Only if password matches, a login is successful
+        if check_password_hash(user_map.get(username), password):
+            return username
+    return None
+
+
+@api.route("/api/load-employees", methods=["POST"])
+@auth.login_required
+def load_employees():
+    """Clean out DataStore and load employees from provided JSON.
+
+    Args:
+        request.data (json/dict): Employees to load into the data store.
+
+    Example:
+
+        The request.data is formatted as follows:
+
+        {
+            "f06ee470-9f17-566f-acbe-e938112d46d9": {
+                "givenname": "Emil Madsen",
+                "name": "Emil",
+                "surname": "Madsen",
+                "uuid": "f06ee470-9f17-566f-acbe-e938112d46d9",
+                "engagements": [
+                  {
+                    "title": "Software Udvikler",
+                    "name": "Teknisk Support",
+                    "uuid": "6fc9ba6b-ca5b-5e09-a594-40363c45aae0"
+                  }
+                ],
+                "associations": [
+                  {
+                    "title": "Ansat",
+                    "name": "Magenta ApS",
+                    "uuid": "582d0b5e-3c3b-52e8-8d93-42573a6a3d88"
+                  }
+                ],
+                "management": [],
+                "addresses": {
+                  "DAR": [
+                    {
+                      "description": "Arbejdsadresse",
+                      "value": "Skt. Johannes Allé 2, 2., 8000 Aarhus C"
+                    },
+                    ...
+                  ],
+                  "PHONE": [
+                  ],
+                  "EMAIL": [
+                    {
+                      "description": "Email",
+                      "value": "emil@magenta.dk"
+                    }
+                  ],
+                  "EAN": [],
+                  "PNUMBER": [],
+                  "WWW": []
+                }
+            },
+            ...
+        }
+
+        The response body is formatted as follows:
+
+        {
+            "indexed": 421, "total": 421
+        }
+
+        If 421 org units were indexed, 421 were processed.
+
+    Returns:
+        :obj:`Response`: Response with json body.
+
+    """
+    if not request.data:
+        raise InvalidRequestBody("Request body (json) is missing")
+
+    log.info("load_employees called")
+
+    # Fetch the entire bulk to be loaded
+    employees = request.get_json()
+
+    def generator():
+        for uuid, employee in employees.items():
+            entry = {"_id": uuid, "_source": employee}
+            yield entry
+
+    # Connect to datastore and clear it out
+    db = DataStore(current_app.connection)
+    db.delete_index("employees")
+    # Loading entries
+    indexed, total = db.bulk_insert_index(
+        index="employees", generator=generator
+    )
+
+    return jsonify({"indexed": indexed, "total": total})
+
+
+@api.route("/api/load-org-units", methods=["POST"])
+@auth.login_required
+def load_org_units():
+    """Clean out DataStore and load org units from provided JSON.
+
+    Args:
+        request.data (json/dict): Org units to load into the data store.
+
+    Example:
+
+        The request.data is formatted as follows:
+
+        {
+            "582d0b5e-3c3b-52e8-8d93-42573a6a3d88": {
+                "uuid": "582d0b5e-3c3b-52e8-8d93-42573a6a3d88",
+                "name": "Magenta ApS",
+                "engagements": [
+                ],
+                "associations": [
+                  {
+                    "title": "Medarbejder",
+                    "name": "Emil Madsen",
+                    "uuid": "f06ee470-9f17-566f-acbe-e938112d46d9"
+                  },
+                  ...
+                ],
+                "management": [
+                  {
+                    "title": "Direktør",
+                    "name": "Morten Kjærsgaard",
+                    "uuid": "f06ee470-9f17-566f-acbe-e938112d46d9"
+                  }
+                ],
+                "addresses": {
+                  "DAR": [
+                    {
+                      "description": "Postadresse",
+                      "value": "Skt. Johannes Allé 2, 2., 8000 Aarhus C"
+                    },
+                    ...
+                  ],
+                  "PHONE": [
+                  ],
+                  "EMAIL": [
+                    {
+                      "description": "Email",
+                      "value": "info@magenta.dk"
+                    }
+                  ],
+                  "EAN": [],
+                  "PNUMBER": [],
+                  "WWW": []
+                }
+            },
+            ...
+        }
+
+        The response body is formatted as follows:
+
+        {
+            "indexed": 421, "total": 421
+        }
+
+        If 421 org units were indexed, 421 were processed.
+
+    Returns:
+        :obj:`Response`: Response with json body.
+
+    """
+    if not request.data:
+        raise InvalidRequestBody("Request body (json) is missing")
+
+    log.info("load_org_units called")
+
+    # Fetch the entire bulk to be loaded
+    org_units = request.get_json()
+
+    def generator():
+        for uuid, org_unit in org_units.items():
+            entry = {"_id": uuid, "_source": org_unit}
+            yield entry
+
+    # Connect to datastore and clear it out
+    db = DataStore(current_app.connection)
+    db.delete_index("org_units")
+    # Loading entries
+    indexed, total = db.bulk_insert_index(
+        index="org_units", generator=generator
+    )
+
+    return jsonify({"indexed": indexed, "total": total})
+
+
 #####################################################################
 #   ERROR HANDLING SECTION                                          #
 #####################################################################
@@ -229,19 +464,14 @@ def call_search_method():
 @api.app_errorhandler(NotFoundError)
 @api.app_errorhandler(InvalidSearchType)
 @api.app_errorhandler(InvalidRequestBody)
+@api.app_errorhandler(InvalidCredentials)
+@api.app_errorhandler(InsufficientCredentials)
 def invalid_validation_handler(error) -> Response:
     """Error handler for all common types
 
-    The supported error types are as follows:
-        * NotFound
-        * NotFoundError
-        * InvalidSearchType
-        * InvalidRequestBody
-
-    All error types above carry a `status_code`.
-
-    NotFoundError is thrown when no record can be found
-    by identifier, as such this will return status 404.
+    All error types carry a `status_code`, for instance: :code:`NotFoundError`
+    is thrown when no record can be found by identifier, as such this will
+    return status code 404.
 
     Args:
         error (Exception): An exception type error object
@@ -263,7 +493,7 @@ def invalid_validation_handler(error) -> Response:
         "error": {"type": error.__class__.__name__, "message": str(error)}
     }
 
-    log.warning("REQUEST_FAILED - {error}")
+    log.warning(f"REQUEST_FAILED - {error}")
 
     return jsonify(response), status_code
 
@@ -294,7 +524,7 @@ def all_exception_handler(error):
         }
     }
 
-    log.error("UNKNOWN_EXCEPTION - {error_class}={error}")
+    log.error(f"UNKNOWN_EXCEPTION - {error_class}={error}")
     log.debug(error)
 
     return jsonify(response), status_code

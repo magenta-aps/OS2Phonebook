@@ -11,25 +11,19 @@ Start applicationen op med:
 
     $ docker-compose up --build
 
-Tilføj data til mox databasen:
+Start en OS2MO op, og tilføj data til mox databasen:
 
 .. code-block:: console
 
-    $ cat dummy.sql | PGPASSWORD=mox psql -h localhost -U mox
+    $ cat dev-environment/snapshot/kolding-fixtures.sql | PGPASSWORD=mox psql -h localhost -U mox
 
-*Note: This data-dump can be acquired from the mo team.*
-
-Start data-import:
+Hent os2mo-data-import-and-export, og start et data-import:
 
 .. code-block:: console
 
-    $ docker exec -it os2phonebook_os2phonebook-service_1 python3 cli.py start-import
+    $ ./tools/job-runner.sh exports_os2phonebook_export
 
 Dette skridt kan tage flere minutter, og outputtet / fremdriften kan ses med:
-
-.. code-block:: console
-
-    $ docker exec -it os2phonebook_os2phonebook-service_1 tail -f /log/import.log
 
 Licens og Copyright
 -------------------
