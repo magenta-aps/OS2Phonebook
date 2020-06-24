@@ -255,25 +255,20 @@ class DataStore(object):
             )
 
         """
-        # Pad 'itr' to length 'n' by appending 0 or more 'pad's.
-        def tuple_pad(itr, n, pad):
-            return itr + (pad,) * (n - len(itr))
-
         # Default processor simply returns the _source directly
         def default_processor(document):
             return document["_source"]
 
-        # Get the query generator method
+        # Get the query generator method and run it to get our tuple
         query_method = self.get_query_method(search_type)
+        result = query_method(search_value, fuzzy_search)
 
-        # Prepare query and processor
-        index, query, processor = tuple_pad(
-            # Generate query
-            query_method(search_value, fuzzy_search),
-            # Pad with default_processor if no processor was returned
-            3,
-            default_processor,
-        )
+        # Pad with default_processor if we only got a 2 tuple back.
+        if len(result) == 2:
+            result = (*result, default_processor)
+
+        # Unpack 3-tuple into constituents
+        index, query, processor = result
 
         response = self.db.search(index=index, body=query)
 
