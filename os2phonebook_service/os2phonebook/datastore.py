@@ -409,6 +409,7 @@ class DataStore(object):
             "uuid",
             "name",
             "addresses.PHONE",
+            "engagements",
         ]
 
         if fuzzy_search:
