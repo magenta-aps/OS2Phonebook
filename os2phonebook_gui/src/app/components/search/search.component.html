@@ -49,9 +49,14 @@
 
             </div>
 
-            <!-- Show the first enagement/job title if the user searched for job titles -->
+            <!-- Show the first engagement/job title if the user searched for job titles -->
             <div class="result-content" *ngIf="result.engagements">
                 <div class="description">{{ result.engagements[0].title }}</div>
+            </div>
+
+            <!-- Show the first kles title if the user searched for kles -->
+            <div class="result-content" *ngIf="result.kles">
+                <div class="description">{{ result.kles[0].title }}</div>
             </div>
 
         </div>

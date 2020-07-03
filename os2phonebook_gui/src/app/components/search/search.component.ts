@@ -47,22 +47,32 @@ export class SearchComponent implements OnInit {
         {
             name: "Navn",
             type: "employee_by_name",
+            url: "/employee"
         },
         {
             name: "Tlf nr.",
             type: "employee_by_phone",
+            url: "/employee"
         },
         {
             name: "Email",
             type: "employee_by_email",
+            url: "/employee"
         },
         {
             name: "Stilling",
             type: "employee_by_engagement",
+            url: "/employee"
         },
         {
             name: "Enhed",
             type: "org_unit_by_name",
+            url: "/orgunit"
+        },
+        {
+            name: "Opgaver",
+            type: "org_unit_by_kle",
+            url: "/orgunit"
         }
     ]
 
@@ -110,16 +120,15 @@ export class SearchComponent implements OnInit {
     private goTo(uuid: string): void {
 
         let url: string;
+        let searchtype: SearchType;
 
         /**
-         * Set the url to either /org_unit or /employee
-         * based on which is the selectedType
+         * Set the url based on the selectedType's url parameter
         */
-        if (this.selectedType == "org_unit_by_name") {
-            url = "/orgunit"
-        } else {
-            url = "/employee"
-        }
+        searchtype = this.searchTypes.find((element : SearchType) => {
+            return element.type == this.selectedType
+        })
+        url = searchtype.url
 
         // Navigate to the corresponding view
         this.router.navigate([url, uuid])
