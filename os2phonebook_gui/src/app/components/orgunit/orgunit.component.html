@@ -53,8 +53,8 @@
     <!-- Contact information ends here -->
 
     <!-- List of managers of the organisation unit or fallback message -->
-    <h5 *ngIf="org_unit.management.length">Ledelse:</h5>
     <h5 *ngIf="!org_unit.management.length">Der findes ingen leder roller for denne afdeling</h5>
+    <h5 *ngIf="org_unit.management.length">Ledelse:</h5>
     <ul class="card">
         <li *ngFor="let manager of org_unit.management" (click)="goToEmployee(manager.uuid)">
             {{ manager.name }} <span>{{ manager.title }}</span>
@@ -62,8 +62,8 @@
     </ul>
 
     <!-- List of employees working in current organisation unit or fallback message -->
-    <h5 *ngIf="org_unit.engagements.length">Ansatte:</h5>
     <h5 *ngIf="!org_unit.engagements.length">Der findes ingen ansatte i denne afdeling</h5>
+    <h5 *ngIf="org_unit.engagements.length">Ansatte:</h5>
     <ul class="card">
         <li *ngFor="let employee of org_unit.engagements" (click)="goToEmployee(employee.uuid)">
             {{ employee.name }} <span>{{ employee.title }}</span>
@@ -71,8 +71,8 @@
     </ul>
 
     <!-- List of employees associated with current organisation unit or fallback message -->
-    <h5 *ngIf="org_unit.associations.length">Tilknytninger:</h5>
     <h5 *ngIf="!org_unit.associations.length">Der findes ingen tilknytninger til denne afdeling</h5>
+    <h5 *ngIf="org_unit.associations.length">Tilknytninger:</h5>
     <ul class="card">
         <li *ngFor="let association of org_unit.associations" (click)="goToEmployee(association.uuid)">
             {{ association.name }} <span>{{ association.title }}</span>
@@ -80,8 +80,8 @@
     </ul>
 
     <!-- List of kle numbers related to the current organisation unit or fallback message -->
-    <h5 *ngIf="org_unit.associations.length">Opgaver:</h5>
-    <h5 *ngIf="!org_unit.associations.length">Der findes ingen opgaver til denne afdeling</h5>
+    <h5 *ngIf="!org_unit.kles.length">Der findes ingen opgaver til denne afdeling</h5>
+    <h5 *ngIf="org_unit.kles.length">Opgaver:</h5>
     <ul class="card">
         <li *ngFor="let kle of org_unit.kles">
             {{ kle.title }}
