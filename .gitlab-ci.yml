@@ -80,7 +80,8 @@ Lint shell scripts:
   script:
     - git ls-files --exclude='*.sh' --ignored | xargs shellcheck
 
-Lint frontend:
+# Disabled for now
+.Lint frontend:
   extends: .lint-default
   image: node:14-slim
   before_script:
