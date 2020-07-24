@@ -29,7 +29,6 @@ services:
             - 9090:9090
         environment:
             OS2PHONEBOOK_COMPANY_NAME: Magenta ApS
-            OS2PHONEBOOK_LOG_ROOT: /log
             OS2PHONEBOOK_DATALOADER_PASSWORD: password1
             ELASTICSEARCH_HOST: elasticsearch
             ELASTICSEARCH_PORT: 9200
