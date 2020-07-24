@@ -29,13 +29,17 @@ services:
         ports:
             - 8000:80
         depends_on:
-        - os2phonebook-frontend
-        - os2phonebook-backend
+            - os2phonebook-frontend
+            - os2phonebook-backend
 
     os2phonebook-frontend:
         build:
             context: .
             dockerfile: docker/Dockerfile.frontend
+            target: builder
+        command: npm run start
+        volumes:
+            - ./os2phonebook_frontend:/app:ro
         ports:
             - 4200:80
 
@@ -43,6 +47,9 @@ services:
         build:
             context: .
             dockerfile: docker/Dockerfile.backend
+        command: /start-reload.sh
+        volumes:
+            - ./os2phonebook_backend/os2phonebook:/app/os2phonebook:ro
         ports:
             - 9090:80
         environment:
