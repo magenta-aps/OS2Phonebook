@@ -15,15 +15,15 @@ services:
         ports:
             - 8000:80
         depends_on:
-        - os2phonebook-gui
-        - os2phonebook-service
+        - os2phonebook-frontend
+        - os2phonebook-backend
 
-    os2phonebook-gui:
+    os2phonebook-frontend:
         image: magentaaps/os2phonebook-frontend:0.0.1-rc
         ports:
             - 4200:4200
 
-    os2phonebook-service:
+    os2phonebook-backend:
         image: magentaaps/os2phonebook-backend:0.0.1-rc
         ports:
             - 9090:9090

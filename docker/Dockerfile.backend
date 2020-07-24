@@ -3,9 +3,9 @@ FROM python:3.7.4 AS dist
 # https://docs.python.org/3/using/cmdline.html#cmdoption-u
 ENV PYTHONUNBUFFERED=1
 
-COPY os2phonebook_service/cli.py /app/cli.py
-COPY os2phonebook_service/wsgi.py /app/wsgi.py
-COPY os2phonebook_service/requirements /app/requirements
+COPY os2phonebook_backend/cli.py /app/cli.py
+COPY os2phonebook_backend/wsgi.py /app/wsgi.py
+COPY os2phonebook_backend/requirements /app/requirements
 
 # Install requirements
 RUN pip install -r /app/requirements/release.txt
@@ -20,7 +20,7 @@ RUN mkdir /log
 COPY docker/entrypoint.sh /entrypoint/os2phonebook-entrypoint.sh
 
 # Copy in source
-COPY os2phonebook_service/os2phonebook /app/os2phonebook
+COPY os2phonebook_backend/os2phonebook /app/os2phonebook
 
 # Default configuration (should be overridden)
 ENV OS2PHONEBOOK_COMPANY_NAME=Magenta
