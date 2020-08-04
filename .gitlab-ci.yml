@@ -80,6 +80,15 @@ Lint shell scripts:
   script:
     - git ls-files --exclude='*.sh' --ignored | xargs shellcheck
 
+Audit frontend:
+  extends: .lint-default
+  image: node:14-slim
+  before_script:
+    - cd os2phonebook_frontend
+    - npm install
+  script:
+    - npm audit --prod
+
 # Disabled for now
 .Lint frontend:
   extends: .lint-default
