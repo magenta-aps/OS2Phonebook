@@ -1,1 +1,0 @@
-# This directory is used to expose logs from the development containers

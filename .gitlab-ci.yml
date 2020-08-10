@@ -37,7 +37,7 @@ stages:
 .lint-default:
   stage: lint
   needs: []
-  image: python:3.7
+  image: python:3
   services: []
   tags:
     - docker
@@ -45,9 +45,9 @@ stages:
 Lint Python:
   extends: .lint-default
   before_script:
-    - pip3 install -r os2phonebook_service/requirements/lint.txt
+    - pip3 install -r os2phonebook_backend/requirements/lint.txt
   script:
-    - cd os2phonebook_service
+    - cd os2phonebook_backend
     - flake8 --version
     - flake8
     - black --version
@@ -79,6 +79,16 @@ Lint shell scripts:
     - apk add git
   script:
     - git ls-files --exclude='*.sh' --ignored | xargs shellcheck
+
+# Disabled for now
+.Lint frontend:
+  extends: .lint-default
+  image: node:14-slim
+  before_script:
+    - cd os2phonebook_frontend
+    - npm install
+  script:
+    - npm run lint
 
 # Build stage
 #############
@@ -118,14 +128,14 @@ build_proxy_docker:
 build_frontend_docker:
   extends: .build_docker_base
   before_script:
-    - export DOCKERFILE="docker/Dockerfile.gui"
+    - export DOCKERFILE="docker/Dockerfile.frontend"
     - export CI_IMAGE="${FRONTEND_IMAGE}"
 
 
 build_backend_docker:
   extends: .build_docker_base
   before_script:
-    - export DOCKERFILE="docker/Dockerfile.service"
+    - export DOCKERFILE="docker/Dockerfile.backend"
     - export CI_IMAGE="${BACKEND_IMAGE}"
 
 
@@ -142,7 +152,7 @@ test_backend:
   tags:
     - docker
   before_script:
-    - pip3 install -r os2phonebook_service/requirements/test.txt
+    - pip3 install -r os2phonebook_backend/requirements/test.txt
   script:
     - pytest
 

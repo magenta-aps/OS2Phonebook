@@ -29,28 +29,31 @@ services:
         ports:
             - 8000:80
         depends_on:
-        - os2phonebook-gui
-        - os2phonebook-service
+            - os2phonebook-frontend
+            - os2phonebook-backend
 
-    os2phonebook-gui:
+    os2phonebook-frontend:
         build:
             context: .
-            dockerfile: docker/Dockerfile.gui
-        ports:
-            - 4200:4200
-
-    os2phonebook-service:
-        build:
-            context: .
-            dockerfile: docker/Dockerfile.service
-            target: dist
-        ports:
-            - 9090:9090
+            dockerfile: docker/Dockerfile.frontend
+            target: builder
+        command: npm run start
         volumes:
-            - ./dev-environment/logs:/log
+            - ./os2phonebook_frontend:/app:ro
+        ports:
+            - 4200:80
+
+    os2phonebook-backend:
+        build:
+            context: .
+            dockerfile: docker/Dockerfile.backend
+        command: /start-reload.sh
+        volumes:
+            - ./os2phonebook_backend/os2phonebook:/app/os2phonebook:ro
+        ports:
+            - 9090:80
         environment:
             OS2PHONEBOOK_COMPANY_NAME: Magenta ApS
-            OS2PHONEBOOK_LOG_ROOT: /log
             OS2PHONEBOOK_DATALOADER_PASSWORD: password1
             ELASTICSEARCH_HOST: elasticsearch
             ELASTICSEARCH_PORT: 9200
