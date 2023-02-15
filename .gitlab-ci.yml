@@ -58,7 +58,7 @@ Lint Dockerfiles:
     - apt-get -y update
     - apt-get -y install --no-install-recommends git
   script:
-    - git ls-files --exclude='Dockerfile*' --ignored | xargs --max-lines=1 hadolint
+    - git ls-files --cached --exclude='Dockerfile*' --ignored | xargs --max-lines=1 hadolint
 
 # Disabled for now
 .REUSE compliance:
@@ -76,7 +76,7 @@ Lint shell scripts:
     - apk update
     - apk add git
   script:
-    - git ls-files --exclude='*.sh' --ignored | xargs shellcheck
+    - git ls-files --cached --exclude='*.sh' --ignored | xargs shellcheck
 
 # Disabled for now
 .Lint frontend:
