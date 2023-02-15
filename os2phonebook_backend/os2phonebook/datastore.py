@@ -60,7 +60,6 @@ class DataStore(object):
     """
 
     def __init__(self, db):
-
         if not isinstance(db, Elasticsearch):
             raise TypeError(
                 "Datastore requires an instance of the Elasticsearch object"
@@ -255,6 +254,7 @@ class DataStore(object):
             )
 
         """
+
         # Default processor simply returns the _source directly
         def default_processor(document):
             return document["_source"]
