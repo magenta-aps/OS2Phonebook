@@ -178,7 +178,7 @@ generate_tags:
   script:
     - apk add skopeo
     - cat tags.txt | xargs -I TAG skopeo copy
-      --src-creds=${CI_REGISTRY_USER}:${CI_BUILD_TOKEN}
+      --src-creds=${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD}
       --dest-creds=${RELEASE_REGISTRY_USER}:${RELEASE_REGISTRY_PASSWORD}
       "docker://${CI_IMAGE}"
       "docker://${RELEASE_IMAGE_NAME}:TAG"
