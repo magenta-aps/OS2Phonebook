@@ -78,8 +78,7 @@ Lint shell scripts:
   script:
     - git ls-files --cached --exclude='*.sh' --ignored | xargs shellcheck
 
-# Disabled for now
-.Lint frontend:
+Lint frontend:
   extends: .lint-default
   image: node:14-slim
   before_script:

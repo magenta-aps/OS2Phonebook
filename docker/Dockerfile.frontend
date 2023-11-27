@@ -17,7 +17,7 @@ RUN useradd -u 72085 --no-log-init -r -g sys_magenta_os2phonebook sys_magenta_os
 COPY os2phonebook_frontend/ /app
 
 # Compile source
-RUN npm run build
+CMD npm run build
 
 FROM nginx:1.19-alpine
 COPY --from=builder /app/dist/OS2PhonebookGUI /usr/share/nginx/html
