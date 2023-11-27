@@ -11,22 +11,19 @@ Start applicationen op med:
 
     $ docker-compose up --build
 
-Load data ind, vha. :code:`curl`:
+Start en OS2MO op, og tilføj data til mox databasen:
 
 .. code-block:: console
 
-    $ curl -u dataloader:password1 -X POST \
-           -H "Content-Type: application/json" \
-           -d @dev-environment/snapshot/employees.json \
-           localhost:9090/api/load-employees
-    {"indexed":758,"total":758}
+    $ cat dev-environment/snapshot/kolding-fixtures.sql | PGPASSWORD=mox psql -h localhost -U mox
 
-    $ curl -u dataloader:password1 -X POST \
-           -H "Content-Type: application/json" \
-           -d @dev-environment/snapshot/org_units.json \
-           localhost:9090/api/load-org-units
-    {"indexed":62,"total":62}
+Hent os2mo-data-import-and-export, og start et data-import:
 
+.. code-block:: console
+
+    $ ./tools/job-runner.sh exports_os2phonebook_export
+
+Dette skridt kan tage flere minutter, og outputtet / fremdriften kan ses med:
 
 Licens og Copyright
 -------------------
