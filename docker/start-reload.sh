@@ -19,6 +19,4 @@ else
 fi
 
 # Start Gunicorn without meinheld
-# We explicitly overwrite the timeout to allow the DIPEX export job time to
-# upload the whole json file.
-exec gunicorn --timeout=60 -c "$GUNICORN_CONF" "$APP_MODULE"
+exec gunicorn -c "$GUNICORN_CONF" "$APP_MODULE"
