@@ -29,20 +29,20 @@ services:
         ports:
             - 8000:80
         depends_on:
-        - os2phonebook-frontend
-        - os2phonebook-backend
+        - os2phonebook-gui
+        - os2phonebook-service
 
-    os2phonebook-frontend:
+    os2phonebook-gui:
         build:
             context: .
-            dockerfile: docker/Dockerfile.frontend
+            dockerfile: docker/Dockerfile.gui
         ports:
             - 4200:4200
 
-    os2phonebook-backend:
+    os2phonebook-service:
         build:
             context: .
-            dockerfile: docker/Dockerfile.backend
+            dockerfile: docker/Dockerfile.service
             target: dist
         ports:
             - 9090:9090
