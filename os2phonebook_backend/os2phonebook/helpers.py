@@ -1,6 +1,7 @@
 import os
 import json
-from logging import getLogger, Logger, Formatter, StreamHandler
+from logging import getLogger, Logger, Formatter
+from logging.handlers import RotatingFileHandler
 
 
 def config_factory():
@@ -13,6 +14,7 @@ def config_factory():
     The following parameters should be generated:
 
         * OS2PHONEBOOK_COMPANY_NAME
+        * OS2PHONEBOOK_LOG_ROOT
         * ELASTICSEARCH_HOST
         * ELASTICSEARCH_PORT
 
@@ -30,6 +32,7 @@ def config_factory():
 
     required_parameters = [
         "OS2PHONEBOOK_COMPANY_NAME",
+        "OS2PHONEBOOK_LOG_ROOT",
         "ELASTICSEARCH_HOST",
         "ELASTICSEARCH_PORT",
     ]
@@ -72,21 +75,32 @@ def log_factory(namespace: str = "os2phonebook") -> Logger:
     return getLogger(namespace)
 
 
-def configure_logging(logger: Logger) -> None:
-    """Configure existing Logger instance with a format and handler.
+def configure_logging(log_root: str, log_file: str, logger: Logger) -> None:
+    """Configure existing Logger instance with a format and file handler.
 
     Args:
+        log_root (str): An absolute path to logging directory.
+            Example: /var/log/os2phonebook.
+        log_file (str): The log filename.
+            Example: service.log
         logger (Logger): An instance of the Logger class.
 
     Raises:
         TypeError: If the logger is not an instance of the Logger class.
             Otherwise setting up the format and handler will fail.
+        FileNotFoundError: If the log_root directory does not already exist.
+
     """
     if not isinstance(logger, Logger):
         raise TypeError(
             "Function will only accept an instance of the python Logger class"
         )
 
+    if not os.path.exists(log_root):
+        raise FileNotFoundError("Specified log directory does not exist")
+
+    # TODO: Must be passed through config module
+    log_file_size = 1000000
     log_level = 20
 
     # DEFAULT TO INFO log level (10)
@@ -95,8 +109,13 @@ def configure_logging(logger: Logger) -> None:
     # Log format
     log_format = Formatter("[%(asctime)s] %(levelname)s %(message)s")
 
+    activity_log_file = os.path.join(log_root, log_file)
+
     # Setup handlers
-    activity_log_handler = StreamHandler()
+    activity_log_handler = RotatingFileHandler(
+        filename=activity_log_file, maxBytes=log_file_size
+    )
+
     activity_log_handler.setFormatter(log_format)
     activity_log_handler.setLevel(log_level)
 
