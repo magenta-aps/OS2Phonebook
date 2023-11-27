@@ -42,4 +42,6 @@ EXPOSE 9090
 
 ENTRYPOINT ["sh", "/entrypoint/os2phonebook-entrypoint.sh"]
 
-CMD ["gunicorn", "-b", "0.0.0.0:9090", "--worker-class=gevent", "--reload", "--worker-connections=1000", "wsgi:app"]
+# We explicitly overwrite the timeout to allow the DIPEX export job time to
+# upload the whole json file.
+CMD ["gunicorn", "-b", "0.0.0.0:9090", "--worker-class=gevent", "--reload", "--worker-connections=1000", "--timeout=60", "wsgi:app"]
