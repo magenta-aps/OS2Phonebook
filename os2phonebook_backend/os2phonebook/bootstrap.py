@@ -46,6 +46,7 @@ def ping_datastore(config: dict, interval=5, max_attempts=15) -> Iterator[str]:
     db = datastore.create_connection(host, port)
 
     for retry in range(max_attempts):
+
         # Info
         yield f"Attempting to connect to datastore {retry}/{max_attempts}"
 
