@@ -30,7 +30,6 @@ def pingdb(max_attempts, interval):
     click.echo("Setting up a connection to the datastore")
 
     for attempt in ping_datastore(config, interval, max_attempts):
-
         click.echo(attempt)
 
 
