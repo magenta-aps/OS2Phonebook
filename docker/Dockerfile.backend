@@ -13,10 +13,6 @@ WORKDIR /app
 COPY os2phonebook_backend/requirements /app/requirements
 RUN pip install --no-cache-dir -r /app/requirements/release.txt
 
-# Install development reload script
-# RUN apk add inotify-tools
-COPY docker/start-reload.sh /start-reload.sh
-
 # Copy in source
 COPY os2phonebook_backend/preflight.sh /app/prestart.sh
 COPY os2phonebook_backend/cli.py /app/cli.py
