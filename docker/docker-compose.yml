@@ -15,20 +15,21 @@ services:
         ports:
             - 8000:80
         depends_on:
-        - os2phonebook-frontend
-        - os2phonebook-backend
+        - os2phonebook-gui
+        - os2phonebook-service
 
-    os2phonebook-frontend:
+    os2phonebook-gui:
         image: magentaaps/os2phonebook-frontend:0.0.1-rc
         ports:
-            - 4200:80
+            - 4200:4200
 
-    os2phonebook-backend:
+    os2phonebook-service:
         image: magentaaps/os2phonebook-backend:0.0.1-rc
         ports:
-            - 9090:80
+            - 9090:9090
         environment:
             OS2PHONEBOOK_COMPANY_NAME: Magenta ApS
+            OS2PHONEBOOK_LOG_ROOT: /log
             OS2PHONEBOOK_DATALOADER_PASSWORD: password1
             ELASTICSEARCH_HOST: elasticsearch
             ELASTICSEARCH_PORT: 9200

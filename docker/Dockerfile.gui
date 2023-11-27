@@ -1,0 +1,18 @@
+FROM node:14
+
+RUN mkdir -p /app
+WORKDIR /app
+
+# Create service account / uid and gid
+RUN groupadd -g 72085 -r sys_magenta_os2phonebook && \
+    useradd -u 72085 --no-log-init -r -g sys_magenta_os2phonebook sys_magenta_os2phonebook
+
+COPY os2phonebook_gui/package.json /app/package.json
+COPY os2phonebook_gui/package-lock.json /app/package-lock.json
+RUN npm install
+
+COPY os2phonebook_gui/ /app
+
+EXPOSE 4200
+
+CMD ["npm", "run", "start"]

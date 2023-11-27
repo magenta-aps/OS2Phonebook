@@ -1,0 +1,36 @@
+<!-- Displays all `ROOT` org units if nothing has been selected -->
+<div *ngIf="!selectedNode">
+    <div *ngFor="let node of nodes">
+        <div class="browser-items" (click)="expandIt(node)">
+            <div class="item" [ngClass]="{'is-child': !node.children.length}">
+                {{ node.name }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Display the selected org unit and its children once it's selected -->
+<div *ngIf="selectedNode">
+
+    <!-- This is the outter container of the highlighting - CLICKABLE -->
+    <div class="browser-items" (click)="remove()">
+
+        <!-- Sets the highlighting class on the displayed org unit -->
+        <div *ngIf="selectedNode.children.length" class="item parent-selected">
+            {{ selectedNode.name }}
+        </div>
+
+        <!-- Same as above, but with a different highlighting class -->
+        <div *ngIf="!selectedNode.children.length" class="item child-selected">
+            {{ selectedNode.name }}
+        </div>
+    </div>
+
+    <!-- IF the selected org unit has children... -->
+    <div *ngIf="selectedNode.children.length">
+
+        <!-- Creates a recursive components (self) for the children -->
+        <app-browser [nodes]="selectedNode.children"></app-browser> <!-- RECURSIVE SELF -->
+    </div>
+
+</div>
